@@ -4,14 +4,25 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URI")
+  url      = env("DATABASE_URL")
+}
+
+enum Provider {
+  EMAIL
+  GOOGLE
+  APPLE
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  password String
-  name     String?
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String
+  password  String? // Nullable - для Google user может быть null
+  avatarUrl String?
+  provider  Provider @default(EMAIL)
+  googleId  String? // Для связи с Google аккаунтом
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
