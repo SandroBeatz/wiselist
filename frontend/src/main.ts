@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import App from './app/App.vue'
-import router from './app/router';
+import App from '@app/App.vue'
+import router from '@app/router';
 import {createPinia} from "pinia";
 
 import { IonicVue } from '@ionic/vue';

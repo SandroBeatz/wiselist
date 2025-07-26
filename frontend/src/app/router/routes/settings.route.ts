@@ -4,7 +4,7 @@ const settingsRoutes: RouteRecordRaw[] = [
     {
         path: 'settings',
         name: 'TabSettings',
-        component: async () => (await import('@/pages/Settings')).SettingsPage,
+        component: async () => (await import('@pages/Settings')).SettingsPage,
     },
 ]
 

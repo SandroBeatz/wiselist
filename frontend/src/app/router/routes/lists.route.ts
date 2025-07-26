@@ -4,7 +4,7 @@ const listsRoutes: RouteRecordRaw[] = [
     {
         path: 'lists',
         name: 'TabLists',
-        component: async () => (await import('@/pages/Lists')).ListsPage,
+        component: async () => (await import('@pages/Lists')).ListsPage,
     },
 ]
 

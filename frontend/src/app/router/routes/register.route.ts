@@ -4,7 +4,7 @@ const registerRoutes: RouteRecordRaw[] = [
     {
         path: '/register',
         name: 'Register',
-        component: async () => (await import('@/pages/Register')).RegisterPage,
+        component: async () => (await import('@pages/Register')).RegisterPage,
     },
 ]
 
