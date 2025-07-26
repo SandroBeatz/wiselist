@@ -19,7 +19,11 @@
     "@capacitor/status-bar": "7.0.1",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
+    "@tailwindcss/postcss": "^4.1.11",
     "ionicons": "^7.0.0",
+    "lucide-vue-next": "^0.525.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0"
   },

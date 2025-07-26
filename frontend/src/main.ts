@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router';
+import App from './app/App.vue'
+import router from './app/router';
 
 import { IonicVue } from '@ionic/vue';
 
@@ -14,11 +14,11 @@ import '@ionic/vue/css/typography.css';
 
 /* Optional CSS utils that can be commented out */
 import '@ionic/vue/css/padding.css';
-import '@ionic/vue/css/float-elements.css';
-import '@ionic/vue/css/text-alignment.css';
-import '@ionic/vue/css/text-transformation.css';
-import '@ionic/vue/css/flex-utils.css';
-import '@ionic/vue/css/display.css';
+// import '@ionic/vue/css/float-elements.css';
+// import '@ionic/vue/css/text-alignment.css';
+// import '@ionic/vue/css/text-transformation.css';
+// import '@ionic/vue/css/flex-utils.css';
+// import '@ionic/vue/css/display.css';
 
 /**
  * Ionic Dark Mode
@@ -27,12 +27,13 @@ import '@ionic/vue/css/display.css';
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import '@ionic/vue/css/palettes/dark.always.css'; */
-/* @import '@ionic/vue/css/palettes/dark.class.css'; */
-import '@ionic/vue/css/palettes/dark.system.css';
+// import '@ionic/vue/css/palettes/dark.always.css';
+// import '@ionic/vue/css/palettes/dark.system.css';
+
+import '@/app/assets/css/main.css';
 
 /* Theme variables */
-import './theme/variables.css';
+import '@/app/theme/variables.css';
 
 const app = createApp(App)
   .use(IonicVue)
