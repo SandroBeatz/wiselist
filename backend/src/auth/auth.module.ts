@@ -7,16 +7,14 @@ import { AuthService } from './auth.service';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModule } from '../user/user.module';
+import {getJwtOptions} from "../config/jwt.config";
 
 @Module({
     imports: [
         PassportModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
-            useFactory: async (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-                signOptions: { expiresIn: '7d' },
-            }),
+            useFactory: getJwtOptions,
             inject: [ConfigService],
         }),
         UserModule,

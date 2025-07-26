@@ -6,13 +6,21 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
 import { GoogleUserDto } from "./dto/google-auth.dto";
 import { Provider } from '@prisma/client';
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
+    private readonly JWT_ACCESS_TOKEN_TTL: string;
+    private readonly JWT_REFRESH_TOKEN_TTL: string;
+
     constructor(
+        private configService: ConfigService,
         private jwtService: JwtService,
         private userService: UserService,
-    ) {}
+    ) {
+        this.JWT_ACCESS_TOKEN_TTL = this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_TTL') || '1h';
+        this.JWT_REFRESH_TOKEN_TTL = this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL') || '7d';
+    }
 
     async register(registerDto: RegisterDto) {
         const { email, password, name } = registerDto;
@@ -97,16 +105,20 @@ export class AuthService {
 
     private generateTokenResponse(user: any) {
         const payload = { sub: user.id, email: user.email };
-        const access_token = this.jwtService.sign(payload);
+        const accessToken = this.jwtService.sign(payload, {
+            expiresIn: this.JWT_ACCESS_TOKEN_TTL,
+        });
+        const refreshToken = this.jwtService.sign(payload, {
+            expiresIn: this.JWT_REFRESH_TOKEN_TTL,
+        });
 
         return {
-            access_token,
+            accessToken,
+            refreshToken,
             user: {
                 id: user.id,
                 email: user.email,
-                name: user.name,
-                avatarUrl: user.avatarUrl,
-                provider: user.provider,
+                name: user.name
             },
         };
     }

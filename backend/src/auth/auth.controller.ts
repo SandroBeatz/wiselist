@@ -1,4 +1,4 @@
-import {Controller, Get, Post, UseGuards, Req, Res, Body, ValidationPipe} from '@nestjs/common';
+import {Controller, Get, Post, UseGuards, Req, Res, Body, ValidationPipe, HttpCode, HttpStatus} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { User } from './decorators/user.decorator';
@@ -12,6 +12,7 @@ export class AuthController {
 
     // ===== EMAIL/PASSWORD ENDPOINTS =====
     @Post('register')
+    @HttpCode(HttpStatus.CREATED)
     async register(@Body(ValidationPipe) registerDto: RegisterDto) {
         return this.authService.register(registerDto);
     }
