@@ -17,7 +17,7 @@ export const setAuthorizationToken = (token: string): Promise<void> => {
     if (!token) {
       reject(new Error('Token is required'))
     }
-    tokenCache.set(token)
+    // tokenCache.set(token)
     API.defaults.headers.common = {
       ...API.defaults.headers.common,
       Authorization: `Bearer ${token}`,
@@ -27,7 +27,7 @@ export const setAuthorizationToken = (token: string): Promise<void> => {
 }
 
 export const clearAuthorizationToken = () => {
-  tokenCache.remove()
+  // tokenCache.remove()
   API.defaults.headers.common = {
     'Content-Type': 'application/json',
   }
