@@ -1,23 +1,12 @@
 <script setup lang="ts">
 import {IonButton, IonInput} from "@ionic/vue";
-import {useRegisterForm} from "../model/useRegisterForm";
+import {useLoginForm} from "@/features/Auth/model/useLoginForm";
 
-const {form, handlerField, handleSubmit} = useRegisterForm()
-
+const {form, handleSubmit, handlerField} = useLoginForm()
 </script>
 
 <template>
   <div class="flex flex-col gap-4 w-full">
-    <ion-input
-        type="text"
-        name="name"
-        label="Your name"
-        label-placement="floating"
-        fill="outline"
-        placeholder="Your name"
-        :value="form.name"
-        @ionInput="handlerField($event)"
-    ></ion-input>
     <ion-input
         type="email"
         name="email"
@@ -39,8 +28,7 @@ const {form, handlerField, handleSubmit} = useRegisterForm()
         @ionInput="handlerField($event)"
     ></ion-input>
 
-
-    <ion-button @click="handleSubmit">Create account</ion-button>
+    <ion-button @click="handleSubmit">Login</ion-button>
   </div>
 </template>
 

@@ -1,35 +1,39 @@
-import {reactive} from "vue";
-import {InputCustomEvent} from "@ionic/vue";
 import {apiAuth} from "../api";
+import {useFormHandler} from "@shared/composables/useFormHandler";
+import {RegisterForm} from "@/features/Auth/model/types";
 
-export function useRegisterForm() {
-    const form = reactive({
+export const useRegisterForm = () => useFormHandler<RegisterForm>({
+    initialData: {
         name: '',
         email: '',
-        password: '',
-    })
-
-    function handlerField(event: InputCustomEvent) {
-        const target = event.target as HTMLIonInputElement
-        const name = target.name as keyof typeof form
-        const value = event.target.value ?? ''
-
-        if(!name) return
-
-        form[name] = String(value)
-    }
-
-    async function handleSubmit() {
+        password: ''
+    },
+    onSubmit: async (formData) => {
         try {
-            await apiAuth.register(form)
+            await apiAuth.register(formData)
         } catch (e) {
             console.log(e)
         }
-    }
+    },
+    validate: (formData) => {
+        const errors: Partial<Record<keyof RegisterForm, string>> = {}
 
-    return {
-        form,
-        handlerField,
-        handleSubmit
+        if (!formData.name) {
+            errors.name = 'Имя обязательно'
+        }
+
+        if (!formData.email) {
+            errors.email = 'Email обязателен'
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            errors.email = 'Некорректный email'
+        }
+
+        if (!formData.password) {
+            errors.password = 'Пароль обязателен'
+        } else if (formData.password.length < 6) {
+            errors.password = 'Пароль должен быть не менее 6 символов'
+        }
+
+        return Object.keys(errors).length > 0 ? errors as Record<keyof RegisterForm, string> : null
     }
-}
+})
