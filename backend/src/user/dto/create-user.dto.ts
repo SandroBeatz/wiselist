@@ -1,5 +1,7 @@
-import { IsEmail, IsString, IsOptional, IsUrl, IsEnum } from 'class-validator';
+import {IsEmail, IsString, IsOptional, IsUrl, IsEnum, ValidateNested} from 'class-validator';
 import { Provider } from '@prisma/client';
+import {CreateProfileDto} from "../../profile/dto/create-profile.dto";
+import {Type} from "class-transformer";
 
 export class CreateUserDto {
     @IsEmail()
@@ -22,4 +24,9 @@ export class CreateUserDto {
     @IsOptional()
     @IsUrl()
     avatarUrl?: string;
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => CreateProfileDto)
+    profile?: CreateProfileDto;
 }

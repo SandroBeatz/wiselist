@@ -12,12 +12,7 @@ export class UserService {
             select: {
                 id: true,
                 email: true,
-                name: true,
-                avatarUrl: true,
-                provider: true,
-                googleId: true,
-                createdAt: true,
-                updatedAt: true,
+                profile: true,
             },
         });
     }
@@ -30,7 +25,18 @@ export class UserService {
 
     async findById(id: string) {
         const user = await this.prismaService.user.findUnique({
-            where: { id }
+            where: { id },
+            select: {
+                id: true,
+                email: true,
+                profile: {
+                    select: {
+                        avatar: true,
+                        fullName: true,
+                        notificationsEnabled: true,
+                    },
+                },
+            },
         })
 
         if(!user) {
@@ -44,21 +50,21 @@ export class UserService {
         return this.prismaService.user.create({
             data: {
                 email: userData.email,
-                name: userData.name,
                 password: userData.password,
                 provider: userData.provider,
                 googleId: userData.googleId,
-                avatarUrl: userData.avatarUrl,
+                profile: {
+                    create: {
+                        avatar: null,
+                        fullName: userData.name,
+                        notificationsEnabled: true,
+                    }
+                },
             },
             select: {
                 id: true,
                 email: true,
-                name: true,
-                avatarUrl: true,
-                provider: true,
-                googleId: true,
-                createdAt: true,
-                updatedAt: true,
+                profile: true,
             },
         });
     }

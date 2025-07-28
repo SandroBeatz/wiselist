@@ -14,15 +14,32 @@ enum Provider {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  name      String
-  password  String? // Nullable - для Google user может быть null
-  avatarUrl String?
-  provider  Provider @default(EMAIL)
-  googleId  String? // Для связи с Google аккаунтом
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  password     String?
+  provider     Provider @default(EMAIL)
+  googleId     String?  @map("google_id")
+  isSubscribed Boolean  @default(false) @map("is_subscribed")
+
+  profile Profile?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Profile {
+  id                   String  @id @default(uuid()) @db.Uuid
+  userId               String  @unique @map("user_id") @db.Uuid
+  fullName             String? @map("full_name")
+  avatar               String?
+  notificationsEnabled Boolean @default(true) @map("notifications_enabled")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
 }

@@ -38,7 +38,7 @@ export class AuthService {
             email,
             name,
             password: hashedPassword,
-            provider: Provider.EMAIL
+            provider: Provider.EMAIL,
         });
 
         return this.generateTokenResponse(user);
@@ -72,14 +72,12 @@ export class AuthService {
             user = await this.userService.create({
                 email: googleUser.email,
                 name: googleUser.name,
-                avatarUrl: googleUser.picture,
                 provider: 'GOOGLE' as Provider,
             });
         } else {
             // Update user info in case it changed
             user = await this.userService.update(user.id, {
                 name: googleUser.name,
-                avatarUrl: googleUser.picture,
             });
         }
 
@@ -87,14 +85,7 @@ export class AuthService {
         const access_token = this.jwtService.sign(payload);
 
         return {
-            access_token,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                avatarUrl: user.avatarUrl,
-                provider: user.provider,
-            },
+            access_token
         };
     }
 
