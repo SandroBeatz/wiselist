@@ -5,7 +5,7 @@ const API = axios.create({
 })
 const token = ''
 
-const AuthorizationToken = token ? { Authorization: `Bearer ${token}` } : undefined
+// const AuthorizationToken = token ? { Authorization: `Bearer ${token}` } : undefined
 
 API.defaults.headers.common = {
     ...API.defaults.headers.common,
