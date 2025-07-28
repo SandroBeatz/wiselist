@@ -1,47 +1,49 @@
 import axios from 'axios'
+import {useLocalStorage} from "@vueuse/core";
+import {storageKeys} from "@shared/constants/storage.constants";
 
 const API = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api/`
+    baseURL: `${import.meta.env.VITE_API_URL}/api/`
 })
-const token = ''
 
-// const AuthorizationToken = token ? { Authorization: `Bearer ${token}` } : undefined
-
-API.defaults.headers.common = {
-    ...API.defaults.headers.common,
-    Authorization: `Bearer ${token}`,
+function setHeaders() {
+    API.defaults.headers.common = {
+        ...API.defaults.headers.common,
+        Authorization: `Bearer ${AuthorizationToken.value}`,
+    }
 }
 
+const AuthorizationToken = useLocalStorage<string>(storageKeys.ACCESS_TOKEN, null)
+
+setHeaders()
+
 export const setAuthorizationToken = (token: string): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
-    if (!token) {
-      reject(new Error('Token is required'))
-    }
-    // tokenCache.set(token)
-    API.defaults.headers.common = {
-      ...API.defaults.headers.common,
-      Authorization: `Bearer ${token}`,
-    }
-    resolve()
-  })
+    return new Promise<void>((resolve, reject) => {
+        if (!token) {
+            reject(new Error('Token is required'))
+        }
+        AuthorizationToken.value = token;
+        setHeaders()
+        resolve()
+    })
 }
 
 export const clearAuthorizationToken = () => {
-  // tokenCache.remove()
-  API.defaults.headers.common = {
-    'Content-Type': 'application/json',
-  }
+    AuthorizationToken.value = null
+    API.defaults.headers.common = {
+        'Content-Type': 'application/json',
+    }
 }
 
-export { API }
+export {API}
 
 API.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config
 
-      console.log(originalRequest)
+        console.log(originalRequest)
 
-    return Promise.reject(error)
-  },
+        return Promise.reject(error)
+    },
 )
