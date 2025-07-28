@@ -7,6 +7,7 @@ import { LoginDto } from "./dto/login.dto";
 import { GoogleUserDto } from "./dto/google-auth.dto";
 import { Provider } from '@prisma/client';
 import {ConfigService} from "@nestjs/config";
+import {JwtPayload} from "./interfaces/jwt.interfaces";
 
 @Injectable()
 export class AuthService {
@@ -25,17 +26,14 @@ export class AuthService {
     async register(registerDto: RegisterDto) {
         const { email, password, name } = registerDto;
 
-        // Проверяем, существует ли пользователь
         const existingUser = await this.userService.findByEmail(email);
         if (existingUser) {
             throw new ConflictException('User with this email already exists');
         }
 
-        // Хешируем пароль
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Создаем пользователя
         const user = await this.userService.create({
             email,
             name,
@@ -49,18 +47,15 @@ export class AuthService {
     async login(loginDto: LoginDto) {
         const { email, password } = loginDto;
 
-        // Находим пользователя
         const user = await this.userService.findByEmailWithPassword(email);
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        // Проверяем, что пользователь зарегистрирован через email/password
         if (user.provider !== Provider.EMAIL || !user.password) {
             throw new UnauthorizedException('This email is registered with a different login method');
         }
 
-        // Проверяем пароль
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
@@ -103,8 +98,12 @@ export class AuthService {
         };
     }
 
-    private generateTokenResponse(user: any) {
-        const payload = { sub: user.id, email: user.email };
+    async validateUser(id: string) {
+        return await this.userService.findById(id);
+    }
+
+    private generateTokenResponse(user: JwtPayload) {
+        const payload = { id: user.id };
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: this.JWT_ACCESS_TOKEN_TTL,
         });
@@ -114,16 +113,7 @@ export class AuthService {
 
         return {
             accessToken,
-            refreshToken,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name
-            },
+            refreshToken
         };
-    }
-
-    async validateUser(userId: string) {
-        return this.userService.findById(userId);
     }
 }

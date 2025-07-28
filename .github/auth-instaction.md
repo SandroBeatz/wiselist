@@ -82,7 +82,7 @@ src/
 │   ├── guards/
 │   │   └── jwt-auth.guard.ts
 │   ├── decorators/
-│   │   └── user.decorator.ts
+│   │   └── authorised-user.decorator.ts
 │   └── dto/
 │       ├── login.dto.ts
 │       └── auth-response.dto.ts

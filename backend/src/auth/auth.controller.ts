@@ -1,16 +1,16 @@
 import {Controller, Get, Post, UseGuards, Req, Res, Body, ValidationPipe, HttpCode, HttpStatus} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { User } from './decorators/user.decorator';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import {AuthorisedUser} from './decorators/authorised-user.decorator';
 import {RegisterDto} from "./dto/register.dto";
 import {LoginDto} from "./dto/login.dto";
+import {User} from "@prisma/client";
+import {Authorisation} from "./decorators/authorisation.decorator";
 
 @Controller('api/auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    // ===== EMAIL/PASSWORD ENDPOINTS =====
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body(ValidationPipe) registerDto: RegisterDto) {
@@ -44,13 +44,6 @@ export class AuthController {
         // return res.redirect(frontendUrl);
     }
 
-    // Get current user profile
-    @Get('profile')
-    @UseGuards(JwtAuthGuard)
-    async getProfile(@User() user) {
-        return user;
-    }
-
     // Alternative: Direct token exchange endpoint for mobile/SPA
     @Post('google/token')
     async googleTokenAuth(@Req() req) {
@@ -59,8 +52,14 @@ export class AuthController {
         throw new Error('Not implemented - use /auth/google flow');
     }
 
+    @Get('me')
+    @Authorisation()
+    async getProfile(@AuthorisedUser() user: User) {
+        return user;
+    }
+
     @Post('logout')
-    @UseGuards(JwtAuthGuard)
+    @Authorisation()
     async logout() {
         // В JWT logout происходит на клиенте (удаление токена)
         return { message: 'Logged out successfully' };
