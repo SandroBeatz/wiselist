@@ -1,12 +1,14 @@
 import {defineStore} from "pinia";
-import {apiUser} from "@/entities/user/api";
+import {apiUser} from "../api";
 import {useLocalStorage} from "@vueuse/core";
 import {storageKeys} from "@shared/constants/storage.constants";
+import type {User} from "./types";
+import {Nullable} from "@shared/types/global";
 
 interface UserState {
     isLoading: boolean
     isAuth: boolean
-    info: any
+    info: Nullable<User>
 }
 
 export const useUserStore = defineStore('user', {
@@ -27,8 +29,7 @@ export const useUserStore = defineStore('user', {
             return new Promise(async (resolve, reject) => {
                 try {
                     this.toggleLoader(true)
-                    const response = await apiUser.getMe()
-                    this.info = response.data
+                    this.info = await apiUser.getMe()
 
                     resolve('ok')
                 } catch (e) {
@@ -45,6 +46,12 @@ export const useUserStore = defineStore('user', {
                 this.isAuth = true
                 await this.fetchUser()
             }
+        },
+
+        async logout() {
+            this.isAuth = false
+            this.info = null
+            useLocalStorage(storageKeys.ACCESS_TOKEN, null).value = null
         },
     },
 })

@@ -5,18 +5,36 @@ import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from "@ionic/vue";
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar class="ion-padding-horizontal">
         <ion-title>Lists</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content fullscreen>
+    <ion-content fullscreen class="ion-padding">
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">Lists</ion-title>
         </ion-toolbar>
       </ion-header>
 
-
+      <ion-list>
+        <template v-for="i in 2" :key="i">
+          <ion-item>
+            <ion-label>Pokémon Yellow</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Mega Man X</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>The Legend of Zelda</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Pac-Man</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>Super Mario World</ion-label>
+          </ion-item>
+        </template>
+      </ion-list>
     </ion-content>
   </ion-page>
 </template>

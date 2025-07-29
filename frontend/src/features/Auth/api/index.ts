@@ -1,10 +1,12 @@
 import {API} from "@shared/instances/axios";
+import type {AuthResponse} from "../model/types";
 
 const LOGIN_ROUTE = 'auth/login'
 const REGISTER_ROUTE = 'auth/register'
+const LOGOUT_ROUTE = 'auth/logout'
 
 const login = (form: any) =>
-    new Promise<any>((resolve, reject) => {
+    new Promise<AuthResponse>((resolve, reject) => {
         API
             .post(LOGIN_ROUTE, {...form})
             .then((response) => resolve(response.data))
@@ -18,7 +20,7 @@ const login = (form: any) =>
     })
 
 const register = (form: any) =>
-    new Promise<any>((resolve, reject) => {
+    new Promise<AuthResponse>((resolve, reject) => {
         API
             .post(REGISTER_ROUTE, {...form})
             .then((response) => resolve(response.data))
@@ -31,8 +33,23 @@ const register = (form: any) =>
             )
     })
 
+const logout = () =>
+    new Promise((resolve, reject) => {
+        API
+            .post(LOGOUT_ROUTE)
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Logout request failed'), {
+                        response: e.response,
+                    }),
+                ),
+            )
+    })
+
 export const apiAuth = {
     login,
-    register
+    register,
+    logout
 } as const
 

@@ -27,7 +27,6 @@ export const setAuthorizationToken = (token: string): Promise<void> => {
         resolve()
     })
 }
-
 export const clearAuthorizationToken = () => {
     AuthorizationToken.value = null
     API.defaults.headers.common = {
