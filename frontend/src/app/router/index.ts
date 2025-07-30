@@ -7,6 +7,7 @@ import settingsRoutes from "@/app/router/routes/settings.route";
 import listsRoutes from "@/app/router/routes/lists.route";
 import {useLocalStorage} from "@vueuse/core";
 import {storageKeys} from "@shared/constants/storage.constants";
+import settingsProfileRoutes from "@app/router/routes/settings-profile.route";
 
 declare module 'vue-router' {
     interface RouteMeta {
@@ -41,7 +42,9 @@ const routes: Array<RouteRecordRaw> = [
     },
     ...authRoutes,
     ...loginRoutes,
-    ...registerRoutes
+    ...registerRoutes,
+
+    ...settingsProfileRoutes
 ]
 
 const router = createRouter({
