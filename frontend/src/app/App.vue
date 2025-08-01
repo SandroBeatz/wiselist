@@ -11,6 +11,9 @@ onBeforeMount(async () => {
   await SocialLogin.initialize({
     google: {
       webClientId: import.meta.env.VITE_WEB_GOOGLE_AUTH_KEY,
+      iOSClientId: import.meta.env.VITE_IOS_GOOGLE_AUTH_KEY,
+      iOSServerClientId: import.meta.env.VITE_WEB_GOOGLE_AUTH_KEY,
+      mode: 'online'
     }
   });
 

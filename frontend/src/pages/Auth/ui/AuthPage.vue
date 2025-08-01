@@ -14,8 +14,10 @@ const googleLogin = async () => {
         scopes: ['email', 'profile'],
       },
     });
+    alert(JSON.stringify(res))
     console.log('Google login response:', res);
   } catch (error) {
+    alert(JSON.stringify(error))
     console.error('Google login error:', error);
   }
 };

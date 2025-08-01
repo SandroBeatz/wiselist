@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAbTR4E_loGiPWtPfYBL3LvRVx2D30yb4c</string>
+	<string>AIzaSyAPSa3nRF8Sy20cN56V_AucSBlP02NgsSI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>380544183248</string>
+	<string>83090600571</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.wiselist.app</string>
 	<key>PROJECT_ID</key>
-	<string>wiselist-f6264</string>
+	<string>wiselist-2b54d</string>
 	<key>STORAGE_BUCKET</key>
-	<string>wiselist-f6264.firebasestorage.app</string>
+	<string>wiselist-2b54d.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:380544183248:ios:ec5c023d5c0b76be2467d5</string>
+	<string>1:83090600571:ios:44c1ec132b8baab05628de</string>
 </dict>
 </plist>
