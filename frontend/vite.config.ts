@@ -1,5 +1,4 @@
 /// <reference types="vitest" />
-
 import legacy from '@vitejs/plugin-legacy'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
@@ -7,6 +6,7 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
     vue(),
     legacy()
@@ -19,8 +19,8 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
     },
   },
-  test: {
-    globals: true,
-    environment: 'jsdom'
-  }
+  // test: {
+  //   globals: true,
+  //   environment: 'jsdom'
+  // }
 })

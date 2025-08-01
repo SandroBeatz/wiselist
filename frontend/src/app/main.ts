@@ -1,9 +1,12 @@
 import { createApp } from 'vue'
-import App from '@app/App.vue'
-import router from '@app/router';
+import App from './App.vue'
+import router from './router';
 import {createPinia} from "pinia";
 
 import { IonicVue } from '@ionic/vue';
+
+/* Theme variables */
+import './theme/variables.css';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -31,10 +34,7 @@ import '@ionic/vue/css/padding.css';
 // import '@ionic/vue/css/palettes/dark.always.css';
 // import '@ionic/vue/css/palettes/dark.system.css';
 
-import '@/app/assets/css/main.css';
-
-/* Theme variables */
-import '@/app/theme/variables.css';
+import './assets/css/main.css';
 
 const pinia = createPinia()
 

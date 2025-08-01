@@ -2,11 +2,21 @@
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 import {useUserStore} from "@/entities/user/model/user.store";
 import {onBeforeMount} from "vue";
+import {SocialLogin} from "@capgo/capacitor-social-login";
 
 const userStore = useUserStore()
 
-onBeforeMount(() => {
-  void userStore.initUser()
+onBeforeMount(async () => {
+  await userStore.initUser()
+  await SocialLogin.initialize({
+    google: {
+      webClientId: import.meta.env.VITE_WEB_GOOGLE_AUTH_KEY,
+    }
+  });
+
+  // await SocialLogin.logout({
+  //   provider: 'google'
+  // });
 })
 </script>
 

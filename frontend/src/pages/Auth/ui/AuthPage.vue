@@ -1,6 +1,24 @@
 <script setup lang="ts">
 import {IonButton, IonText} from "@ionic/vue";
 import {Page} from "@/shared/ui/Page";
+import {SocialLogin} from "@capgo/capacitor-social-login";
+import {useRouter} from "vue-router";
+
+const router = useRouter();
+
+const googleLogin = async () => {
+  try {
+    const res = await SocialLogin.login({
+      provider: 'google',
+      options: {
+        scopes: ['email', 'profile'],
+      },
+    });
+    console.log('Google login response:', res);
+  } catch (error) {
+    console.error('Google login error:', error);
+  }
+};
 </script>
 
 <template>
@@ -12,15 +30,15 @@ import {Page} from "@/shared/ui/Page";
 
       <div class="flex flex-col gap-4 w-full">
         <ion-button color="light">Continue with Apple</ion-button>
-        <ion-button color="light">Continue with Google</ion-button>
-        <ion-button @click="$router.push({name: 'Login'})">Continue with Email</ion-button>
+        <ion-button @click="googleLogin" color="light">Continue with Google</ion-button>
+        <ion-button @click="router.push({name: 'Login'})">Continue with Email</ion-button>
       </div>
     </div>
 
     <template #footer>
       <p class="text-sm text-center">
         <ion-text>
-          By continuing, you agree to our <a href="#">Privacy Policy</a>.
+          By continuing, you agree to our <a href="https://google.com">Privacy Policy</a>.
         </ion-text>
       </p>
     </template>

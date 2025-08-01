@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <ion-page ref="pageRef">
+  <ion-page>
     <!-- Header Section -->
     <ion-header v-if="isInner" mode="md" class="header-inner-page">
       <ion-toolbar class="header-inner-page__toolbar">
@@ -54,48 +54,5 @@ defineProps<{
 </template>
 
 <style scoped>
-.header-page {
-  box-shadow: none!important;
-  background: var(--ion-background-color);
-  --background: var(--ion-background-color);
 
-  &__toolbar {
-    background: var(--ion-background-color);
-    --background: var(--ion-background-color);
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-  }
-}
-
-
-ion-content::part(scroll) {
-  display: flex;
-}
-
-.header-inner-page {
-  box-shadow: none;
-  background: transparent;
-  &__toolbar {
-    --background: var(--ion-card-background);
-    --min-height: 80px;
-    border-radius: 0 0 var(--ion-radius-card) var(--ion-radius-card);
-  }
-
-  &__tools {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 6px;
-  }
-}
-
-.footer-page {
-  box-shadow: none;
-  background: transparent;
-
-  &__toolbar {
-    --background: var(--ion-card-background);
-    border-radius: var(--ion-radius-card) var(--ion-radius-card) 0 0;
-  }
-}
 </style>
