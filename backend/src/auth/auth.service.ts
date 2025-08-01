@@ -4,15 +4,17 @@ import { UserService } from '../user/user.service';
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from "./dto/login.dto";
-import { GoogleUserDto } from "./dto/google-auth.dto";
+import {GoogleAuthDto} from "./dto/google-auth.dto";
 import { Provider } from '@prisma/client';
 import {ConfigService} from "@nestjs/config";
 import {JwtPayload} from "./interfaces/jwt.interfaces";
+import {OAuth2Client} from "google-auth-library";
 
 @Injectable()
 export class AuthService {
     private readonly JWT_ACCESS_TOKEN_TTL: string;
     private readonly JWT_REFRESH_TOKEN_TTL: string;
+    private googleClient: OAuth2Client;
 
     constructor(
         private configService: ConfigService,
@@ -21,6 +23,11 @@ export class AuthService {
     ) {
         this.JWT_ACCESS_TOKEN_TTL = this.configService.getOrThrow<string>('JWT_ACCESS_TOKEN_TTL') || '1h';
         this.JWT_REFRESH_TOKEN_TTL = this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL') || '7d';
+
+        this.googleClient = new OAuth2Client(
+            this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+            this.configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET')
+        );
     }
 
     async register(registerDto: RegisterDto) {
@@ -64,29 +71,54 @@ export class AuthService {
         return this.generateTokenResponse(user);
     }
 
-    async googleLogin(googleUser: GoogleUserDto) {
-        // Find or create user
-        let user = await this.userService.findByEmail(googleUser.email);
+    async googleLogin(googleData: GoogleAuthDto) {
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken: googleData.idToken,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
 
-        if (!user) {
-            user = await this.userService.create({
-                email: googleUser.email,
-                name: googleUser.name,
-                provider: 'GOOGLE' as Provider,
-            });
-        } else {
-            // Update user info in case it changed
-            user = await this.userService.update(user.id, {
-                name: googleUser.name,
-            });
+            const payload = ticket.getPayload();
+
+            if (!payload) {
+                throw new UnauthorizedException('Invalid Google token');
+            }
+
+            if (payload.email !== googleData.profile.email) {
+                throw new UnauthorizedException('Token and profile data mismatch');
+            }
+
+            const existingUser = await this.userService.findByEmail(payload.email);
+
+            if(!existingUser) {
+                const user = await this.userService.create({
+                    googleId: payload.sub,
+                    email: payload.email,
+                    name: payload.name,
+                    provider: Provider.GOOGLE,
+                    avatarUrl: payload.picture,
+                });
+
+                return this.generateTokenResponse(user);
+            } else {
+                if (!existingUser.googleId && existingUser.provider !== Provider.GOOGLE) {
+                    throw new UnauthorizedException('This email is registered with a different login method');
+                }
+
+                // Update user info in case it changed
+                // const updatedUser = await this.userService.update(existingUser.id, {
+                //     googleId: payload.sub,
+                //     name: payload.name,
+                //     avatarUrl: payload.picture,
+                // });
+
+                return this.generateTokenResponse(existingUser);
+            }
+
+        } catch (error) {
+            console.log(error)
+            throw new UnauthorizedException('Google authentication failed');
         }
-
-        const payload = { sub: user.id, email: user.email };
-        const access_token = this.jwtService.sign(payload);
-
-        return {
-            access_token
-        };
     }
 
     async validateUser(id: string) {

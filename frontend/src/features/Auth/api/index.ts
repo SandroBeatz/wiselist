@@ -4,6 +4,7 @@ import type {AuthResponse} from "../model/types";
 const LOGIN_ROUTE = 'auth/login'
 const REGISTER_ROUTE = 'auth/register'
 const LOGOUT_ROUTE = 'auth/logout'
+const GOOGLE_AUTH_ROUTE = 'auth/google'
 
 const login = (form: any) =>
     new Promise<AuthResponse>((resolve, reject) => {
@@ -47,9 +48,24 @@ const logout = () =>
             )
     })
 
+const googleAuth = (payload: any) =>
+    new Promise<AuthResponse>((resolve, reject) => {
+        API
+            .post(GOOGLE_AUTH_ROUTE, {...payload})
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Google auth request failed'), {
+                        response: e.response,
+                    }),
+                ),
+            )
+    })
+
 export const apiAuth = {
     login,
     register,
-    logout
+    logout,
+    googleAuth
 } as const
 

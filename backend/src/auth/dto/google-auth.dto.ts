@@ -1,14 +1,45 @@
-import {IsEmail, IsNotEmpty, IsString} from "class-validator";
+import {IsEmail, IsObject, IsString, ValidateNested} from "class-validator";
+import {Type} from "class-transformer";
 
-export class GoogleUserDto {
-    @IsNotEmpty()
+class AccessTokenDto {
+    @IsString()
+    token: string;
+}
+
+class ProfileDto {
     @IsEmail()
     email: string;
 
-    @IsNotEmpty()
+    @IsString()
+    familyName: string;
+
+    @IsString()
+    givenName: string;
+
+    @IsString()
+    id: string;
+
     @IsString()
     name: string;
 
     @IsString()
-    picture: string;
+    imageUrl: string;
+}
+
+export class GoogleAuthDto {
+    @IsObject()
+    @ValidateNested()
+    @Type(() => AccessTokenDto)
+    accessToken: AccessTokenDto;
+
+    @IsString()
+    idToken: string;
+
+    @IsObject()
+    @ValidateNested()
+    @Type(() => ProfileDto)
+    profile: ProfileDto;
+
+    @IsString()
+    responseType: string;
 }

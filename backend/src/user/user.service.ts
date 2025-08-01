@@ -12,6 +12,8 @@ export class UserService {
             select: {
                 id: true,
                 email: true,
+                googleId: true,
+                provider: true,
                 profile: true,
             },
         });
@@ -55,7 +57,7 @@ export class UserService {
                 googleId: userData.googleId,
                 profile: {
                     create: {
-                        avatar: null,
+                        avatar: userData.avatarUrl,
                         fullName: userData.name,
                         notificationsEnabled: true,
                     }

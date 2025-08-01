@@ -28,7 +28,7 @@ const {logout} = useLogout()
 
       <ion-item v-if="info" button @click="router.push({name: 'SettingsProfile'})">
         <ion-avatar slot="start" class="!w-12 !h-12">
-          <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img alt="Silhouette of a person's head" :src="info.profile.avatar ?? 'https://ionicframework.com/docs/img/demos/avatar.svg'" />
         </ion-avatar>
         <div class="flex flex-col pl-4 py-3">
           <h2 class="text-base font-semibold !m-0">{{ info.profile.fullName }}</h2>

@@ -6,6 +6,7 @@ import {RegisterDto} from "./dto/register.dto";
 import {LoginDto} from "./dto/login.dto";
 import {User} from "@prisma/client";
 import {Authorisation} from "./decorators/authorisation.decorator";
+import {GoogleAuthDto} from "./dto/google-auth.dto";
 
 @Controller('api/auth')
 export class AuthController {
@@ -22,11 +23,9 @@ export class AuthController {
         return this.authService.login(loginDto);
     }
 
-    // Redirect to Google OAuth
-    @Get('google')
-    @UseGuards(AuthGuard('google'))
-    async googleAuth() {
-        // Initiates the Google OAuth2 login flow
+    @Post('google')
+    async googleAuth(@Body(ValidationPipe) googleAuthDto: GoogleAuthDto) {
+        return this.authService.googleLogin(googleAuthDto);
     }
 
     // Google OAuth callback
