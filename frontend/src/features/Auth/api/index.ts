@@ -1,5 +1,6 @@
 import {API} from "@shared/instances/axios";
 import type {AuthResponse} from "../model/types";
+import type {GoogleLoginResponse} from "@capgo/capacitor-social-login";
 
 const LOGIN_ROUTE = 'auth/login'
 const REGISTER_ROUTE = 'auth/register'
@@ -48,7 +49,7 @@ const logout = () =>
             )
     })
 
-const googleAuth = (payload: any) =>
+const googleAuth = (payload: GoogleLoginResponse) =>
     new Promise<AuthResponse>((resolve, reject) => {
         API
             .post(GOOGLE_AUTH_ROUTE, {...payload})

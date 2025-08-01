@@ -1,29 +1,11 @@
 <script setup lang="ts">
 import {IonButton, IonText} from "@ionic/vue";
 import {Page} from "@/shared/ui/Page";
-import {SocialLogin} from "@capgo/capacitor-social-login";
 import {useRouter} from "vue-router";
 import {useGoogleAuth} from "@/features/Auth";
 
 const router = useRouter();
 const {googleAuth} = useGoogleAuth()
-
-
-const googleLogin = async () => {
-  try {
-    const {result} = await SocialLogin.login({
-      provider: 'google',
-      options: {
-        scopes: ['email', 'profile'],
-      },
-    });
-    void googleAuth(result)
-    console.log('Google login response:', result);
-  } catch (error) {
-    alert(JSON.stringify(error))
-    console.error('Google login error:', error);
-  }
-};
 </script>
 
 <template>
@@ -35,7 +17,7 @@ const googleLogin = async () => {
 
       <div class="flex flex-col gap-4 w-full">
         <ion-button color="light">Continue with Apple</ion-button>
-        <ion-button @click="googleLogin" color="light">Continue with Google</ion-button>
+        <ion-button @click="googleAuth" color="light">Continue with Google</ion-button>
         <ion-button @click="router.push({name: 'Login'})">Continue with Email</ion-button>
       </div>
     </div>

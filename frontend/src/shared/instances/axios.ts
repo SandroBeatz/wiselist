@@ -43,6 +43,10 @@ API.interceptors.response.use(
 
         console.log(originalRequest)
 
+        if(error.status === 401) {
+            clearAuthorizationToken()
+        }
+
         return Promise.reject(error)
     },
 )
