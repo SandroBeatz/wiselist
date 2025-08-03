@@ -54,5 +54,39 @@ defineProps<{
 </template>
 
 <style scoped>
+.header-page {
+  box-shadow: none!important;
+  background: var(--ion-background-color);
+  --background: var(--ion-background-color);
+}
 
+.header-page__toolbar {
+  background: var(--ion-background-color);
+  --background: var(--ion-background-color);
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+.header-inner-page {
+  box-shadow: none;
+  background: transparent;
+}
+
+.header-inner-page__toolbar {
+  --min-height: 80px;
+}
+.header-inner-page__tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+}
+
+.footer-page {
+  box-shadow: none;
+  background: transparent;
+}
+
+.footer-page__toolbar {
+}
 </style>

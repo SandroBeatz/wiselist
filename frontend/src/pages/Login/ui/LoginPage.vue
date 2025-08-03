@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {Page} from "@shared/ui/Page";
 import {LoginForm} from "@/features/Auth";
+import {PageWrapper} from "@shared/ui/Page";
 </script>
 
 <template>
-  <Page is-inner title="Login">
+  <PageWrapper is-inner title="Login">
     <div class="flex-1 flex flex-col items-center justify-center">
       <div class="mb-14">
         <div class="text-2xl font-semibold">Wiselist</div>
@@ -16,7 +16,7 @@ import {LoginForm} from "@/features/Auth";
         <div class="text-sm">Don't have an account? <router-link :to="{name: 'Register'}">Sign up</router-link></div>
       </div>
     </div>
-  </Page>
+  </PageWrapper>
 </template>
 
 <style scoped>

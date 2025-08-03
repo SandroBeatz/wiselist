@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {IonButton, IonText} from "@ionic/vue";
-import {Page} from "@/shared/ui/Page";
 import {useRouter} from "vue-router";
 import {useGoogleAuth} from "@/features/Auth";
+import {PageWrapper} from "@shared/ui/Page";
 
 const router = useRouter();
 const {googleAuth} = useGoogleAuth()
 </script>
 
 <template>
-  <Page>
+  <PageWrapper>
     <div class="flex-1 flex flex-col items-center justify-center">
       <div class="size-60 rounded-4xl overflow-hidden mb-14">
         <img src="../../../app/assets/img/preview.png" alt="asfsa">
@@ -29,7 +29,7 @@ const {googleAuth} = useGoogleAuth()
         </ion-text>
       </p>
     </template>
-  </Page>
+  </PageWrapper>
 </template>
 
 <style scoped>

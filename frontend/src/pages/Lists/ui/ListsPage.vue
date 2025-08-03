@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRippleEffect} from "@ionic/vue";
+import {computed} from "vue";
+import { mockLists } from '@/entities/list/mocks';
+
+const lists = computed(() => mockLists);
 </script>
 
 <template>
@@ -16,25 +20,17 @@ import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from "@ionic/vue";
         </ion-toolbar>
       </ion-header>
 
-      <ion-list>
-        <template v-for="i in 2" :key="i">
-          <ion-item>
-            <ion-label>Pokémon Yellow</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>Mega Man X</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>The Legend of Zelda</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>Pac-Man</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>Super Mario World</ion-label>
-          </ion-item>
+      <div class="grid grid-cols-2 gap-4">
+        <template v-for="list in lists" :key="list.id">
+          <router-link :to="{name: 'ListPreview', params: {id: list.id}}" class="ion-activatable ripple-parent relative border border-zinc-500 rounded-lg p-4">
+            <div class="text-lg font-semibold">{{ list.title }}</div>
+            <div class="text-sm text-zinc-400">{{ new Date(list.createdAt).toLocaleDateString() }}</div>
+            <div class="text-xs text-zinc-500 mt-2">Items: {{ list.count_of_items }}</div>
+            <div class="text-xs text-zinc-500">People: {{ list.assigned_people.join(', ') }}</div>
+            <ion-ripple-effect></ion-ripple-effect>
+          </router-link>
         </template>
-      </ion-list>
+      </div>
     </ion-content>
   </ion-page>
 </template>

@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 const settingsProfileRoutes: RouteRecordRaw[] = [
     {
-        path: '/settings/profile',
+        path: '/settings-profile',
         name: 'SettingsProfile',
         component: async () => (await import('@pages/SettingsProfile')).SettingsProfilePage,
         meta: {
