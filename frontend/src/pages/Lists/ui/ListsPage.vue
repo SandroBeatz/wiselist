@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRippleEffect} from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRippleEffect, onIonViewWillEnter, IonFab, IonFabButton} from "@ionic/vue";
 import {computed} from "vue";
-import {mockLists} from "@/entities/list";
+import {mockLists, useListsStore} from "@/entities/list";
+import {storeToRefs} from "pinia";
+import {Plus} from "lucide-vue-next";
+import {CreateEditListDialog} from "@/features/List/CreateEdit";
 
 const lists = computed(() => mockLists);
+
+const listsStore = useListsStore()
+const {isLoading, lists: newLists} = storeToRefs(listsStore)
+
+onIonViewWillEnter(() => void listsStore.fetchData())
 </script>
 
 <template>
@@ -19,6 +27,8 @@ const lists = computed(() => mockLists);
           <ion-title size="large" class="p-0">Lists</ion-title>
         </ion-toolbar>
       </ion-header>
+      <pre>{{isLoading}}</pre>
+      <pre>{{newLists}}</pre>
 
       <div class="grid grid-cols-2 gap-4">
         <template v-for="list in lists" :key="list.id">
@@ -31,6 +41,16 @@ const lists = computed(() => mockLists);
           </router-link>
         </template>
       </div>
+
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="p-3">
+        <CreateEditListDialog>
+          <template #trigger="{id}">
+            <ion-fab-button :id="id">
+              <Plus />
+            </ion-fab-button>
+          </template>
+        </CreateEditListDialog>
+      </ion-fab>
     </ion-content>
   </ion-page>
 </template>

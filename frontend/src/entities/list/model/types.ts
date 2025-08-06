@@ -1,11 +1,12 @@
+export type listId = string;
+export type ListType = 'SHOPPING' | 'TODO' | 'OTHER';
+
 export interface List {
-  id: string;
-  title: string;
-  type: 'shopping' | 'todo' | 'other';
-  ownerId: string;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  count_of_items: number;
-  assigned_people: string[];
+  id: listId
+  title: string
+  type: ListType
+  createdAt: string
 }
+
+export type ListForm = Pick<List, 'title' | 'type'>
 

@@ -26,7 +26,7 @@ export interface FormHandlerOptions<T extends FormData> {
 export interface FormHandlerReturn<T extends FormData> {
     form: T
     handlerField: (event: InputCustomEvent) => void
-    handleSubmit: () => Promise<void>
+    handleSubmit: (callback?: () => void | Promise<void>) => Promise<void>
     errors: Ref<Record<keyof T, string> | null>
     isSubmitting: Ref<boolean>
     resetForm: () => void
@@ -90,7 +90,7 @@ export function useFormHandler<T extends FormData>(
         errors.value = null
     }
 
-    async function handleSubmit(): Promise<void> {
+    async function handleSubmit(callback?: () => void | Promise<void>): Promise<void> {
         if (isSubmitting.value) return
 
         try {
@@ -107,6 +107,7 @@ export function useFormHandler<T extends FormData>(
 
             if (onSubmit) {
                 await onSubmit(form)
+                await callback?.()
             }
         } catch (error) {
             console.error('Form submission error:', error)
