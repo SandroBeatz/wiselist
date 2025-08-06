@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRippleEffect} from "@ionic/vue";
 import {computed} from "vue";
-import { mockLists } from '@/entities/list/mocks';
+import {mockLists} from "@/entities/list";
 
 const lists = computed(() => mockLists);
 </script>
