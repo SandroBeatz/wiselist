@@ -9,14 +9,14 @@ const lists = computed(() => mockLists);
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar class="ion-padding-horizontal">
+      <ion-toolbar>
         <ion-title>Lists</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen class="ion-padding">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">Lists</ion-title>
+          <ion-title size="large" class="p-0">Lists</ion-title>
         </ion-toolbar>
       </ion-header>
 
