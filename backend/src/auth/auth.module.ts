@@ -7,20 +7,20 @@ import { AuthService } from './auth.service';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModule } from '../user/user.module';
-import {getJwtOptions} from "../config/jwt.config";
+import { getJwtOptions } from '../config/jwt.config';
 
 @Module({
-    imports: [
-        PassportModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: getJwtOptions,
-            inject: [ConfigService],
-        }),
-        UserModule,
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, GoogleStrategy, JwtStrategy],
-    exports: [AuthService],
+  imports: [
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: getJwtOptions,
+      inject: [ConfigService],
+    }),
+    UserModule,
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, GoogleStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

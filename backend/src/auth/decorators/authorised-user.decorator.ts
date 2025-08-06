@@ -3,8 +3,8 @@ import { User } from '@prisma/client';
 import type { Request } from 'express';
 
 export const AuthorisedUser = createParamDecorator(
-    (data: keyof User, ctx: ExecutionContext) => {
-        const request = ctx.switchToHttp().getRequest() as Request
-        return data ? request.user[data] :  request.user;
-    },
+  (data: keyof User, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest() as Request;
+    return data ? request.user[data] : request.user;
+  },
 );

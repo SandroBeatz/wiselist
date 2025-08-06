@@ -74,6 +74,8 @@ npm run format        # Prettier
 - `src/auth/` - Authentication module (Google OAuth, JWT strategies)
 - `src/user/` - User management 
 - `src/profile/` - User profile management
+- `src/list/` - List CRUD operations
+- `src/list-item/` - List item CRUD operations  
 - `src/prisma/` - Database service and module
 - Database schema in `prisma/schema.prisma`
 
@@ -88,12 +90,33 @@ npm run format        # Prettier
 Uses PostgreSQL with Prisma ORM. Current schema includes:
 - Users with Google OAuth support
 - User profiles with notification preferences
+- Lists with types (SHOPPING, TODO, OTHER)
+- List items with content and checked status
 - Provider enum: EMAIL, GOOGLE, APPLE
+- ListType enum: SHOPPING, TODO, OTHER
 
 When making database changes:
 1. Update `prisma/schema.prisma`
 2. Run `npx prisma db push` to apply changes
 3. Run `npx prisma generate` to update client
+
+## API Endpoints
+
+### Lists
+- `GET /lists` - Get all user's lists
+- `POST /lists` - Create a new list
+- `GET /lists/:id` - Get specific list with items
+- `PATCH /lists/:id` - Update list
+- `DELETE /lists/:id` - Delete list
+
+### List Items  
+- `POST /list-items` - Create list item
+- `GET /list-items/by-list/:listId` - Get all items for a list
+- `GET /list-items/:id` - Get specific list item
+- `PATCH /list-items/:id` - Update list item
+- `DELETE /list-items/:id` - Delete list item
+
+All endpoints require JWT authentication via `Authorization: Bearer <token>` header.
 
 ## Mobile Development
 

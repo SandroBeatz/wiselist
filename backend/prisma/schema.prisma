@@ -13,6 +13,12 @@ enum Provider {
   APPLE
 }
 
+enum ListType {
+  SHOPPING
+  TODO
+  OTHER
+}
+
 model User {
   id           String   @id @default(uuid()) @db.Uuid
   email        String   @unique
@@ -22,6 +28,7 @@ model User {
   isSubscribed Boolean  @default(false) @map("is_subscribed")
 
   profile Profile?
+  lists   List[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -42,4 +49,33 @@ model Profile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("profiles")
+}
+
+model List {
+  id      String   @id @default(uuid()) @db.Uuid
+  title   String
+  type    ListType @default(OTHER)
+  ownerId String   @map("owner_id") @db.Uuid
+
+  owner User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  items ListItem[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("lists")
+}
+
+model ListItem {
+  id      String  @id @default(uuid()) @db.Uuid
+  listId  String  @map("list_id") @db.Uuid
+  content String
+  checked Boolean @default(false)
+
+  list List @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("list_items")
 }
