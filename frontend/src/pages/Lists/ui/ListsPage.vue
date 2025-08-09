@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonRippleEffect, onIonViewWillEnter, IonFab, IonFabButton} from "@ionic/vue";
-import {computed} from "vue";
-import {mockLists, useListsStore} from "@/entities/list";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, onIonViewWillEnter, IonFab, IonFabButton, IonSpinner} from "@ionic/vue";
+import {useListsStore, ListCard} from "@/entities/list";
 import {storeToRefs} from "pinia";
 import {Plus} from "lucide-vue-next";
 import {CreateEditListDialog} from "@/features/List/CreateEdit";
 
-const lists = computed(() => mockLists);
-
 const listsStore = useListsStore()
-const {isLoading, lists: newLists} = storeToRefs(listsStore)
+const {isLoading, lists} = storeToRefs(listsStore)
 
 onIonViewWillEnter(() => void listsStore.fetchData())
 </script>
@@ -27,19 +24,32 @@ onIonViewWillEnter(() => void listsStore.fetchData())
           <ion-title size="large" class="p-0">Lists</ion-title>
         </ion-toolbar>
       </ion-header>
-      <pre>{{isLoading}}</pre>
-      <pre>{{newLists}}</pre>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center items-center py-12">
+        <ion-spinner name="circular" class="size-8"></ion-spinner>
+      </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <template v-for="list in lists" :key="list.id">
-          <router-link :to="{name: 'ListPreview', params: {id: list.id}}" class="ion-activatable ripple-parent relative border border-zinc-500 rounded-lg p-4">
-            <div class="text-lg font-semibold">{{ list.title }}</div>
-            <div class="text-sm text-zinc-400">{{ new Date(list.createdAt).toLocaleDateString() }}</div>
-            <div class="text-xs text-zinc-500 mt-2">Items: {{ list.count_of_items }}</div>
-            <div class="text-xs text-zinc-500">People: {{ list.assigned_people.join(', ') }}</div>
-            <ion-ripple-effect></ion-ripple-effect>
-          </router-link>
-        </template>
+      <!-- Empty State -->
+      <div v-else-if="!lists.length" class="text-center py-12">
+        <div class="mb-4 flex justify-center">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-zinc-400">
+            <rect x="15" y="20" width="50" height="40" rx="6" stroke="currentColor" stroke-width="2" fill="none"/>
+            <line x1="25" y1="32" x2="55" y2="32" stroke="currentColor" stroke-width="2"/>
+            <line x1="25" y1="42" x2="45" y2="42" stroke="currentColor" stroke-width="2"/>
+            <line x1="25" y1="52" x2="50" y2="52" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-zinc-700 mb-2">No lists yet</h3>
+        <p class="text-zinc-500 mb-6">Create your first list to get started organizing!</p>
+      </div>
+
+      <!-- Lists Grid -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <ListCard
+          v-for="list in lists"
+          :key="list.id"
+          :list="list"
+        />
       </div>
 
       <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="p-3">
