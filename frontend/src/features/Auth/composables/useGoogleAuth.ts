@@ -10,7 +10,7 @@ export function useGoogleAuth() {
 
     const googleAuth = async () => {
         const loading = await loadingController.create({
-            message: ''
+            translucent: true
         });
 
         try {
