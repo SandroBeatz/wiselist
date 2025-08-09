@@ -27,20 +27,22 @@ export const useRegisterForm = () => {
         validate: (formData) => {
             const errors: Partial<Record<keyof RegisterForm, string>> = {}
 
-            if (!formData.name) {
-                errors.name = 'Имя обязательно'
+            if (!formData.name.trim()) {
+                errors.name = 'Name is required'
+            } else if (formData.name.trim().length < 2) {
+                errors.name = 'Name must be at least 2 characters'
             }
 
-            if (!formData.email) {
-                errors.email = 'Email обязателен'
-            } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-                errors.email = 'Некорректный email'
+            if (!formData.email.trim()) {
+                errors.email = 'Email is required'
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                errors.email = 'Please enter a valid email address'
             }
 
-            if (!formData.password) {
-                errors.password = 'Пароль обязателен'
+            if (!formData.password.trim()) {
+                errors.password = 'Password is required'
             } else if (formData.password.length < 6) {
-                errors.password = 'Пароль должен быть не менее 6 символов'
+                errors.password = 'Password must be at least 6 characters'
             }
 
             return Object.keys(errors).length > 0 ? errors as Record<keyof RegisterForm, string> : null
