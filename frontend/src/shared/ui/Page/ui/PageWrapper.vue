@@ -54,6 +54,13 @@ defineProps<{
 </template>
 
 <style scoped>
+ion-content::part(scroll) {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
 .header-page {
   box-shadow: none!important;
   background: var(--ion-background-color);

@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    @apply font-nunito text-lg;
+    --ion-font-family: 'Nunito', sans-serif;
+}
+
+ion-button {
+    --border-radius: 26px;
+    --padding-top: 15px;
+    --padding-bottom: 15px;
+    font-size: 17px;
+    text-transform: none;
+    letter-spacing: 0;
+}
