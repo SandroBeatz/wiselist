@@ -23,11 +23,30 @@ ion-input {
     --padding-top: 15px;
     --padding-bottom: 15px;
     --padding-start: 12px!important;
-    /*--padding-end: 12px!important;*/
-    /*--border-color: var(--ion-color-step-400);*/
-    /*--border-width: 1px;*/
-    /*--border-style: solid;*/
-    border: 1px solid var(--ion-color-step-200);
+    border: 1px solid var(--ion-color-step-150);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
 
-    /*@apply bg-zinc-200;*/
+ion-input .native-input {
+    border: none !important;
+    outline: none !important;
+}
+
+ion-input:hover {
+    border-color: #9ca3af;
+}
+
+ion-input.has-focus {
+    border-color: var(--ion-color-primary-tint);
+    box-shadow: 0 0 4px 2px rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+ion-input.ion-invalid {
+    border-color: var(--ion-color-danger);
+    box-shadow: 0 0 4px 2px rgba(var(--ion-color-danger-rgb), 0.1);
+}
+
+ion-input.ion-invalid.has-focus {
+    border-color: var(--ion-color-danger);
+    box-shadow: 0 0 4px 2px rgba(var(--ion-color-danger-rgb), 0.1);
 }

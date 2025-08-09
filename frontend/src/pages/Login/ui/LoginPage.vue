@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import {LoginForm} from "@/features/Auth";
+import {LoginForm, useGoogleAuth} from "@/features/Auth";
 import {PageWrapper} from "@shared/ui/Page";
 import {GoogleButton} from "@shared/ui/GoogleButton";
 import {AppleButton} from "@shared/ui/AppleButton";
+
+const {googleAuth} = useGoogleAuth()
 </script>
 
 <template>
@@ -17,7 +19,7 @@ import {AppleButton} from "@shared/ui/AppleButton";
         </p>
 
         <div class="flex items-center justify-center gap-4 mb-4">
-          <GoogleButton square />
+          <GoogleButton @click="googleAuth" square />
           <ion-text>or</ion-text>
           <AppleButton square />
         </div>
