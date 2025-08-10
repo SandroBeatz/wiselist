@@ -2,7 +2,7 @@
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, IonIcon, onIonViewWillEnter, IonList} from "@ionic/vue";
 import {useRoute} from "vue-router";
 import {useList, ListItem} from "@/entities/list";
-import {ArrowLeft, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User} from "lucide-vue-next";
+import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User} from "lucide-vue-next";
 
 const route = useRoute();
 const { list, isLoading, error, fetchList } = useList();
@@ -48,8 +48,14 @@ onIonViewWillEnter(() => {
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar class="ion-padding-horizontal">
+      <ion-toolbar>
         <ion-title>{{list?.title}}</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button size="small">
+            <Ellipsis slot="icon-only" class="size-6"/>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen class="ion-padding">
@@ -94,9 +100,9 @@ onIonViewWillEnter(() => {
               {{ list.type.toLowerCase() }}
             </span>
           </div>
-          
+
           <h1 class="text-2xl font-bold text-zinc-800 mb-2">{{ list.title }}</h1>
-          
+
           <div class="flex items-center gap-4 text-sm text-zinc-500">
             <div class="flex items-center gap-1">
               <Calendar class="size-4" />

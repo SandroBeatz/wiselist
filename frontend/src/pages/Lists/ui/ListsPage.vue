@@ -1,8 +1,19 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, onIonViewWillEnter, IonFab, IonFabButton, IonSpinner} from "@ionic/vue";
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  onIonViewWillEnter,
+  IonFab,
+  IonFabButton,
+  IonSpinner,
+  IonButton
+} from "@ionic/vue";
 import {useListsStore, ListCard} from "@/entities/list";
 import {storeToRefs} from "pinia";
-import {Plus} from "lucide-vue-next";
+import {Ellipsis, Plus} from "lucide-vue-next";
 import {CreateEditListDialog} from "@/features/List/CreateEdit";
 
 const listsStore = useListsStore()
@@ -16,6 +27,12 @@ onIonViewWillEnter(() => void listsStore.fetchData())
     <ion-header>
       <ion-toolbar>
         <ion-title>Lists</ion-title>
+
+        <ion-buttons slot="end">
+          <ion-button size="small">
+            <Ellipsis slot="icon-only" class="size-6"/>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen class="ion-padding">
