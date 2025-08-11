@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, onIonViewWillEnter, IonList, IonItem, IonPopover, IonButtons, IonLabel, IonText, alertController} from "@ionic/vue";
 import {useRoute, useRouter} from "vue-router";
-import {useList, ListItem} from "@/entities/list";
+import {useList} from "@/entities/list";
 import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User, Trash} from "lucide-vue-next";
+import {useDeleteList} from "@/features/List/Delete";
 
 const route = useRoute();
 const router = useRouter();
-const { list, isLoading, error, fetchList, deleteList } = useList();
+const { list, isLoading, error, fetchList } = useList();
+const { deleteList } = useDeleteList();
 
 const getListIcon = (type: string) => {
   switch (type) {
