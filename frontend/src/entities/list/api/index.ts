@@ -47,10 +47,25 @@ const create = (form: ListForm) =>
             )
     })
 
+const deleteOne = (id: listId) =>
+    new Promise((resolve, reject) => {
+        API
+            .delete(LIST_ROUTE + `/${id}`)
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Request error'), {
+                        response: e.response,
+                    }),
+                ),
+            )
+    })
+
 
 export const apiList = {
     getAll,
     getOne,
-    create
+    create,
+    deleteOne
 } as const
 

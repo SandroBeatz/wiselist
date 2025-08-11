@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, IonIcon, onIonViewWillEnter, IonList} from "@ionic/vue";
-import {useRoute} from "vue-router";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, onIonViewWillEnter, IonList, IonItem, IonPopover, IonButtons, IonLabel, IonText, alertController} from "@ionic/vue";
+import {useRoute, useRouter} from "vue-router";
 import {useList, ListItem} from "@/entities/list";
-import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User} from "lucide-vue-next";
+import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User, Trash} from "lucide-vue-next";
 
 const route = useRoute();
-const { list, isLoading, error, fetchList } = useList();
+const router = useRouter();
+const { list, isLoading, error, fetchList, deleteList } = useList();
 
 const getListIcon = (type: string) => {
   switch (type) {
@@ -37,6 +38,35 @@ const handleItemToggle = (itemId: string, checked: boolean) => {
   console.log('Toggle item:', itemId, checked);
 };
 
+const handleDeleteList = async () => {
+  if (!list.value) return;
+
+  const alert = await alertController.create({
+    header: 'Delete List',
+    message: `Are you sure you want to delete "${list.value.title}"? This action cannot be undone.`,
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel'
+      },
+      {
+        text: 'Delete',
+        role: 'destructive',
+        handler: async () => {
+          try {
+            await deleteList(list.value!.id);
+            await router.replace({name: 'TabLists'});
+          } catch (error) {
+            console.error('Failed to delete list:', error);
+          }
+        }
+      }
+    ]
+  });
+
+  await alert.present();
+};
+
 onIonViewWillEnter(() => {
   const listId = String(route.params.id);
   if (listId) {
@@ -52,9 +82,22 @@ onIonViewWillEnter(() => {
         <ion-title>{{list?.title}}</ion-title>
 
         <ion-buttons slot="end">
-          <ion-button size="small">
+          <ion-button id="popover-button" size="small">
             <Ellipsis slot="icon-only" class="size-6"/>
           </ion-button>
+
+          <ion-popover trigger="popover-button" dismiss-on-select>
+            <ion-content>
+              <ion-list>
+                <ion-item button :detail="false" @click="handleDeleteList">
+                  <ion-text slot="start" color="danger">
+                    <Trash class="size-5" />
+                  </ion-text>
+                  <ion-label>Delete</ion-label>
+                </ion-item>
+              </ion-list>
+            </ion-content>
+          </ion-popover>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>

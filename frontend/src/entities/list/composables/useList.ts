@@ -8,6 +8,7 @@ interface UseListReturn {
   error: Ref<string | null>
   fetchList: (id: listId) => Promise<void>
   refetch: () => Promise<void>
+  deleteList: (id: listId) => Promise<void>
 }
 
 export function useList(): UseListReturn {
@@ -41,11 +42,34 @@ export function useList(): UseListReturn {
     }
   }
 
+  const deleteList = async (id: listId): Promise<void> => {
+    if (isLoading.value) return
+
+    try {
+      isLoading.value = true
+      error.value = null
+
+      await apiList.deleteOne(id)
+      
+      if (currentId === id) {
+        list.value = null
+        currentId = null
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to delete list'
+      console.error('Failed to delete list:', err)
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     list,
     isLoading,
     error,
     fetchList,
-    refetch
+    refetch,
+    deleteList
   }
 }
