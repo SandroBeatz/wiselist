@@ -47,6 +47,20 @@ const create = (form: ListForm) =>
             )
     })
 
+const update = (id: listId, form: Pick<ListForm, 'title'>) =>
+    new Promise((resolve, reject) => {
+        API
+            .patch(LIST_ROUTE + `/${id}`, {...form})
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Request error'), {
+                        response: e.response,
+                    }),
+                ),
+            )
+    })
+
 const deleteOne = (id: listId) =>
     new Promise((resolve, reject) => {
         API
@@ -66,6 +80,7 @@ export const apiList = {
     getAll,
     getOne,
     create,
+    update,
     deleteOne
 } as const
 

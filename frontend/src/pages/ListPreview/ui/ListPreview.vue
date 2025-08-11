@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, onIonViewWillEnter, IonList, IonItem, IonPopover, IonButtons, IonLabel, IonText, alertController} from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonSpinner, IonButton, onIonViewWillEnter, IonButtons, alertController} from "@ionic/vue";
 import {useRoute, useRouter} from "vue-router";
-import {useList} from "@/entities/list";
-import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User, Trash} from "lucide-vue-next";
+import {computed} from "vue";
+import {useList, ListItem} from "@/entities/list";
+import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User, Trash, SquarePen} from "lucide-vue-next";
 import {useDeleteList} from "@/features/List/Delete";
+import {CreateEditListDialogService} from "@/features/List/CreateEdit";
+import {ActionDropdown, type ActionItem} from "@/shared/ui/ActionDropdown";
 
 const route = useRoute();
 const router = useRouter();
@@ -40,6 +43,20 @@ const handleItemToggle = (itemId: string, checked: boolean) => {
   console.log('Toggle item:', itemId, checked);
 };
 
+const handleEditList = async () => {
+  if (!list.value) return;
+
+  const dialog = await CreateEditListDialogService.open({
+    id: list.value.id,
+    list: list.value,
+    callback: async () => {
+      await fetchList(list.value!.id);
+    }
+  });
+
+  await dialog.present();
+};
+
 const handleDeleteList = async () => {
   if (!list.value) return;
 
@@ -69,6 +86,29 @@ const handleDeleteList = async () => {
   await alert.present();
 };
 
+const dropdownActions = computed((): ActionItem[] => {
+  if (!list.value) return [];
+
+  return [
+    {
+      id: 'edit',
+      label: 'Rename list',
+      icon: SquarePen,
+      color: 'medium',
+      // component: CreateEditListDialog,
+      // componentProps: { id: list.value.id, callback: async () => await fetchList(list.value!.id) }
+      action: handleEditList
+    },
+    {
+      id: 'delete',
+      label: 'Delete',
+      icon: Trash,
+      color: 'danger',
+      action: handleDeleteList
+    }
+  ];
+});
+
 onIonViewWillEnter(() => {
   const listId = String(route.params.id);
   if (listId) {
@@ -84,22 +124,13 @@ onIonViewWillEnter(() => {
         <ion-title>{{list?.title}}</ion-title>
 
         <ion-buttons slot="end">
-          <ion-button id="popover-button" size="small">
-            <Ellipsis slot="icon-only" class="size-6"/>
-          </ion-button>
-
-          <ion-popover trigger="popover-button" dismiss-on-select>
-            <ion-content>
-              <ion-list>
-                <ion-item button :detail="false" @click="handleDeleteList">
-                  <ion-text slot="start" color="danger">
-                    <Trash class="size-5" />
-                  </ion-text>
-                  <ion-label>Delete</ion-label>
-                </ion-item>
-              </ion-list>
-            </ion-content>
-          </ion-popover>
+          <ActionDropdown :actions="dropdownActions">
+            <template #trigger="{triggerId}">
+              <ion-button :id="triggerId" size="small">
+                <Ellipsis slot="icon-only" class="size-6"/>
+              </ion-button>
+            </template>
+          </ActionDropdown>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>

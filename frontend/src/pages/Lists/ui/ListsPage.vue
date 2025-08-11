@@ -14,10 +14,20 @@ import {
 import {useListsStore, ListCard} from "@/entities/list";
 import {storeToRefs} from "pinia";
 import {Ellipsis, Plus} from "lucide-vue-next";
-import {CreateEditListDialog} from "@/features/List/CreateEdit";
+import {CreateEditListDialogService} from "@/features/List/CreateEdit";
 
 const listsStore = useListsStore()
 const {isLoading, lists} = storeToRefs(listsStore)
+
+const handleAddList = async () => {
+  const dialog = await CreateEditListDialogService.open({
+    callback: async () => {
+      await listsStore.fetchData()
+    }
+  });
+
+  await dialog.present();
+};
 
 onIonViewWillEnter(() => void listsStore.fetchData())
 </script>
@@ -70,13 +80,9 @@ onIonViewWillEnter(() => void listsStore.fetchData())
       </div>
 
       <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="p-3">
-        <CreateEditListDialog>
-          <template #trigger="{id}">
-            <ion-fab-button :id="id">
-              <Plus />
-            </ion-fab-button>
-          </template>
-        </CreateEditListDialog>
+        <ion-fab-button @click="handleAddList">
+          <Plus />
+        </ion-fab-button>
       </ion-fab>
     </ion-content>
   </ion-page>

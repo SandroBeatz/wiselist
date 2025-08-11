@@ -7,6 +7,10 @@ body {
     --ion-font-family: 'Nunito', sans-serif;
 }
 
+.height-auto {
+    --height: auto;
+}
+
 ion-button {
     --border-radius: 26px;
     --padding-top: 15px;
@@ -16,7 +20,7 @@ ion-button {
     letter-spacing: 0;
 }
 
-ion-input {
+ion-input, ion-select {
     background: var(--ion-color-step-100);
     height: 52px;
     border-radius: 8px;
@@ -25,6 +29,7 @@ ion-input {
     --padding-start: 12px!important;
     border: 1px solid var(--ion-color-step-150);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    --width: 100%;
 }
 
 ion-input .native-input {
@@ -36,7 +41,7 @@ ion-input:hover {
     border-color: #9ca3af;
 }
 
-ion-input.has-focus {
+ion-input.has-focus, ion-select.has-focus {
     border-color: var(--ion-color-primary-tint);
     box-shadow: 0 0 4px 2px rgba(var(--ion-color-primary-rgb), 0.1);
 }
@@ -49,4 +54,9 @@ ion-input.ion-invalid {
 ion-input.ion-invalid.has-focus {
     border-color: var(--ion-color-danger);
     box-shadow: 0 0 4px 2px rgba(var(--ion-color-danger-rgb), 0.1);
+}
+
+ion-select::part(container) {
+    display: flex;
+    flex: 1;
 }
