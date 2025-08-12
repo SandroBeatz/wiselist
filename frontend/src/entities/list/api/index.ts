@@ -5,18 +5,16 @@ const LIST_ROUTE = 'lists'
 
 const getAll = () =>
     new Promise((resolve, reject) => {
-        setTimeout(() => {
-            API
-                .get(LIST_ROUTE)
-                .then((response) => resolve(response.data))
-                .catch((e) =>
-                    reject(
-                        Object.assign(new Error(e.message || 'Request error'), {
-                            response: e.response,
-                        }),
-                    ),
-                )
-        }, 1000);
+        API
+            .get(LIST_ROUTE)
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Request error'), {
+                        response: e.response,
+                    }),
+                ),
+            )
     })
 
 const getOne = (id: listId) =>
