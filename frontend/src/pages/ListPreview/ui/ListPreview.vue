@@ -14,8 +14,6 @@ import {
   ShoppingCart,
   CheckSquare,
   List as ListIcon,
-  Calendar,
-  User,
   Trash,
   SquarePen,
   Plus
@@ -24,7 +22,6 @@ import {useDeleteList} from "@/features/List/Delete";
 import {CreateEditListDialogService} from "@/features/List/CreateEdit";
 import {ActionDropdown, type ActionItem} from "@/shared/ui/ActionDropdown";
 import {PageWrapper} from "@shared/ui";
-import {CreateListItemDialogService} from "@/features/ListItem/Create";
 
 const route = useRoute();
 const router = useRouter();
@@ -128,20 +125,6 @@ const dropdownActions = computed((): ActionItem[] => {
   ];
 });
 
-const handleAddItem = async () => {
-  if (!list.value) return;
-
-  const dialog = await CreateListItemDialogService.open({
-    listId: list.value.id,
-    presentingElement: presentingElement.value,
-    callback: async () => {
-      console.log(5467890)
-    }
-  });
-
-  await dialog.present();
-};
-
 onIonViewWillEnter(() => {
   const listId = String(route.params.id);
   if (listId) {
@@ -151,7 +134,12 @@ onIonViewWillEnter(() => {
 </script>
 
 <template>
-  <PageWrapper ref="pageRef" is-inner default-href="/tabs/lists">
+  <PageWrapper
+      is-inner
+      ref="pageRef"
+      default-href="/tabs/lists"
+      :title="list?.title ?? ''"
+  >
     <template #header-tools>
       <ion-buttons slot="end">
         <ActionDropdown :actions="dropdownActions" triggerId="list-actions-dropdown">
@@ -186,51 +174,9 @@ onIonViewWillEnter(() => {
     </div>
 
     <!-- List Content -->
-    <div v-else-if="list" class="pb-4">
-      <!-- List Header -->
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <component
-              :is="getListIcon(list.type)"
-              class="size-6"
-              :class="getListTypeColor(list.type)"
-          />
-          <span class="text-sm font-medium text-zinc-500 uppercase tracking-wide">
-              {{ list.type.toLowerCase() }}
-            </span>
-        </div>
-
-        <h1 class="text-2xl font-bold text-zinc-800 mb-2">{{ list.title }}</h1>
-
-        <div class="flex items-center gap-4 text-sm text-zinc-500">
-          <div class="flex items-center gap-1">
-            <Calendar class="size-4" />
-            <span>{{ formatDate(list.createdAt) }}</span>
-          </div>
-          <div class="flex items-center gap-1">
-            <User class="size-4" />
-            <span>{{ list.owner.profile.fullName }}</span>
-          </div>
-        </div>
-
-        <!-- Progress Summary -->
-        <div v-if="list.items.length > 0" class="mt-4 p-4 bg-zinc-50 rounded-lg">
-          <div class="flex justify-between text-sm text-zinc-600 mb-2">
-            <span>Progress</span>
-            <span>{{ list.items.filter(item => item.checked).length }} / {{ list.items.length }}</span>
-          </div>
-          <div class="w-full bg-zinc-200 rounded-full h-2">
-            <div
-                class="bg-primary h-2 rounded-full transition-all duration-300"
-                :style="{ width: `${(list.items.filter(item => item.checked).length / list.items.length) * 100}%` }"
-            ></div>
-          </div>
-        </div>
-      </div>
-
+    <div v-else-if="list" class="">
       <!-- List Items -->
       <div v-if="list.items.length > 0">
-        <h2 class="text-lg font-semibold text-zinc-800 mb-3">Items</h2>
         <ion-list class="bg-transparent">
           <ListItem
               v-for="item in list.items"
@@ -252,7 +198,7 @@ onIonViewWillEnter(() => {
         <h3 class="text-lg font-semibold text-zinc-600 mb-2">No items yet</h3>
         <p class="text-zinc-500">Start adding items to this list to get organized!</p>
 
-        <ion-button class="mt-4" @click="handleAddItem">
+        <ion-button class="mt-4" @click="router.push({name: 'AddItem', params: {id: list.id}})">
           Add Item
         </ion-button>
       </div>

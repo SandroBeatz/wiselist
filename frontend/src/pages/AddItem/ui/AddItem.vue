@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import {
   onIonViewWillEnter,
-  IonItem, IonList, IonNote, IonInput
+  IonItem, IonList, IonNote, IonInput, IonFabButton, IonFab
 } from "@ionic/vue";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {computed, onMounted, ref} from "vue";
 import {useList} from "@/entities/list";
 import {PageWrapper} from "@shared/ui";
-import {useCreateListItemForm} from "@/features/ListItem/Create/composables/useCreateListItemForm";
-import {ListId} from "@/entities/list/model/types";
+import type {ListId} from "@/entities/list";
+import {useCreateListItemForm} from "@/features/ListItem/Create";
+import {Check} from "lucide-vue-next";
 
 const route = useRoute();
+const router = useRouter();
+
 const { list, fetchList } = useList();
 
 const listId = route.params.id as ListId
@@ -64,32 +67,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <PageWrapper ref="pageRef" is-inner :default-href="`/tabs/lists/${listId}`">
-    <template #header-tools>
-<!--      <ion-buttons slot="end">-->
-<!--        <ActionDropdown :actions="dropdownActions" triggerId="list-actions-dropdown">-->
-<!--          <template #trigger="{triggerId}">-->
-<!--            <ion-button :id="triggerId" size="small">-->
-<!--              <Ellipsis slot="icon-only" class="size-6"/>-->
-<!--            </ion-button>-->
-<!--          </template>-->
-<!--        </ActionDropdown>-->
-<!--      </ion-buttons>-->
-    </template>
-
-<!--    &lt;!&ndash; Loading State &ndash;&gt;-->
-<!--    <div v-if="isLoading" class="flex justify-center items-center py-12">-->
-<!--      <ion-spinner name="circular" class="size-8"></ion-spinner>-->
-<!--    </div>-->
-
+  <PageWrapper ref="pageRef" is-inner title="Add items" :default-href="`/tabs/lists/${listId}`">
     <!-- List Content -->
-    <div class="pb-4">
+    <div class="pb-12">
       <!-- List Header -->
-      <div class="relative mb-4">
+      <div class="mb-6">
         <ion-input
             ref="inputRef"
             v-model="form.content"
-            placeholder="Введите новый элемент..."
+            placeholder="Type item content"
             type="text"
             :maxlength="500"
             :disabled="isSubmitting"
@@ -104,27 +90,27 @@ onMounted(() => {
         >
           {{ errors.content }}
         </ion-note>
-
-        <div
-            class="pt-6"
-        >
-          <ion-list class="p-0">
-            <ion-item
-                v-for="(suggestion, index) in filteredSuggestions"
-                :key="index"
-                button
-                @click="handleSuggestionClick(suggestion.content)"
-                class="cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              <div class="py-2">
-                <span class="text-sm text-gray-700">{{ suggestion.content }}</span>
-              </div>
-            </ion-item>
-          </ion-list>
-        </div>
       </div>
+      <ion-list class="p-0">
+        <ion-item
+            v-for="(suggestion, index) in filteredSuggestions"
+            :key="index"
+            button
+            @click="handleSuggestionClick(suggestion.content)"
+            class="cursor-pointer hover:bg-gray-50 transition-colors"
+        >
+          <div class="py-2">
+            <span class="text-sm text-gray-700">{{ suggestion.content }}</span>
+          </div>
+        </ion-item>
+      </ion-list>
     </div>
 
+    <ion-fab v-if="filteredSuggestions.length" slot="fixed" vertical="bottom" horizontal="center" class="p-3">
+      <ion-button @click="router.go(-1)">
+        <Check /> Done
+      </ion-button>
+    </ion-fab>
   </PageWrapper>
 </template>
 
