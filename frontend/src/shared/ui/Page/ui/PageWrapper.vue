@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <ion-page>
+  <ion-page ref="pageRef">
     <!-- Header Section -->
     <ion-header v-if="isInner" mode="md" class="header-inner-page">
       <ion-toolbar class="header-inner-page__toolbar">

@@ -25,7 +25,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  triggerId: () => `action-dropdown-${Date.now()}`
+  triggerId: `action-dropdown-${Math.random().toString(36).substr(2, 9)}`
 });
 
 const handleAction = async (item: ActionItem) => {

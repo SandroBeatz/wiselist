@@ -14,7 +14,7 @@ import { UpdateListItemDto } from './dto/update-list-item.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthorisedUser } from '../auth/decorators/authorised-user.decorator';
 
-@Controller('list-items')
+@Controller('api/list-items')
 @UseGuards(JwtAuthGuard)
 export class ListItemController {
   constructor(private readonly listItemService: ListItemService) {}
