@@ -4,10 +4,10 @@ import {useCreateEditListForm} from "../composables/useCreateEditListForm";
 import {computed} from "vue";
 import {useListsStore, List} from "@/entities/list";
 import {X} from "lucide-vue-next";
-import type {listId} from "@/entities/list";
+import type {ListId} from "@/entities/list";
 
 interface Props {
-  id?: listId;
+  id?: ListId;
   list?: List
   callback?: () => Promise<void>;
 }

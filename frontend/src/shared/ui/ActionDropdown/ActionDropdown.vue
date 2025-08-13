@@ -24,7 +24,7 @@ interface Props {
   triggerId?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const { triggerId = `action-dropdown-${Math.random().toString(36).substr(2, 9)}` } = withDefaults(defineProps<Props>(), {
   triggerId: `action-dropdown-${Math.random().toString(36).substr(2, 9)}`
 });
 

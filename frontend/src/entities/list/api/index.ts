@@ -1,5 +1,5 @@
 import {API} from "@shared/instances/axios";
-import type {ListForm, listId} from "../model/types";
+import type {ListForm, ListId} from "../model/types";
 
 const LIST_ROUTE = 'lists'
 
@@ -17,7 +17,7 @@ const getAll = () =>
             )
     })
 
-const getOne = (id: listId) =>
+const getOne = (id: ListId) =>
     new Promise((resolve, reject) => {
         API
             .get(LIST_ROUTE + `/${id}`)
@@ -45,7 +45,7 @@ const create = (form: ListForm) =>
             )
     })
 
-const update = (id: listId, form: Pick<ListForm, 'title'>) =>
+const update = (id: ListId, form: Pick<ListForm, 'title'>) =>
     new Promise((resolve, reject) => {
         API
             .patch(LIST_ROUTE + `/${id}`, {...form})
@@ -59,7 +59,7 @@ const update = (id: listId, form: Pick<ListForm, 'title'>) =>
             )
     })
 
-const deleteOne = (id: listId) =>
+const deleteOne = (id: ListId) =>
     new Promise((resolve, reject) => {
         API
             .delete(LIST_ROUTE + `/${id}`)

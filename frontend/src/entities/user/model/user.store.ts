@@ -25,19 +25,14 @@ export const useUserStore = defineStore('user', {
             this.isLoading = typeof value === 'boolean' ? value : !this.isLoading
         },
 
-        fetchUser() {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    this.toggleLoader(true)
-                    this.info = await apiUser.getMe()
-
-                    resolve('ok')
-                } catch (e) {
-                    reject(e)
-                } finally {
-                    this.toggleLoader(false)
-                }
-            })
+        async fetchUser() {
+            try {
+                this.toggleLoader(true)
+                this.info = await apiUser.getMe()
+                return 'ok'
+            } finally {
+                this.toggleLoader(false)
+            }
         },
 
         async initUser() {

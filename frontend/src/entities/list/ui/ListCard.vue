@@ -7,7 +7,7 @@ interface Props {
   list: List;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const getListIcon = (type: string) => {
   switch (type) {

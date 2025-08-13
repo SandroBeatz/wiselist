@@ -1,9 +1,9 @@
 import { modalController } from '@ionic/vue';
 import CreateEditListDialog from '../ui/CreateEditListDialog.vue';
-import type { listId, List } from '@/entities/list';
+import type { ListId, List } from '@/entities/list';
 
 interface OpenDialogOptions {
-  id?: listId;
+  id?: ListId;
   list?: List;
   callback?: () => Promise<void>;
 }

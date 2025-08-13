@@ -1,5 +1,5 @@
 import {useFormHandler} from "@shared/composables/useFormHandler";
-import {apiList, type ListForm, type listId} from "@/entities/list";
+import {apiList, type ListForm, type ListId} from "@/entities/list";
 
 const validateListForm = (formData: ListForm): Record<keyof ListForm, string> | null => {
     const errors: Partial<Record<keyof ListForm, string>> = {};
@@ -24,7 +24,7 @@ const validateListForm = (formData: ListForm): Record<keyof ListForm, string> | 
 };
 
 interface UseCreateEditListFormOptions {
-    listId?: listId;
+    listId?: ListId;
     initialData?: Partial<ListForm>;
 }
 

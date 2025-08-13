@@ -1,3 +1,5 @@
+import type {ListId} from "@/entities/list/@x/list-item";
+
 export type ListItemId = string
 
 export interface ListItem {
@@ -8,6 +10,6 @@ export interface ListItem {
 }
 
 export interface ListItemForm {
-    listId: string
+    listId: ListId
     content: string
 }

@@ -4,12 +4,22 @@ import {
   IonButton,
   onIonViewWillEnter,
   IonButtons,
-  alertController
+  alertController, IonFabButton, IonFab
 } from "@ionic/vue";
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref} from "vue";
 import {ListItem, useList} from "@/entities/list";
-import {Ellipsis, ShoppingCart, CheckSquare, List as ListIcon, Calendar, User, Trash, SquarePen} from "lucide-vue-next";
+import {
+  Ellipsis,
+  ShoppingCart,
+  CheckSquare,
+  List as ListIcon,
+  Calendar,
+  User,
+  Trash,
+  SquarePen,
+  Plus
+} from "lucide-vue-next";
 import {useDeleteList} from "@/features/List/Delete";
 import {CreateEditListDialogService} from "@/features/List/CreateEdit";
 import {ActionDropdown, type ActionItem} from "@/shared/ui/ActionDropdown";
@@ -141,7 +151,7 @@ onIonViewWillEnter(() => {
 </script>
 
 <template>
-  <PageWrapper ref="pageRef" is-inner default-href="/tab/lists">
+  <PageWrapper ref="pageRef" is-inner default-href="/tabs/lists">
     <template #header-tools>
       <ion-buttons slot="end">
         <ActionDropdown :actions="dropdownActions" triggerId="list-actions-dropdown">
@@ -247,6 +257,12 @@ onIonViewWillEnter(() => {
         </ion-button>
       </div>
     </div>
+
+    <ion-fab v-if="list?.items.length" slot="fixed" vertical="bottom" horizontal="end" class="p-3">
+      <ion-fab-button @click="router.push({name: 'AddItem', params: {id: list.id}})">
+        <Plus />
+      </ion-fab-button>
+    </ion-fab>
   </PageWrapper>
 </template>
 

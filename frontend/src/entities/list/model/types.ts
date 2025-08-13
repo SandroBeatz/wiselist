@@ -1,4 +1,4 @@
-export type listId = string;
+export type ListId = string;
 export type ListType = 'SHOPPING' | 'TODO' | 'OTHER';
 
 export interface UserProfile {
@@ -27,7 +27,7 @@ export interface ListItem {
 }
 
 export interface List {
-  id: listId;
+  id: ListId;
   title: string;
   type: ListType;
   ownerId: string;

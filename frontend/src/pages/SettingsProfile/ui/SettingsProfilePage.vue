@@ -9,7 +9,7 @@ const { info } = storeToRefs(useUserStore())
 </script>
 
 <template>
-  <PageWrapper is-inner title="Profile" default-href="/settings">
+  <PageWrapper is-inner title="Profile" default-href="/tabs/settings">
     <ion-item v-if="info" button>
       <ion-avatar slot="start" class="!w-12 !h-12">
         <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />

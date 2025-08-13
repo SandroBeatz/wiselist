@@ -1,12 +1,12 @@
 import { ref, type Ref } from 'vue'
 import { apiList } from '../api'
-import type { List, listId } from '../model/types'
+import type { List, ListId } from '../model/types'
 
 interface UseListReturn {
   list: Ref<List | null>
   isLoading: Ref<boolean>
   error: Ref<string | null>
-  fetchList: (id: listId) => Promise<void>
+  fetchList: (id: ListId) => Promise<void>
   refetch: () => Promise<void>
 }
 
@@ -14,9 +14,9 @@ export function useList(): UseListReturn {
   const list = ref<List | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  let currentId: listId | null = null
+  let currentId: ListId | null = null
 
-  const fetchList = async (id: listId): Promise<void> => {
+  const fetchList = async (id: ListId): Promise<void> => {
     if (isLoading.value) return
 
     try {
