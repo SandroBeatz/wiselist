@@ -5,7 +5,7 @@ import {
   IonFabButton,
   IonButton
 } from "@ionic/vue";
-import {useListsStore, ListCard} from "@/entities/list";
+import {useListsStore, ListCard, SkeletonListCards} from "@/entities/list";
 import {storeToRefs} from "pinia";
 import {Ellipsis, Plus, TextSearch, Bell} from "lucide-vue-next";
 import {CreateEditListDialogService} from "@/features/List/CreateEdit";
@@ -39,15 +39,15 @@ onIonViewWillEnter(() => void listsStore.fetchData())
         </ion-button>
       </ion-buttons>
     </template>
-    <!-- Empty State -->
+
+    <SkeletonListCards v-if="isLoading && !lists.length"/>
     <EmptyContent
-        v-if="!lists.length"
+        v-else-if="!lists.length"
         :icon="TextSearch"
         title="No lists yet"
         description="Create your first list to get started organizing!"
     />
-
-    <div v-if="lists.length" class="grid grid-cols-2 gap-4">
+    <div v-else class="grid grid-cols-2 gap-4">
       <ListCard
           v-for="list in lists"
           :key="list.id"

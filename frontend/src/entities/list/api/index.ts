@@ -1,10 +1,10 @@
 import {API} from "@shared/instances/axios";
-import type {ListForm, ListId} from "../model/types";
+import type {List, ListForm, ListId} from "../model/types";
 
 const LIST_ROUTE = 'lists'
 
 const getAll = () =>
-    new Promise((resolve, reject) => {
+    new Promise<List[]>((resolve, reject) => {
         API
             .get(LIST_ROUTE)
             .then((response) => resolve(response.data))

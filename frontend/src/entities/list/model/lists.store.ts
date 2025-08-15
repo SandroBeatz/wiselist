@@ -22,11 +22,12 @@ export const useListsStore = defineStore("lists", {
         },
 
         async fetchData() {
+            this.toggleLoader(true)
             try {
                 const response = await apiList.getAll();
                 this.buildData(response)
-            } catch (e) {
-                console.log('Get categories error:', e);
+            } finally {
+                this.toggleLoader(false)
             }
         }
     },
