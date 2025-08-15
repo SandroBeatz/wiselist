@@ -13,16 +13,17 @@ body {
 
 ion-button {
     --border-radius: 26px;
-    --padding-top: 15px;
-    --padding-bottom: 15px;
-    font-size: 17px;
+    --padding-top: 5px;
+    --padding-bottom: 5px;
+    min-height: 48px;
+    font-size: 16px;
     text-transform: none;
     letter-spacing: 0;
 }
 
 ion-input, ion-select {
     background: var(--ion-color-step-100);
-    height: 52px;
+    height: 48px;
     border-radius: 8px;
     --padding-top: 15px;
     --padding-bottom: 15px;

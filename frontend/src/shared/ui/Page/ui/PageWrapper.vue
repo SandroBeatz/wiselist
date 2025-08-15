@@ -30,9 +30,9 @@ defineProps<{
       <div class="ios-top-space"></div>
       <ion-header class="header-page">
         <ion-toolbar v-if="title || $slots['header-tools']" class="header-page__toolbar">
-          <ion-title class="ion-text-lg ion-text-semibold">{{title}}</ion-title>
+          <div class="text-3xl font-bold">{{title}}</div>
 
-          <ion-buttons slot="end" class="header-inner-page__tools">
+          <ion-buttons slot="end" class="header-page__tools">
             <slot name="header-tools"></slot>
           </ion-buttons>
         </ion-toolbar>
@@ -41,7 +41,7 @@ defineProps<{
     </template>
 
     <!-- Content Section -->
-    <ion-content :class="{'ion-padding': !noContentPadding}" fullscreen>
+    <ion-content :class="{'ion-padding': !noContentPadding}" class="flex" fullscreen>
       <slot></slot>
     </ion-content>
 
@@ -59,19 +59,26 @@ ion-content::part(scroll) {
   flex-direction: column;
 }
 
-
-
 .header-page {
   box-shadow: none!important;
-  background: var(--ion-background-color);
-  --background: var(--ion-background-color);
+  --background: rgba(var(--ion-background-color-rgb), 0.3);
+  background-color: rgba(var(--ion-background-color-rgb), 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .header-page__toolbar {
-  background: var(--ion-background-color);
-  --background: var(--ion-background-color);
-  --padding-top: 10px;
-  --padding-bottom: 10px;
+  background: none!important;
+  --background: none!important;
+  --padding-top: 20px;
+  --padding-bottom: 11px;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --border-width: 0!important;
+}
+
+.header-page__tools {
+  padding: 0;
+  margin-right: -10px;
 }
 
 .header-inner-page {
