@@ -18,12 +18,14 @@ defineProps<{
           <ion-back-button :default-href="defaultHref" text=""></ion-back-button>
         </ion-buttons>
 
-        <slot v-if="$slots['header']" name="header"></slot>
-        <ion-title v-else class="ion-text-base ion-no-padding">{{title}}</ion-title>
+        <ion-title class="ion-text-base ion-no-padding">{{title}}</ion-title>
 
         <ion-buttons slot="end" class="header-inner-page__tools">
           <slot name="header-tools"></slot>
         </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar v-if="$slots['header']">
+        <slot name="header"></slot>
       </ion-toolbar>
     </ion-header>
     <template v-else>

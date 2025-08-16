@@ -12,4 +12,6 @@ export interface ListItem {
 export interface ListItemForm {
     listId: ListId
     content: string
+    context?: string
+    [key: string]: string | undefined
 }

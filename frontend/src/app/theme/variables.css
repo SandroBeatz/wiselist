@@ -99,6 +99,8 @@ http://ionicframework.com/docs/theming/ */
     --ion-color-step-950: #f3f3f4;
 
     --ion-item-background: #221d31;
+    --ion-item-background-rgb: 255, 255, 255;
+
     --ion-card-background: #221d31;
     --ion-card-background-rgb: 34, 29, 49;
     --ion-toolbar-background: #0c0815;
@@ -134,6 +136,8 @@ http://ionicframework.com/docs/theming/ */
     --ion-color-step-950: #232028;
 
     --ion-item-background: #ffffff;
+    --ion-item-background-rgb: 255, 255, 255;
+
     --ion-card-background: #f5f5f5;
     --ion-toolbar-background: #f5f5f5;
     --ion-tab-bar-background: #ffffff;
