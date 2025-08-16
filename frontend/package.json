@@ -21,6 +21,7 @@
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@capgo/capacitor-social-login": "^7.8.3",
+    "@formkit/auto-animate": "^0.8.2",
     "@ionic/core": "^7.8.6",
     "@ionic/vue": "^7.8.6",
     "@ionic/vue-router": "^7.8.6",

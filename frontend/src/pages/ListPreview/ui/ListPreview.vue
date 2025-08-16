@@ -9,6 +9,7 @@ import {
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref} from "vue";
 import {ListItem, useList} from "@/entities/list";
+import {useListItem} from "@/entities/list-item";
 import {
   Ellipsis,
   ShoppingCart,
@@ -28,6 +29,7 @@ const route = useRoute();
 const router = useRouter();
 const {list, isLoading, error, fetchList} = useList();
 const {deleteList} = useDeleteList();
+const {toggleItem, deleteItem} = useListItem();
 
 const pageRef = ref()
 const presentingElement = computed(() => pageRef.value?.$el)
@@ -63,9 +65,42 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const handleItemToggle = (itemId: string, checked: boolean) => {
-  // TODO: Implement item toggle functionality
-  console.log('Toggle item:', itemId, checked);
+const handleItemToggle = async (itemId: string, checked: boolean) => {
+  if (!list.value) return;
+
+  // Optimistically update the UI
+  const item = list.value.items.find(item => item.id === itemId);
+  if (item) {
+    item.checked = checked;
+  }
+
+  // Make the API call
+  const success = await toggleItem(itemId, checked);
+
+  // If the API call failed, revert the optimistic update
+  if (!success && item) {
+    item.checked = !checked;
+  }
+};
+
+const handleItemDelete = async (itemId: string) => {
+  if (!list.value) return;
+
+  // Optimistically remove the item from the UI
+  const itemIndex = list.value.items.findIndex(item => item.id === itemId);
+  let removedItem = null;
+
+  if (itemIndex !== -1) {
+    removedItem = list.value.items.splice(itemIndex, 1)[0];
+  }
+
+  // Make the API call
+  const success = await deleteItem(itemId);
+
+  // If the API call failed, restore the item
+  if (!success && removedItem && itemIndex !== -1) {
+    list.value.items.splice(itemIndex, 0, removedItem);
+  }
 };
 
 const handleEditList = async () => {
@@ -171,25 +206,26 @@ onIonViewWillEnter(() => {
         description="Start adding items to this list to get organized!"
     >
       <div class="flex justify-center">
-        <ion-button @click="router.push({name: 'AddItem', params: {id: list.id}})">
+        <ion-button @click="router.push({name: 'AddItem', params: {id: list?.id}})">
           Add Item
         </ion-button>
       </div>
     </EmptyContent>
 
     <div v-else>
-      <ion-list class="bg-transparent">
+      <ion-list v-auto-animate class="bg-transparent" lines="none">
         <ListItem
             v-for="item in list.items"
             :key="item.id"
             :item="item"
             @toggle="handleItemToggle"
+            @delete="handleItemDelete"
         />
       </ion-list>
     </div>
 
     <ion-fab v-if="list?.items.length" slot="fixed" vertical="bottom" horizontal="end" class="p-3">
-      <ion-fab-button @click="router.push({name: 'AddItem', params: {id: list.id}})">
+      <ion-fab-button @click="router.push({name: 'AddItem', params: {id: list?.id}})">
         <Plus/>
       </ion-fab-button>
     </ion-fab>

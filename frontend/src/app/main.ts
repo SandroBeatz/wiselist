@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
 import {createPinia} from "pinia";
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
 
 import { IonicVue } from '@ionic/vue';
 
@@ -41,6 +42,7 @@ const pinia = createPinia()
 const app = createApp(App)
   .use(IonicVue)
   .use(pinia)
+  .use(autoAnimatePlugin)
   .use(router);
 
 router.isReady().then(() => {
