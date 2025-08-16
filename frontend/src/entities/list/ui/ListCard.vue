@@ -81,7 +81,7 @@ const formatDate = (dateString: string) => {
 
       <div class="w-full bg-zinc-200 rounded-full overflow-hidden h-1.5">
         <div
-            class="bg-primary h-1.5 rounded-full transition-all duration-300"
+            class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
             :style="{ width: `${list.items.length > 0 ? +(list.items.filter(item => item.checked).length / list.items.length) * 100 : 0}%` }"
         ></div>
       </div>
@@ -96,7 +96,7 @@ const formatDate = (dateString: string) => {
           <template v-else>
             <span>{{
                 list.items.filter(item => item.checked).length
-              }}</span>/<span>{{ list.items.filter(item => !item.checked).length }}</span>
+              }}</span>/<span>{{ list.items.length }}</span>
           </template>
         </div>
       </div>

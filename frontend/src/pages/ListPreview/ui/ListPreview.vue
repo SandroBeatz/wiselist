@@ -215,13 +215,28 @@ onIonViewWillEnter(() => {
     <div v-else>
       <ion-list v-auto-animate class="bg-transparent" lines="none">
         <ListItem
-            v-for="item in list.items"
+            v-for="item in list.items.filter(i => !i.checked)"
             :key="item.id"
             :item="item"
             @toggle="handleItemToggle"
             @delete="handleItemDelete"
         />
       </ion-list>
+
+      <template v-if="list.items.filter(i => i.checked).length">
+        <div class="p-4 text-center">
+          <div class="text-sm text-zinc-500">Completed items</div>
+        </div>
+        <ion-list v-auto-animate class="bg-transparent" lines="none">
+          <ListItem
+              v-for="item in list.items.filter(i => i.checked)"
+              :key="item.id"
+              :item="item"
+              @toggle="handleItemToggle"
+              @delete="handleItemDelete"
+          />
+        </ion-list>
+      </template>
     </div>
 
     <ion-fab v-if="list?.items.length" slot="fixed" vertical="bottom" horizontal="end" class="p-3">
