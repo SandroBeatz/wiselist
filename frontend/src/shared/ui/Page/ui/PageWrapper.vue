@@ -83,11 +83,16 @@ ion-content::part(scroll) {
 
 .header-inner-page {
   box-shadow: none;
-  background: transparent;
+  --background: rgba(var(--ion-background-color-rgb), 0.3);
+  background-color: rgba(var(--ion-background-color-rgb), 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .header-inner-page__toolbar {
   --min-height: 80px;
+  background: none!important;
+  --background: none!important;
+  --border-width: 0!important;
 }
 .header-inner-page__tools {
   display: flex;

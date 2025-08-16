@@ -16,34 +16,41 @@ import {
   List as ListIcon,
   Trash,
   SquarePen,
-  Plus
+  Plus,
+  LayoutList
 } from "lucide-vue-next";
 import {useDeleteList} from "@/features/List/Delete";
 import {CreateEditListDialogService} from "@/features/List/CreateEdit";
 import {ActionDropdown, type ActionItem} from "@/shared/ui/ActionDropdown";
-import {PageWrapper} from "@shared/ui";
+import {EmptyContent, PageWrapper} from "@shared/ui";
 
 const route = useRoute();
 const router = useRouter();
-const { list, isLoading, error, fetchList } = useList();
-const { deleteList } = useDeleteList();
+const {list, isLoading, error, fetchList} = useList();
+const {deleteList} = useDeleteList();
 
 const pageRef = ref()
 const presentingElement = computed(() => pageRef.value?.$el)
 
 const getListIcon = (type: string) => {
   switch (type) {
-    case 'SHOPPING': return ShoppingCart;
-    case 'TODO': return CheckSquare;
-    default: return ListIcon;
+    case 'SHOPPING':
+      return ShoppingCart;
+    case 'TODO':
+      return CheckSquare;
+    default:
+      return ListIcon;
   }
 };
 
 const getListTypeColor = (type: string) => {
   switch (type) {
-    case 'SHOPPING': return 'text-blue-500';
-    case 'TODO': return 'text-green-500';
-    default: return 'text-zinc-500';
+    case 'SHOPPING':
+      return 'text-blue-500';
+    case 'TODO':
+      return 'text-green-500';
+    default:
+      return 'text-zinc-500';
   }
 };
 
@@ -153,60 +160,37 @@ onIonViewWillEnter(() => {
     </template>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
+    <div v-if="isLoading && !list" class="flex justify-center items-center py-12">
       <ion-spinner name="circular" class="size-8"></ion-spinner>
     </div>
 
-    <!-- Error State -->
-    <div v-else-if="error" class="text-center py-12">
-      <div class="mb-4 text-red-500">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mx-auto">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-      </div>
-      <h3 class="text-lg font-semibold text-zinc-700 mb-2">Failed to load list</h3>
-      <p class="text-zinc-500 mb-4">{{ error }}</p>
-      <ion-button fill="outline" @click="fetchList(String(route.params.id))">
-        Try Again
-      </ion-button>
-    </div>
-
-    <!-- List Content -->
-    <div v-else-if="list" class="">
-      <!-- List Items -->
-      <div v-if="list.items.length > 0">
-        <ion-list class="bg-transparent">
-          <ListItem
-              v-for="item in list.items"
-              :key="item.id"
-              :item="item"
-              @toggle="handleItemToggle"
-          />
-        </ion-list>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else class="text-center py-8">
-        <div class="mb-4 flex justify-center">
-          <component
-              :is="getListIcon(list.type)"
-              class="size-16 text-zinc-300"
-          />
-        </div>
-        <h3 class="text-lg font-semibold text-zinc-600 mb-2">No items yet</h3>
-        <p class="text-zinc-500">Start adding items to this list to get organized!</p>
-
-        <ion-button class="mt-4" @click="router.push({name: 'AddItem', params: {id: list.id}})">
+    <EmptyContent
+        v-else-if="!list?.items.length"
+        :icon="LayoutList"
+        title="No items yet"
+        description="Start adding items to this list to get organized!"
+    >
+      <div class="flex justify-center">
+        <ion-button @click="router.push({name: 'AddItem', params: {id: list.id}})">
           Add Item
         </ion-button>
       </div>
+    </EmptyContent>
+
+    <div v-else>
+      <ion-list class="bg-transparent">
+        <ListItem
+            v-for="item in list.items"
+            :key="item.id"
+            :item="item"
+            @toggle="handleItemToggle"
+        />
+      </ion-list>
     </div>
 
     <ion-fab v-if="list?.items.length" slot="fixed" vertical="bottom" horizontal="end" class="p-3">
       <ion-fab-button @click="router.push({name: 'AddItem', params: {id: list.id}})">
-        <Plus />
+        <Plus/>
       </ion-fab-button>
     </ion-fab>
   </PageWrapper>

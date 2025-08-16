@@ -9,7 +9,7 @@ import {useList} from "@/entities/list";
 import {PageWrapper} from "@shared/ui";
 import type {ListId} from "@/entities/list";
 import {useCreateListItemForm} from "@/features/ListItem/Create";
-import {Check} from "lucide-vue-next";
+import {Check, Trash, Plus, Minus} from "lucide-vue-next";
 
 const route = useRoute();
 const router = useRouter();
@@ -50,11 +50,14 @@ const handleKeyPress = (event: KeyboardEvent) => {
     handleSubmit(async () => {
       await fetchList(listId)
       resetForm()
+      setTimeout(() => {
+        inputRef.value?.$el.querySelector('input')?.focus()
+      }, 300)
     })
   }
 }
 
-const handleSuggestionClick = (suggestion: string) => {
+const handleSuggestionClick = (suggestion?: string) => {
   showSuggestions.value = false
   inputRef.value?.$el.querySelector('input')?.focus()
 }
@@ -91,17 +94,27 @@ onMounted(() => {
           {{ errors.content }}
         </ion-note>
       </div>
-      <ion-list class="p-0">
+      <ion-list class="p-0 bg-none" lines="none">
         <ion-item
             v-for="(suggestion, index) in filteredSuggestions"
             :key="index"
-            button
+            :detail="false"
             @click="handleSuggestionClick(suggestion.content)"
-            class="cursor-pointer hover:bg-gray-50 transition-colors"
+            class="cursor-pointer hover:bg-gray-50 transition-colors mb-2"
         >
-          <div class="py-2">
-            <span class="text-sm text-gray-700">{{ suggestion.content }}</span>
-          </div>
+<!--          <ion-button slot="start" fill="clear" class="add-btn">-->
+<!--            <Plus slot="icon-only" class="size-5" />-->
+<!--          </ion-button>-->
+          <ion-avatar slot="start" class="flex justify-center items-center bg-gray-50">
+            <Check class="size-5" />
+          </ion-avatar>
+          <ion-label>{{ suggestion.content }}</ion-label>
+<!--          <ion-button slot="end" fill="clear" class="delete-btn">-->
+<!--            <Trash slot="icon-only" class="size-5" />-->
+<!--          </ion-button>-->
+          <ion-button slot="end" fill="clear" class="remove-btn">
+            <Minus slot="icon-only" class="size-5"/>
+          </ion-button>
         </ion-item>
       </ion-list>
     </div>
@@ -115,5 +128,33 @@ onMounted(() => {
 </template>
 
 <style scoped>
+ion-list {
+  background: none;
+}
 
+ion-item {
+  overflow: hidden;
+  --min-height: 48px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --inner-padding-end: 0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+ion-item ion-button, ion-item ion-avatar {
+  @apply p-0 size-9 rounded-full min-h-0;
+}
+
+.add-btn {
+  @apply bg-green-50 text-green-500;
+}
+
+.delete-btn {
+  @apply bg-red-50 text-red-500;
+}
+
+.remove-btn {
+  @apply bg-orange-50 text-orange-500;
+}
 </style>

@@ -16,6 +16,7 @@ defineProps<{
     </div>
     <h3 v-if="title" class="text-xl font-bold text-zinc-700 mb-2">{{title}}</h3>
     <p v-if="description" class="text-zinc-500 mb-6">{{description}}</p>
+    <slot></slot>
   </div>
 </template>
 
