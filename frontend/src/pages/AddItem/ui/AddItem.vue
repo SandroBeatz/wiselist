@@ -10,11 +10,15 @@ import {PageWrapper} from "@shared/ui";
 import type {ListId} from "@/entities/list";
 import {useCreateListItemForm} from "@/features/ListItem/Create";
 import {Check, Trash, Plus, Minus} from "lucide-vue-next";
+import {useItemCache} from "@shared/composables/useItemCache";
+import {useListItem} from "@/entities/list-item";
 
 const route = useRoute();
 const router = useRouter();
 
 const { list, fetchList } = useList();
+const { getCachedItems, addToCache, removeFromCache } = useItemCache();
+const { deleteItem } = useListItem();
 
 const listId = route.params.id as ListId
 
@@ -34,20 +38,51 @@ const {
     resetForm
 } = useCreateListItemForm(listId)
 
-const filteredSuggestions = computed(() => {
-  return list.value?.items.filter(i =>
-    i.content.toLowerCase().includes(form.content.toLowerCase()) &&
-    !list.value?.items.some(item => item.content === form.content)
-  ) || [];
-})
+// Get cached items for the current list type
+const cachedItems = computed(() => {
+  if (!list.value) return [];
+  return getCachedItems(list.value.type).value;
+});
+
+// Get current list items content for comparison
+const currentListItemsContent = computed(() => {
+  return list.value?.items.map(item => item.content.toLowerCase()) || [];
+});
+
+// Combine cached items with their status (in list or not)
+const itemSuggestions = computed(() => {
+  if (!list.value) return [];
+  
+  const suggestions = [];
+  
+  // Filter cached items based on input
+  const filteredCached = cachedItems.value.filter(item =>
+    item.content.toLowerCase().includes(form.content.toLowerCase())
+  );
+  
+  for (const cachedItem of filteredCached) {
+    const isInCurrentList = currentListItemsContent.value.includes(cachedItem.content.toLowerCase());
+    
+    suggestions.push({
+      content: cachedItem.content,
+      isInCurrentList,
+      isFromCache: true
+    });
+  }
+  
+  return suggestions;
+});
 
 const inputRef = ref<typeof IonInput>()
-const showSuggestions = ref(false)
 
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
     event.preventDefault()
     handleSubmit(async () => {
+      // Add item to cache after successful creation
+      if (list.value && form.content.trim()) {
+        addToCache(list.value.type, form.content.trim());
+      }
       await fetchList(listId)
       resetForm()
       setTimeout(() => {
@@ -57,10 +92,41 @@ const handleKeyPress = (event: KeyboardEvent) => {
   }
 }
 
-const handleSuggestionClick = (suggestion?: string) => {
-  showSuggestions.value = false
-  inputRef.value?.$el.querySelector('input')?.focus()
-}
+// Add item from cache to current list
+const handleAddFromCache = async (content: string) => {
+  if (!list.value) return;
+  
+  try {
+    form.content = content;
+    await handleSubmit(async () => {
+      await fetchList(listId);
+      resetForm();
+    });
+  } catch (error) {
+    console.error('Failed to add item from cache:', error);
+  }
+};
+
+// Remove item from current list (but keep in cache)
+const handleRemoveFromList = async (content: string) => {
+  if (!list.value) return;
+  
+  const item = list.value.items.find(i => i.content.toLowerCase() === content.toLowerCase());
+  if (item) {
+    try {
+      await deleteItem(item.id);
+      await fetchList(listId);
+    } catch (error) {
+      console.error('Failed to remove item from list:', error);
+    }
+  }
+};
+
+// Remove item from cache completely
+const handleRemoveFromCache = (content: string) => {
+  if (!list.value) return;
+  removeFromCache(list.value.type, content);
+};
 
 onMounted(() => {
   setTimeout(() => {
@@ -94,32 +160,61 @@ onMounted(() => {
           {{ errors.content }}
         </ion-note>
       </div>
+      <!-- Cached items list with proper logic -->
       <ion-list class="p-0 bg-none" lines="none">
         <ion-item
-            v-for="(suggestion, index) in filteredSuggestions"
+            v-for="(suggestion, index) in itemSuggestions"
             :key="index"
             :detail="false"
-            @click="handleSuggestionClick(suggestion.content)"
-            class="cursor-pointer hover:bg-gray-50 transition-colors mb-2"
+            class="transition-colors mb-2"
         >
-<!--          <ion-button slot="start" fill="clear" class="add-btn">-->
-<!--            <Plus slot="icon-only" class="size-5" />-->
-<!--          </ion-button>-->
-          <ion-avatar slot="start" class="flex justify-center items-center bg-gray-50">
-            <Check class="size-5" />
+          <!-- Add button for items not in current list -->
+          <ion-button 
+            v-if="!suggestion.isInCurrentList"
+            slot="start" 
+            fill="clear" 
+            class="add-btn"
+            @click="handleAddFromCache(suggestion.content)"
+          >
+            <Plus slot="icon-only" class="size-5" />
+          </ion-button>
+          
+          <!-- Check mark for items already in current list -->
+          <ion-avatar 
+            v-else
+            slot="start" 
+            class="flex justify-center items-center bg-green-50"
+          >
+            <Check class="size-5 text-green-500" />
           </ion-avatar>
+          
           <ion-label>{{ suggestion.content }}</ion-label>
-<!--          <ion-button slot="end" fill="clear" class="delete-btn">-->
-<!--            <Trash slot="icon-only" class="size-5" />-->
-<!--          </ion-button>-->
-          <ion-button slot="end" fill="clear" class="remove-btn">
+
+          <!-- Remove from cache button (always visible) -->
+          <ion-button 
+            slot="end" 
+            fill="clear" 
+            class="delete-btn"
+            @click="handleRemoveFromCache(suggestion.content)"
+          >
+            <Trash slot="icon-only" class="size-5" />
+          </ion-button>
+
+          <!-- Remove from current list button (only for items in list) -->
+          <ion-button 
+            v-if="suggestion.isInCurrentList"
+            slot="end" 
+            fill="clear" 
+            class="remove-btn"
+            @click="handleRemoveFromList(suggestion.content)"
+          >
             <Minus slot="icon-only" class="size-5"/>
           </ion-button>
         </ion-item>
       </ion-list>
     </div>
 
-    <ion-fab v-if="filteredSuggestions.length" slot="fixed" vertical="bottom" horizontal="center" class="p-3">
+    <ion-fab v-if="itemSuggestions.length" slot="fixed" vertical="bottom" horizontal="center" class="p-3">
       <ion-button @click="router.go(-1)">
         <Check /> Done
       </ion-button>

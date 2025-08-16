@@ -41,11 +41,9 @@ const handleDragEnd = async () => {
   try {
     const ratio = await slidingItemRef.value.$el.getSlidingRatio();
 
-    // If swiped right more than threshold, trigger delete
     if (ratio > SWIPE_DELETE_THRESHOLD) {
+      await slidingItemRef.value.$el.open('end');
       handleDelete();
-      // Close the sliding item after delete
-      await slidingItemRef.value.close();
     }
   } catch (error) {
     console.error('Error getting sliding ratio:', error);
