@@ -9,10 +9,10 @@ export interface HTMLIonInputElement extends HTMLElement {
     value?: string | number | null
 }
 
-export type FormData = Record<string, string | number | boolean>
+export type FormData = Record<string, string | number | boolean | undefined>
 
 export interface BaseFormData {
-    [key: string]: string | number | boolean
+    [key: string]: string | number | boolean | undefined
 }
 
 export type SubmitHandler<T extends FormData> = (formData: T) => Promise<void> | void

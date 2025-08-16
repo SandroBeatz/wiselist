@@ -97,7 +97,6 @@ const handleAddFromCache = async (content: string) => {
 
   try {
     form.context = content;
-    console.log(form)
     await handleSubmit(async () => {
       await fetchList(listId);
       resetForm();
