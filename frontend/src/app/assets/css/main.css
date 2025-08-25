@@ -11,6 +11,11 @@ body {
     --height: auto;
 }
 
+.confirmation-dialog::part(content) {
+    border-radius: 16px;
+    margin: 16px;
+}
+
 ion-button {
     --border-radius: 26px;
     --padding-top: 5px;
