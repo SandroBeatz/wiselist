@@ -3,9 +3,9 @@
  */
 
 interface JwtPayload {
-    exp?: number;
-    iat?: number;
-    id?: string;
+  exp?: number
+  iat?: number
+  id?: string
 }
 
 /**
@@ -14,19 +14,19 @@ interface JwtPayload {
  * @returns Decoded payload or null if invalid
  */
 export const decodeJwt = (token: string): JwtPayload | null => {
-    if (!token) return null;
-    
-    try {
-        const parts = token.split('.');
-        if (parts.length !== 3) return null;
-        
-        const payload = parts[1];
-        const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-        return JSON.parse(decoded);
-    } catch {
-        return null;
-    }
-};
+  if (!token) return null
+
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+
+    const payload = parts[1]
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    return JSON.parse(decoded)
+  } catch {
+    return null
+  }
+}
 
 /**
  * Check if token is expired
@@ -35,14 +35,14 @@ export const decodeJwt = (token: string): JwtPayload | null => {
  * @returns true if token is expired or invalid
  */
 export const isTokenExpired = (token: string, bufferSeconds: number = 30): boolean => {
-    const payload = decodeJwt(token);
-    if (!payload?.exp) return true;
-    
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expiryTime = payload.exp - bufferSeconds;
-    
-    return currentTime >= expiryTime;
-};
+  const payload = decodeJwt(token)
+  if (!payload?.exp) return true
+
+  const currentTime = Math.floor(Date.now() / 1000)
+  const expiryTime = payload.exp - bufferSeconds
+
+  return currentTime >= expiryTime
+}
 
 /**
  * Check if token is valid (exists and not expired)
@@ -50,8 +50,8 @@ export const isTokenExpired = (token: string, bufferSeconds: number = 30): boole
  * @returns true if token is valid
  */
 export const isTokenValid = (token: string): boolean => {
-    return !!token && !isTokenExpired(token);
-};
+  return !!token && !isTokenExpired(token)
+}
 
 /**
  * Get token expiry date
@@ -59,8 +59,8 @@ export const isTokenValid = (token: string): boolean => {
  * @returns Date object or null if invalid
  */
 export const getTokenExpiry = (token: string): Date | null => {
-    const payload = decodeJwt(token);
-    if (!payload?.exp) return null;
-    
-    return new Date(payload.exp * 1000);
-};
+  const payload = decodeJwt(token)
+  if (!payload?.exp) return null
+
+  return new Date(payload.exp * 1000)
+}

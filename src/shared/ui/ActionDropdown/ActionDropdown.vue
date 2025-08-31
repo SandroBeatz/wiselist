@@ -1,44 +1,48 @@
 <script setup lang="ts">
-import {
-  IonButton,
-  IonPopover,
-  IonContent,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonText
-} from "@ionic/vue";
-import type { Component } from 'vue';
+import { IonButton, IonPopover, IonContent, IonList, IonItem, IonLabel, IonText } from '@ionic/vue'
+import type { Component } from 'vue'
 
 export interface ActionItem {
-  id: string;
-  label: string;
-  icon?: Component;
-  color?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'danger' | 'light' | 'medium' | 'dark';
-  action?: () => void | Promise<void>;
-  disabled?: boolean;
+  id: string
+  label: string
+  icon?: Component
+  color?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'success'
+    | 'warning'
+    | 'danger'
+    | 'light'
+    | 'medium'
+    | 'dark'
+  action?: () => void | Promise<void>
+  disabled?: boolean
 }
 
 interface Props {
-  actions: ActionItem[];
-  triggerId?: string;
+  actions: ActionItem[]
+  triggerId?: string
 }
 
-const { triggerId = `action-dropdown-${Math.random().toString(36).substr(2, 9)}` } = withDefaults(defineProps<Props>(), {
-  triggerId: `action-dropdown-${Math.random().toString(36).substr(2, 9)}`
-});
+const { triggerId = `action-dropdown-${Math.random().toString(36).substr(2, 9)}` } = withDefaults(
+  defineProps<Props>(),
+  {
+    triggerId: `action-dropdown-${Math.random().toString(36).substr(2, 9)}`,
+  }
+)
 
 const handleAction = async (item: ActionItem) => {
-  if (item.disabled) return;
+  if (item.disabled) return
 
   if (item.action) {
     try {
-      await item.action();
+      await item.action()
     } catch (error) {
-      console.error('Action failed:', error);
+      console.error('Action failed:', error)
     }
   }
-};
+}
 </script>
 
 <template>

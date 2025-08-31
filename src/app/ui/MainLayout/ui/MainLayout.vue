@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {Settings, ListTodo} from "lucide-vue-next";
-import {IonPage, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs} from "@ionic/vue";
+import { Settings, ListTodo } from 'lucide-vue-next'
+import { IonPage, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/vue'
 </script>
 
 <template>

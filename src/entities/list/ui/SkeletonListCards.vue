@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {IonSkeletonText, IonThumbnail} from "@ionic/vue";
+import { IonSkeletonText, IonThumbnail } from '@ionic/vue'
 </script>
 
 <template>

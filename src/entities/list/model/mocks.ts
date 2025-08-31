@@ -1,4 +1,4 @@
-import { List } from './types';
+import type { List } from './types'
 
 export const mockLists: List[] = [
   {
@@ -31,5 +31,4 @@ export const mockLists: List[] = [
     count_of_items: 12,
     assigned_people: ['Alice', 'David', 'Eve'],
   },
-];
-
+]

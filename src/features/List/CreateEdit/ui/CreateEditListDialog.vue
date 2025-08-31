@@ -1,46 +1,48 @@
 <script setup lang="ts">
-import {IonButton, IonButtons, IonInput, IonSelect, IonSelectOption, IonText} from "@ionic/vue";
-import {useCreateEditListForm} from "../composables/useCreateEditListForm";
-import {computed} from "vue";
-import {useListsStore, List} from "@/entities/list";
-import {X} from "lucide-vue-next";
-import type {ListId} from "@/entities/list";
+import { IonButton, IonButtons, IonInput, IonSelect, IonSelectOption, IonText } from '@ionic/vue'
+import { useCreateEditListForm } from '../composables/useCreateEditListForm'
+import { computed } from 'vue'
+import { useListsStore, type List } from '@/entities/list'
+import { X } from 'lucide-vue-next'
+import type { ListId } from '@/entities/list'
 
 interface Props {
-  id?: ListId;
+  id?: ListId
   list?: List
-  callback?: () => Promise<void>;
+  callback?: () => Promise<void>
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
-const isEditMode = computed(() => !!props.id);
+const isEditMode = computed(() => !!props.id)
 
-const {form, handlerField, handleSubmit, resetForm, errors, isSubmitting} = useCreateEditListForm({
-  listId: props.id,
-  initialData: props.list
-});
+const { form, handlerField, handleSubmit, resetForm, errors, isSubmitting } = useCreateEditListForm(
+  {
+    listId: props.id,
+    initialData: props.list,
+  }
+)
 
 const closeModal = () => {
   import('@ionic/vue').then(({ modalController }) => {
-    modalController.dismiss();
-  });
-  resetForm();
-};
+    modalController.dismiss()
+  })
+  resetForm()
+}
 
 const closeAndRefetch = async () => {
   try {
     if (isEditMode.value) {
       await props.callback?.()
     } else {
-      await useListsStore().fetchData();
+      await useListsStore().fetchData()
     }
 
     closeModal()
   } catch (error) {
-    console.error('Error closing modal:', error);
+    console.error('Error closing modal:', error)
   }
-};
+}
 </script>
 
 <template>

@@ -1,1 +1,1 @@
-export {default as AddItem} from './ui/AddItem.vue';
+export { default as AddItem } from './ui/AddItem.vue'

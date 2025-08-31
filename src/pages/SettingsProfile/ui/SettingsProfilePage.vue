@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import {IonAvatar} from "@ionic/vue";
-import {storeToRefs} from "pinia";
-import {useUserStore} from "@/entities/user";
-import {PageWrapper} from "@shared/ui/Page";
+import { IonAvatar } from '@ionic/vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/entities/user'
+import { PageWrapper } from '@shared/ui/Page'
 
 const { info } = storeToRefs(useUserStore())
-
 </script>
 
 <template>

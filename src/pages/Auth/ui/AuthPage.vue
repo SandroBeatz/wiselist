@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {IonButton} from "@ionic/vue";
-import {useRouter} from "vue-router";
-import {useGoogleAuth} from "@/features/Auth";
-import {PageWrapper} from "@shared/ui/Page";
-import {IconWiselistRounded} from "@shared/ui/Icons";
-import {GoogleButton} from "@shared/ui/GoogleButton";
-import {AppleButton} from "@shared/ui/AppleButton";
+import { IonButton } from '@ionic/vue'
+import { useRouter } from 'vue-router'
+import { useGoogleAuth } from '@/features/Auth'
+import { PageWrapper } from '@shared/ui/Page'
+import { IconWiselistRounded } from '@shared/ui/Icons'
+import { GoogleButton } from '@shared/ui/GoogleButton'
+import { AppleButton } from '@shared/ui/AppleButton'
 
-const router = useRouter();
-const {googleAuth} = useGoogleAuth()
+const router = useRouter()
+const { googleAuth } = useGoogleAuth()
 </script>
 
 <template>

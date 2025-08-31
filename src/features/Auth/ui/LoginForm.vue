@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {IonButton, IonInput, IonText} from "@ionic/vue";
-import {useLoginForm} from "@/features/Auth/model/useLoginForm";
-import {Eye, EyeOff} from "lucide-vue-next";
-import {ref} from "vue";
+import { IonButton, IonInput, IonText } from '@ionic/vue'
+import { useLoginForm } from '@/features/Auth/model/useLoginForm'
+import { Eye, EyeOff } from 'lucide-vue-next'
+import { ref } from 'vue'
 
-const {form, handleSubmit, handlerField, errors, isSubmitting} = useLoginForm()
+const { form, handleSubmit, handlerField, errors, isSubmitting } = useLoginForm()
 const showPassword = ref(false)
 </script>
 

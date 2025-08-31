@@ -1,1 +1,1 @@
-export {default as SettingsProfilePage} from './ui/SettingsProfilePage.vue';
+export { default as SettingsProfilePage } from './ui/SettingsProfilePage.vue'

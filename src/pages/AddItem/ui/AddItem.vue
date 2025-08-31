@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import {
   onIonViewWillEnter,
-  IonItem, IonList, IonNote, IonInput, IonFabButton, IonFab
-} from "@ionic/vue";
-import {useRoute, useRouter} from "vue-router";
-import {computed, onMounted, ref} from "vue";
-import {useList} from "@/entities/list";
-import {PageWrapper} from "@shared/ui";
-import type {ListId} from "@/entities/list";
-import {useCreateListItemForm} from "@/features/ListItem/Create";
-import {Check, Trash, Plus, Minus} from "lucide-vue-next";
-import {useItemCache} from "@shared/composables/useItemCache";
-import {useListItem} from "@/entities/list-item";
+  IonItem,
+  IonList,
+  IonNote,
+  type IonInput,
+  IonFabButton,
+  IonFab,
+} from '@ionic/vue'
+import { useRoute, useRouter } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useList } from '@/entities/list'
+import { PageWrapper } from '@shared/ui'
+import type { ListId } from '@/entities/list'
+import { useCreateListItemForm } from '@/features/ListItem/Create'
+import { Check, Trash, Plus, Minus } from 'lucide-vue-next'
+import { useItemCache } from '@shared/composables/useItemCache'
+import { useListItem } from '@/entities/list-item'
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
-const { list, fetchList } = useList();
-const { getCachedItems, addToCache, removeFromCache } = useItemCache();
-const { deleteItem } = useListItem();
+const { list, fetchList } = useList()
+const { getCachedItems, addToCache, removeFromCache } = useItemCache()
+const { deleteItem } = useListItem()
 
 const listId = route.params.id as ListId
 
@@ -26,51 +31,46 @@ const pageRef = ref()
 
 onIonViewWillEnter(() => {
   if (listId) {
-    void fetchList(listId);
+    void fetchList(listId)
   }
-});
+})
 
-const {
-  isSubmitting,
-  form,
-  handleSubmit,
-    resetForm
-} = useCreateListItemForm(listId)
+const { isSubmitting, form, handleSubmit, resetForm } = useCreateListItemForm(listId)
 
 // Get cached items for the current list type
 const cachedItems = computed(() => {
-  if (!list.value) return [];
-  return getCachedItems(list.value.type).value;
-});
+  if (!list.value) return []
+  return getCachedItems(list.value.type).value
+})
 
 // Get current list items content for comparison
 const currentListItemsContent = computed(() => {
-  return list.value?.items.map(item => item.content.toLowerCase()) || [];
-});
+  return list.value?.items.map((item) => item.content.toLowerCase()) || []
+})
 
 // Combine cached items with their status (in list or not)
 const itemSuggestions = computed(() => {
-  if (!list.value) return [];
+  if (!list.value) return []
 
-  const suggestions = [];
+  const suggestions = []
 
   // Filter cached items based on input
-  const filteredCached = cachedItems.value.filter(item =>
+  const filteredCached = cachedItems.value.filter((item) =>
     item.content.toLowerCase().includes(form.content.toLowerCase())
-  );
+  )
 
   for (const cachedItem of filteredCached) {
-    const isInCurrentList = currentListItemsContent.value.includes(cachedItem.content.toLowerCase());
+    const isInCurrentList = currentListItemsContent.value.includes(cachedItem.content.toLowerCase())
 
     suggestions.push({
       content: cachedItem.content,
       isInCurrentList,
-      isFromCache: true
-    });
+      isFromCache: true,
+    })
   }
 
-  return suggestions;
-});
+  return suggestions
+})
 
 const inputRef = ref<typeof IonInput>()
 
@@ -80,7 +80,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     handleSubmit(async () => {
       // Add item to cache after successful creation
       if (list.value && form.content.trim()) {
-        addToCache(list.value.type, form.content.trim());
+        addToCache(list.value.type, form.content.trim())
       }
       await fetchList(listId)
       resetForm()
@@ -93,39 +93,39 @@ const handleKeyPress = (event: KeyboardEvent) => {
 
 // Add item from cache to current list
 const handleAddFromCache = async (content: string) => {
-  if (!list.value) return;
+  if (!list.value) return
 
   try {
-    form.context = content;
+    form.context = content
     await handleSubmit(async () => {
-      await fetchList(listId);
-      resetForm();
-    });
+      await fetchList(listId)
+      resetForm()
+    })
   } catch (error) {
-    console.error('Failed to add item from cache:', error);
+    console.error('Failed to add item from cache:', error)
   }
-};
+}
 
 // Remove item from current list (but keep in cache)
 const handleRemoveFromList = async (content: string) => {
-  if (!list.value) return;
+  if (!list.value) return
 
-  const item = list.value.items.find(i => i.content.toLowerCase() === content.toLowerCase());
+  const item = list.value.items.find((i) => i.content.toLowerCase() === content.toLowerCase())
   if (item) {
     try {
-      await deleteItem(item.id);
-      await fetchList(listId);
+      await deleteItem(item.id)
+      await fetchList(listId)
     } catch (error) {
-      console.error('Failed to remove item from list:', error);
+      console.error('Failed to remove item from list:', error)
     }
   }
-};
+}
 
 // Remove item from cache completely
 const handleRemoveFromCache = (content: string) => {
-  if (!list.value) return;
-  removeFromCache(list.value.type, content);
-};
+  if (!list.value) return
+  removeFromCache(list.value.type, content)
+}
 
 onMounted(() => {
   setTimeout(() => {

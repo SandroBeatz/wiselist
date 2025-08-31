@@ -1,1 +1,1 @@
-export type {ListId} from '../model/types'
+export type { ListId } from '../model/types'

@@ -4,17 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Wiselist is a mobile-first list management application built with Ionic Vue 3 and NestJS backend. The project allows users to create, share, and collaboratively edit lists with real-time synchronization and offline support.
+Wiselist is a mobile-first list management application built with Ionic Vue 3. The project is designed to allow users to create, share, and collaboratively edit lists with real-time synchronization and offline support. The frontend is currently implemented and connects to an external API.
 
 ### Tech Stack
 - **Frontend**: Ionic Vue 3 + TypeScript + Tailwind CSS + Capacitor
-- **Backend**: NestJS + TypeScript + Prisma ORM + PostgreSQL
 - **Mobile**: iOS/Android support via Capacitor
-- **Authentication**: Google OAuth integration
+- **Authentication**: Google OAuth integration (configured)
+- **Styling**: Custom Tailwind CSS theme with Ionic components
+- **Testing**: Vitest for unit tests, Cypress for e2e tests
 
 ## Development Commands
 
-### Frontend (frontend/)
+### Frontend (current project root)
 ```bash
 # Development server
 npm run dev
@@ -32,32 +33,11 @@ vue-tsc && vite build
 npm run test:unit    # Vitest unit tests
 npm run test:e2e     # Cypress e2e tests
 
-# Linting
-npm run lint
-```
-
-### Backend (backend/)
-```bash
-# Development server with hot reload
-npm run start:dev
-
-# Production build
-npm run build
-npm run start:prod
-
-# Database management
-npx prisma generate    # Generate Prisma client
-npx prisma db push     # Push schema changes
-npx prisma studio      # Open database GUI
-
-# Testing
-npm run test           # Jest unit tests
-npm run test:e2e       # End-to-end tests
-npm run test:cov       # Test coverage
-
-# Code quality
-npm run lint          # ESLint
-npm run format        # Prettier
+# Linting and Formatting (Biome.js)
+npm run lint           # Check code for issues
+npm run lint:fix       # Auto-fix issues where possible  
+npm run format         # Format code
+npm run check          # Combined linting + formatting check
 ```
 
 ## Architecture
@@ -65,69 +45,95 @@ npm run format        # Prettier
 ### Frontend Structure (FSD-inspired)
 - `src/app/` - Application-level configuration (routing, theme, main app)
 - `src/pages/` - Page-level components (Auth, Lists, Settings, etc.)
-- `src/features/` - Business logic features (Auth flows, etc.)
-- `src/entities/` - Domain entities (User, List models and stores)  
-- `src/shared/` - Shared utilities, UI components, and instances
-- Path aliases: `@app`, `@pages`, `@shared` are configured in vite.config.ts
-
-### Backend Structure
-- `src/auth/` - Authentication module (Google OAuth, JWT strategies)
-- `src/user/` - User management 
-- `src/profile/` - User profile management
-- `src/list/` - List CRUD operations
-- `src/list-item/` - List item CRUD operations  
-- `src/prisma/` - Database service and module
-- Database schema in `prisma/schema.prisma`
+- `src/features/` - Business logic features (Auth flows, List/ListItem operations)
+- `src/entities/` - Domain entities (User, List, ListItem models and stores)  
+- `src/shared/` - Shared utilities, UI components, services, and instances
+- Path aliases: `@`, `@app`, `@pages`, `@shared` are configured in vite.config.ts
 
 ### Key Configuration
 - Frontend runs on port 5173 (Vite default)
-- Backend runs on port 3000 with CORS enabled
+- API base URL configured via `VITE_API_URL` environment variable
 - Capacitor config for mobile builds in `capacitor.config.ts`
 - Google OAuth client ID configured for mobile authentication
+- Tailwind CSS with custom color scheme (primary, text variants)
 
-## Database
+### Authentication & API Integration
+- Axios instance with automatic token refresh handling
+- JWT access/refresh token management with service layer
+- Request queue for handling failed requests during token refresh
+- Google OAuth configured via Capacitor Social Login plugin
 
-Uses PostgreSQL with Prisma ORM. Current schema includes:
-- Users with Google OAuth support
-- User profiles with notification preferences
-- Lists with types (SHOPPING, TODO, OTHER)
-- List items with content and checked status
-- Provider enum: EMAIL, GOOGLE, APPLE
-- ListType enum: SHOPPING, TODO, OTHER
+## Data Models
 
-When making database changes:
-1. Update `prisma/schema.prisma`
-2. Run `npx prisma db push` to apply changes
-3. Run `npx prisma generate` to update client
+The frontend defines the following TypeScript interfaces:
 
-## API Endpoints
+### List Types
+- `ListType`: 'SHOPPING' | 'TODO' | 'OTHER'
+- `ListId`: string
+- `List`: Contains id, title, type, owner info, items, and timestamps
+- `ListForm`: Pick<List, 'title' | 'type'> for form handling
 
-### Lists
-- `GET /lists` - Get all user's lists
-- `POST /lists` - Create a new list
-- `GET /lists/:id` - Get specific list with items
-- `PATCH /lists/:id` - Update list
-- `DELETE /lists/:id` - Delete list
+### User Types  
+- `UserProfile`: User profile information with notification settings
+- `ListOwner`: User information with profile data
 
-### List Items  
-- `POST /list-items` - Create list item
-- `GET /list-items/by-list/:listId` - Get all items for a list
-- `GET /list-items/:id` - Get specific list item
-- `PATCH /list-items/:id` - Update list item
-- `DELETE /list-items/:id` - Delete list item
+### List Items
+- `ListItem`: Individual items within lists with content, checked status, and timestamps
 
-All endpoints require JWT authentication via `Authorization: Bearer <token>` header.
+## API Integration
+
+The app expects these API endpoints to be available:
+
+### Lists (src/entities/list/api/)
+- `GET /api/lists` - Get all user's lists
+- `POST /api/lists` - Create a new list
+- `GET /api/lists/:id` - Get specific list with items  
+- `PATCH /api/lists/:id` - Update list
+- `DELETE /api/lists/:id` - Delete list
+
+### List Items (src/entities/list-item/api/)
+- API endpoints for list item operations (structure follows same pattern)
+
+All API calls use the configured Axios instance with automatic authentication.
 
 ## Mobile Development
 
 This is a Capacitor-based app supporting iOS and Android:
-- iOS project in `frontend/ios/`
-- Android project in `frontend/android/`
+- iOS project in `ios/`
+- Android project in `android/`  
 - Use `npm run build:ios` for iOS builds
-- Google Auth configured with proper client IDs
+- Google Auth configured with proper client IDs in capacitor.config.ts
+- Capacitor plugins: App, Haptics, Keyboard, StatusBar, Social Login
+
+## Routing & Navigation
+
+- Vue Router with Ionic Vue Router integration
+- Tab-based navigation with MainLayout component
+- Protected routes using authentication middleware
+- Route structure:
+  - `/tabs/lists` - Main lists view (authenticated)
+  - `/tabs/settings` - Settings (authenticated)
+  - `/auth`, `/login`, `/register` - Authentication pages (guest only)
+  - Dynamic routes for list previews and item management
 
 ## Testing Strategy
 
 - Frontend: Vitest for unit tests, Cypress for e2e
-- Backend: Jest for all testing (unit, integration, e2e)
+- Test files in `tests/unit/` and `tests/e2e/` 
 - Always run tests before committing changes
+
+## Code Quality Tools
+
+- **Biome.js**: Fast, unified linter and formatter (replaces ESLint + Prettier)
+- Configuration in `biome.json` with TypeScript and Vue support
+- Automatic code formatting with consistent style rules
+- Fast linting with TypeScript-aware rules
+
+## Important Implementation Details
+
+- Uses Feature-Sliced Design (FSD) architecture pattern
+- Pinia stores for state management (user.store.ts, lists.store.ts)
+- Automatic token refresh with request queuing
+- Offline-first approach with caching strategies
+- Custom Tailwind theme with Ionic component integration
+- Modern tooling: Vite + Biome.js for fast development experience

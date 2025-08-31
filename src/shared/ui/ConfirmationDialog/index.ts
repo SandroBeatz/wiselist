@@ -1,1 +1,1 @@
-export { useConfirmationDialog } from './composables/useConfirmationDialog';
+export { useConfirmationDialog } from './composables/useConfirmationDialog'

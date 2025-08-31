@@ -1,1 +1,1 @@
-export {default as ListsPage} from './ui/ListsPage.vue';
+export { default as ListsPage } from './ui/ListsPage.vue'

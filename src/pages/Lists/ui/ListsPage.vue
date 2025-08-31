@@ -1,28 +1,23 @@
 <script setup lang="ts">
-import {
-  onIonViewWillEnter,
-  IonFab,
-  IonFabButton,
-  IonButton
-} from "@ionic/vue";
-import {useListsStore, ListCard, SkeletonListCards} from "@/entities/list";
-import {storeToRefs} from "pinia";
-import {Ellipsis, Plus, TextSearch, Bell} from "lucide-vue-next";
-import {CreateEditListDialogService} from "@/features/List/CreateEdit";
-import {EmptyContent, PageWrapper} from "@shared/ui";
+import { onIonViewWillEnter, IonFab, IonFabButton, IonButton } from '@ionic/vue'
+import { useListsStore, ListCard, SkeletonListCards } from '@/entities/list'
+import { storeToRefs } from 'pinia'
+import { Ellipsis, Plus, TextSearch, Bell } from 'lucide-vue-next'
+import { CreateEditListDialogService } from '@/features/List/CreateEdit'
+import { EmptyContent, PageWrapper } from '@shared/ui'
 
 const listsStore = useListsStore()
-const {isLoading, lists} = storeToRefs(listsStore)
+const { isLoading, lists } = storeToRefs(listsStore)
 
 const handleAddList = async () => {
   const dialog = await CreateEditListDialogService.open({
     callback: async () => {
       await listsStore.fetchData()
-    }
-  });
+    },
+  })
 
-  await dialog.present();
-};
+  await dialog.present()
+}
 
 onIonViewWillEnter(() => void listsStore.fetchData())
 </script>

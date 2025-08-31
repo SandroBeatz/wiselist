@@ -32,6 +32,6 @@ export function useDeleteList(): UseDeleteListReturn {
   return {
     isDeleting,
     error,
-    deleteList
+    deleteList,
   }
 }

@@ -1,1 +1,1 @@
-export {default as ListPreview} from './ui/ListPreview.vue';
+export { default as ListPreview } from './ui/ListPreview.vue'

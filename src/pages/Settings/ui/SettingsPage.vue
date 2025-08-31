@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import {IonList, IonItemGroup, IonItem, IonLabel, IonAvatar, IonBadge} from "@ionic/vue";
-import {storeToRefs} from "pinia";
-import {useUserStore} from "@/entities/user";
-import {useLogout} from "@/features/Auth";
-import {useRouter} from "vue-router";
-import {PageWrapper} from "@shared/ui";
-import {useConfirmationDialog} from "@shared/ui/ConfirmationDialog";
-import {Pencil, SunMoon, LogOut, Bell, Languages} from "lucide-vue-next";
-import {computed} from "vue";
+import { IonList, IonItemGroup, IonItem, IonLabel, IonAvatar, IonBadge } from '@ionic/vue'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/entities/user'
+import { useLogout } from '@/features/Auth'
+import { useRouter } from 'vue-router'
+import { PageWrapper } from '@shared/ui'
+import { useConfirmationDialog } from '@shared/ui/ConfirmationDialog'
+import { Pencil, SunMoon, LogOut, Bell, Languages } from 'lucide-vue-next'
+import { computed } from 'vue'
 
 const router = useRouter()
 
 const { info } = storeToRefs(useUserStore())
 
-const avatarUrl = computed(() => info.value?.profile.avatar ?? 'https://ionicframework.com/docs/img/demos/avatar.svg')
+const avatarUrl = computed(
+  () => info.value?.profile.avatar ?? 'https://ionicframework.com/docs/img/demos/avatar.svg'
+)
 
-const {logout} = useLogout()
+const { logout } = useLogout()
 const { open: openConfirmationDialog } = useConfirmationDialog()
 
 const handleLogout = async () => {
@@ -24,7 +26,7 @@ const handleLogout = async () => {
     message: 'Are you sure you want to logout?',
     confirmText: 'Logout',
     cancelText: 'Cancel',
-    onConfirm: logout
+    onConfirm: logout,
   })
 
   await dialog.present()

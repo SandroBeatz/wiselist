@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { IonButton, IonButtons, IonText } from "@ionic/vue";
-import { X } from "lucide-vue-next";
+import { IonButton, IonButtons, IonText } from '@ionic/vue'
+import { X } from 'lucide-vue-next'
 
 interface Props {
-  title?: string;
-  message?: string;
-  confirmText?: string;
-  cancelText?: string;
-  confirmColor?: string;
-  onConfirm?: () => void | Promise<void>;
+  title?: string
+  message?: string
+  confirmText?: string
+  cancelText?: string
+  confirmColor?: string
+  onConfirm?: () => void | Promise<void>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,23 +16,23 @@ const props = withDefaults(defineProps<Props>(), {
   message: 'Are you sure you want to proceed?',
   confirmText: 'Confirm',
   cancelText: 'Cancel',
-  confirmColor: 'primary'
-});
+  confirmColor: 'primary',
+})
 
 const closeModal = () => {
   import('@ionic/vue').then(({ modalController }) => {
-    modalController.dismiss();
-  });
-};
+    modalController.dismiss()
+  })
+}
 
 const handleConfirm = async () => {
   try {
-    await props.onConfirm?.();
-    closeModal();
+    await props.onConfirm?.()
+    closeModal()
   } catch (error) {
-    console.error('Error in confirmation action:', error);
+    console.error('Error in confirmation action:', error)
   }
-};
+}
 </script>
 
 <template>

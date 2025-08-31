@@ -24,7 +24,7 @@ export function useList(): UseListReturn {
       error.value = null
       currentId = id
 
-      list.value = await apiList.getOne(id) as List
+      list.value = (await apiList.getOne(id)) as List
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch list'
       list.value = null
@@ -45,6 +45,6 @@ export function useList(): UseListReturn {
     isLoading,
     error,
     fetchList,
-    refetch
+    refetch,
   }
 }

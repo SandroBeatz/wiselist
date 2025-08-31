@@ -1,19 +1,19 @@
-import { modalController } from '@ionic/vue';
-import ConfirmationDialog from '../ui/ConfirmationDialog.vue';
+import { modalController } from '@ionic/vue'
+import ConfirmationDialog from '../ui/ConfirmationDialog.vue'
 
 interface OpenDialogOptions {
-  title?: string;
-  message?: string;
-  confirmText?: string;
-  cancelText?: string;
-  confirmColor?: string;
-  onConfirm?: () => void | Promise<void>;
+  title?: string
+  message?: string
+  confirmText?: string
+  cancelText?: string
+  confirmColor?: string
+  onConfirm?: () => void | Promise<void>
 }
 
 interface DialogInstance {
-  present: () => Promise<void>;
-  dismiss: (data?: any, role?: string) => Promise<boolean>;
-  onDidDismiss: () => Promise<{data?: any; role?: string}>;
+  present: () => Promise<void>
+  dismiss: (data?: any, role?: string) => Promise<boolean>
+  onDidDismiss: () => Promise<{ data?: any; role?: string }>
 }
 
 export function useConfirmationDialog() {
@@ -29,16 +29,16 @@ export function useConfirmationDialog() {
         onConfirm: options.onConfirm,
       },
       cssClass: 'height-auto confirmation-dialog',
-    });
+    })
 
     return {
       present: () => modal.present(),
       dismiss: (data?: any, role?: string) => modal.dismiss(data, role),
       onDidDismiss: () => modal.onDidDismiss(),
-    };
-  };
+    }
+  }
 
   return {
     open,
-  };
+  }
 }

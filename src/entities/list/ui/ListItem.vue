@@ -1,63 +1,73 @@
 <script setup lang="ts">
-import {IonCheckbox, IonItem, IonLabel, IonText, IonItemSliding, IonItemOptions, IonItemOption} from "@ionic/vue";
-import type {ListItem as ListItemType} from "../model/types";
-import {Trash} from "lucide-vue-next";
-import {ref} from "vue";
+import {
+  IonCheckbox,
+  IonItem,
+  IonLabel,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+} from '@ionic/vue'
+import type { ListItem as ListItemType } from '../model/types'
+import { Trash } from 'lucide-vue-next'
+import { ref } from 'vue'
 
 interface Props {
-  item: ListItemType;
-  readonly?: boolean;
+  item: ListItemType
+  readonly?: boolean
 }
 
 interface Emits {
-  (e: 'toggle', itemId: string, checked: boolean): void;
-  (e: 'delete', itemId: string): void;
+  (e: 'toggle', itemId: string, checked: boolean): void
+  (e: 'delete', itemId: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  readonly: false
-});
+  readonly: false,
+})
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits<Emits>()
 
-const slidingItemRef = ref<HTMLIonItemSlidingElement>();
-const SWIPE_DELETE_THRESHOLD = 2.2; // 80% swipe triggers delete
+const slidingItemRef = ref<HTMLIonItemSlidingElement>()
+const SWIPE_DELETE_THRESHOLD = 2.2 // 80% swipe triggers delete
 
+// Used in template
 const handleToggle = (event: CustomEvent) => {
   if (!props.readonly) {
-    emit('toggle', props.item.id, event.detail.checked);
+    emit('toggle', props.item.id, event.detail.checked)
   }
-};
+}
 
 const handleDelete = () => {
   if (!props.readonly) {
-    emit('delete', props.item.id);
+    emit('delete', props.item.id)
   }
-};
+}
 
+// Used in template
 const handleDragEnd = async () => {
-  if (!slidingItemRef.value || props.readonly) return;
+  if (!slidingItemRef.value || props.readonly) return
 
   try {
-    const ratio = await slidingItemRef.value.$el.getSlidingRatio();
+    const ratio = await slidingItemRef.value.$el.getSlidingRatio()
 
     if (ratio > SWIPE_DELETE_THRESHOLD) {
-      await slidingItemRef.value.$el.open('end');
-      handleDelete();
+      await slidingItemRef.value.$el.open('end')
+      handleDelete()
     }
   } catch (error) {
-    console.error('Error getting sliding ratio:', error);
+    console.error('Error getting sliding ratio:', error)
   }
-};
+}
 
-const formatDate = (dateString: string) => {
+// Currently unused, but kept for potential future use
+const _formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+    minute: '2-digit',
+  })
+}
 </script>
 
 <template>

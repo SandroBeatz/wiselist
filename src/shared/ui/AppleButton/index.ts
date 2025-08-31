@@ -1,1 +1,1 @@
-export {default as AppleButton} from './ui/AppleButton.vue';
+export { default as AppleButton } from './ui/AppleButton.vue'

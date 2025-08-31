@@ -1,53 +1,56 @@
 <script setup lang="ts">
-import {IonRippleEffect} from "@ionic/vue";
-import {ShoppingBasket, CheckSquare, ListTodo, Calendar} from "lucide-vue-next";
-import type {List} from "../model/types";
+import { ShoppingBasket, CheckSquare, ListTodo, Calendar } from 'lucide-vue-next'
+import type { List } from '../model/types'
 
 interface Props {
-  list: List;
+  list: List
 }
 
-defineProps<Props>();
+defineProps<Props>()
 
+// Used in template
 const getListIcon = (type: string) => {
   switch (type) {
     case 'SHOPPING':
-      return ShoppingBasket;
+      return ShoppingBasket
     case 'TODO':
-      return CheckSquare;
+      return CheckSquare
     default:
-      return ListTodo;
+      return ListTodo
   }
-};
+}
 
+// Used in template
 const getListTypeColor = (type: string) => {
   switch (type) {
     case 'SHOPPING':
-      return 'text-blue-500';
+      return 'text-blue-500'
     case 'TODO':
-      return 'text-green-500';
+      return 'text-green-500'
     default:
-      return 'text-zinc-500';
+      return 'text-zinc-500'
   }
-};
+}
 
+// Used in template
 const getListTypeBg = (type: string) => {
   switch (type) {
     case 'SHOPPING':
-      return 'bg-blue-100';
+      return 'bg-blue-100'
     case 'TODO':
-      return 'bg-green-100';
+      return 'bg-green-100'
     default:
-      return 'bg-zinc-100';
+      return 'bg-zinc-100'
   }
-};
+}
 
+// Used in template
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
-    day: 'numeric'
-  });
-};
+    day: 'numeric',
+  })
+}
 </script>
 
 <template>

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { X, Plus } from "lucide-vue-next"
-import { 
-  IonButton, 
-  IonButtons, 
-  IonContent, 
-  IonInput, 
-  IonItem, 
-  IonList, 
+import { X, Plus } from 'lucide-vue-next'
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  type IonInput,
+  IonItem,
+  IonList,
   IonNote,
   IonSpinner,
-  modalController 
-} from "@ionic/vue"
+  modalController,
+} from '@ionic/vue'
 import { useCreateListItemForm } from '../composables/useCreateListItemForm'
 
 interface Props {
@@ -21,15 +21,8 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const {
-  form,
-  errors,
-  isLoading,
-  isValid,
-  filteredSuggestions,
-  selectSuggestion,
-  submitForm
-} = useCreateListItemForm(props.listId)
+const { form, errors, isLoading, isValid, filteredSuggestions, selectSuggestion, submitForm } =
+  useCreateListItemForm(props.listId)
 
 const inputRef = ref<typeof IonInput>()
 const showSuggestions = ref(false)

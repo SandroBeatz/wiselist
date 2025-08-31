@@ -1,1 +1,1 @@
-export {default as GoogleButton} from './ui/GoogleButton.vue';
+export { default as GoogleButton } from './ui/GoogleButton.vue'

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import {IonButton, IonInput, IonText} from "@ionic/vue";
-import {useRegisterForm} from "../model/useRegisterForm";
-import {Eye, EyeOff} from "lucide-vue-next";
-import {ref} from "vue";
+import { IonButton, IonInput, IonText } from '@ionic/vue'
+import { useRegisterForm } from '../model/useRegisterForm'
+import { Eye, EyeOff } from 'lucide-vue-next'
+import { ref } from 'vue'
 
-const {form, handlerField, handleSubmit, errors, isSubmitting} = useRegisterForm()
+const { form, handlerField, handleSubmit, errors, isSubmitting } = useRegisterForm()
 const showPassword = ref(false)
-
 </script>
 
 <template>

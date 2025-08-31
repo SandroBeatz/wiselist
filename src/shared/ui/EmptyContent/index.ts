@@ -1,1 +1,1 @@
-export {default as EmptyContent} from "./ui/EmptyContent.vue"
+export { default as EmptyContent } from './ui/EmptyContent.vue'

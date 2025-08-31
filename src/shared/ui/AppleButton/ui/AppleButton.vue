@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {IonButton} from "@ionic/vue";
-import {IconApple} from "@shared/ui/Icons";
+import { IonButton } from '@ionic/vue'
+import { IconApple } from '@shared/ui/Icons'
 
 interface Props {
-  square?: boolean;
+  square?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
-  square: false
-});
+  square: false,
+})
 </script>
 
 <template>

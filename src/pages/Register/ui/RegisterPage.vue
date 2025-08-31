@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {PageWrapper} from "@shared/ui/Page";
-import {RegisterForm, useGoogleAuth} from "@/features/Auth";
-import {GoogleButton} from "@shared/ui/GoogleButton";
-import {AppleButton} from "@shared/ui/AppleButton";
+import { PageWrapper } from '@shared/ui/Page'
+import { RegisterForm, useGoogleAuth } from '@/features/Auth'
+import { GoogleButton } from '@shared/ui/GoogleButton'
+import { AppleButton } from '@shared/ui/AppleButton'
 
-const {googleAuth} = useGoogleAuth()
+const { googleAuth } = useGoogleAuth()
 </script>
 
 <template>

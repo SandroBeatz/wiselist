@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import {IonBackButton, IonButtons, IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFooter} from "@ionic/vue";
+import {
+  IonBackButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonFooter,
+} from '@ionic/vue'
 
 defineProps<{
   title?: string
