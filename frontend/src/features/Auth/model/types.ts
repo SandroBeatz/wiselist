@@ -13,4 +13,5 @@ export interface RegisterForm extends BaseFormData{
 
 export type AuthResponse = {
     accessToken: string;
+    refreshToken: string;
 }

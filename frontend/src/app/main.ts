@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router';
 import {createPinia} from "pinia";
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import '@shared/utils/auth-debug.utils' // Development debugging tools
 
 import { IonicVue } from '@ionic/vue';
 
@@ -45,6 +46,11 @@ const app = createApp(App)
   .use(autoAnimatePlugin)
   .use(router);
 
-router.isReady().then(() => {
+router.isReady().then(async () => {
   app.mount('#app');
+
+  // Initialize user session and start token monitoring
+  // const userStore = useUserStore()
+  // await userStore.initUser()
+  // tokenMonitorService.startMonitoring()
 });

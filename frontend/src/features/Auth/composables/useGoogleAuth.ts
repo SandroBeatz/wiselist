@@ -1,5 +1,4 @@
-import {useUserStore} from "@/entities/user";
-import {setAuthorizationToken} from "@shared/instances/axios";
+import {useUserStore} from "../../../entities/user";
 import {apiAuth} from "../api";
 import {useRouter} from "vue-router";
 import {SocialLogin} from "@capgo/capacitor-social-login";
@@ -21,9 +20,8 @@ export function useGoogleAuth() {
                     scopes: ['email', 'profile'],
                 },
             });
-            const {accessToken} = await apiAuth.googleAuth(result);
-            await setAuthorizationToken(accessToken)
-            await useUserStore().initUser()
+            const { accessToken, refreshToken } = await apiAuth.googleAuth(result);
+            await useUserStore().setTokens(accessToken, refreshToken)
             void router.push({name: 'TabLists'})
         } catch (e) {
             console.log(e)

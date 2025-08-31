@@ -5,8 +5,7 @@ import loginRoutes from "@/app/router/routes/login.route";
 import registerRoutes from "@/app/router/routes/register.route";
 import settingsRoutes from "@/app/router/routes/settings.route";
 import listsRoutes from "@/app/router/routes/lists.route";
-import {useLocalStorage} from "@vueuse/core";
-import {storageKeys} from "@shared/constants/storage.constants";
+import { tokenService } from "@shared/services/token.service";
 import settingsProfileRoutes from "@app/router/routes/settings-profile.route";
 import listPreviewRoutes from "@app/router/routes/list-preview.route";
 import addItemRoutes from "@app/router/routes/add-item.route";
@@ -57,17 +56,18 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    const AuthorizationToken = useLocalStorage<string>(storageKeys.ACCESS_TOKEN, null)
-
     const isAuth = to.matched.some((record) => record.meta.middleware?.isAuth)
     const isGuest = to.matched.some((record) => record.meta.middleware?.isGuest)
 
-    if (isAuth && !AuthorizationToken.value) {
+    // Check if user is authenticated (has valid access token or refresh token)
+    const isAuthenticated = tokenService.isAuthenticated()
+
+    if (isAuth && !isAuthenticated) {
         next({
             name: 'Auth',
             query: {redirect: to.fullPath},
         })
-    } else if (!!AuthorizationToken.value && isGuest) {
+    } else if (isAuthenticated && isGuest) {
         next({name: 'TabLists'})
     } else {
         next()

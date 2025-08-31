@@ -30,6 +30,7 @@ export class AuthService {
     this.JWT_REFRESH_TOKEN_TTL =
       this.configService.getOrThrow<string>('JWT_REFRESH_TOKEN_TTL') || '7d';
 
+
     this.googleClient = new OAuth2Client(
       this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
       this.configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
@@ -54,7 +55,7 @@ export class AuthService {
       provider: Provider.EMAIL,
     });
 
-    return this.generateTokenResponse(user);
+    return this.auth(user);
   }
 
   async login(loginDto: LoginDto) {
@@ -76,7 +77,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.generateTokenResponse(user);
+    return this.auth(user);
   }
 
   async googleLogin(googleData: GoogleAuthDto) {
@@ -107,7 +108,7 @@ export class AuthService {
           avatarUrl: payload.picture,
         });
 
-        return this.generateTokenResponse(user);
+        return this.auth(user);
       } else {
         if (
           !existingUser.googleId &&
@@ -125,7 +126,7 @@ export class AuthService {
         //     avatarUrl: payload.picture,
         // });
 
-        return this.generateTokenResponse(existingUser);
+        return this.auth(existingUser);
       }
     } catch (error) {
       console.log(error);
@@ -135,6 +136,35 @@ export class AuthService {
 
   async validateUser(id: string) {
     return await this.userService.findById(id);
+  }
+
+  async refresh(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not provided');
+    }
+
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const user = await this.validateUser(payload.id);
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return this.auth(user);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
+  private auth(user: JwtPayload) {
+    const {accessToken, refreshToken} = this.generateTokenResponse(user);
+
+    // Возвращаем оба токена на фронт
+    return { 
+      accessToken,
+      refreshToken 
+    };
   }
 
   private generateTokenResponse(user: JwtPayload) {
@@ -148,6 +178,8 @@ export class AuthService {
 
     return {
       accessToken,
+      refreshToken
     };
   }
+
 }

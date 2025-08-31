@@ -6,6 +6,7 @@ const LOGIN_ROUTE = 'auth/login'
 const REGISTER_ROUTE = 'auth/register'
 const LOGOUT_ROUTE = 'auth/logout'
 const GOOGLE_AUTH_ROUTE = 'auth/google'
+const REFRESH_ROUTE = 'auth/refresh'
 
 const login = (form: any) =>
     new Promise<AuthResponse>((resolve, reject) => {
@@ -63,10 +64,25 @@ const googleAuth = (payload: GoogleLoginResponse) =>
             )
     })
 
+const refreshToken = (refreshToken: string) =>
+    new Promise<AuthResponse>((resolve, reject) => {
+        API
+            .post(REFRESH_ROUTE, { refreshToken })
+            .then((response) => resolve(response.data))
+            .catch((e) =>
+                reject(
+                    Object.assign(new Error(e.message || 'Token refresh failed'), {
+                        response: e.response,
+                    }),
+                ),
+            )
+    })
+
 export const apiAuth = {
     login,
     register,
     logout,
-    googleAuth
+    googleAuth,
+    refreshToken
 } as const
 

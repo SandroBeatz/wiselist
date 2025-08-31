@@ -18,6 +18,8 @@ import { LoginDto } from './dto/login.dto';
 import { User } from '@prisma/client';
 import { Authorisation } from './decorators/authorisation.decorator';
 import { GoogleAuthDto } from './dto/google-auth.dto';
+import { RefreshDto } from './dto/refresh.dto';
+import type {Response} from "express";
 
 @Controller('api/auth')
 export class AuthController {
@@ -68,10 +70,15 @@ export class AuthController {
     return user;
   }
 
+  @Post('refresh')
+  async refresh(@Body(ValidationPipe) refreshDto: RefreshDto) {
+    return this.authService.refresh(refreshDto.refreshToken);
+  }
+
   @Post('logout')
   @Authorisation()
   async logout() {
-    // В JWT logout происходит на клиенте (удаление токена)
+    // Refresh token управляется на фронте
     return { message: 'Logged out successfully' };
   }
 }

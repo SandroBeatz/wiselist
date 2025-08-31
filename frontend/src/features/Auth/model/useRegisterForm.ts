@@ -1,8 +1,7 @@
 import {apiAuth} from "../api";
 import {useFormHandler} from "@shared/composables/useFormHandler";
-import {RegisterForm} from "@/features/Auth/model/types";
-import {setAuthorizationToken} from "@shared/instances/axios";
-import {useUserStore} from "@/entities/user/model/user.store";
+import {RegisterForm} from "./types";
+import {useUserStore} from "../../../entities/user/model/user.store";
 import {useRouter} from "vue-router";
 
 export const useRegisterForm = () => {
@@ -16,9 +15,8 @@ export const useRegisterForm = () => {
         },
         onSubmit: async (formData) => {
             try {
-                const {accessToken} = await apiAuth.register(formData)
-                await setAuthorizationToken(accessToken)
-                void useUserStore().initUser()
+                const { accessToken, refreshToken } = await apiAuth.register(formData)
+                await useUserStore().setTokens(accessToken, refreshToken)
                 void router.push({name: 'TabLists'})
             } catch (e) {
                 console.log(e)
