@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
     "useDefineForClassFields": true,
+    "module": "ESNext",
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
@@ -16,7 +16,9 @@
       "@/*": ["./src/*"],
       "@app/*": ["./src/app/*"],
       "@pages/*": ["./src/pages/*"],
-      "@shared/*": ["./src/shared/*"]
+      "@shared/*": ["./src/shared/*"],
+      "@features/*": ["./src/features/*"],
+      "@entities/*": ["./src/entities/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

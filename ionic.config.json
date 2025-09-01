@@ -3,9 +3,5 @@
   "integrations": {
     "capacitor": {}
   },
-  "type": "custom",
-  "serve": {
-    "command": "npm run dev",
-    "port": 5173
-  }
+  "type": "vue-vite"
 }
