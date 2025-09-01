@@ -10,13 +10,13 @@ const { square = false } = defineProps<Props>()
 </script>
 
 <template>
-  <ion-button
+  <IonButton
     color="light"
     :class="square ? 'square-button' : ''"
   >
     <IconApple :class="square ? 'size-10' : 'size-8 absolute left-0 top-1/2 -translate-y-1/2'"/>
     <slot v-if="!square"></slot>
-  </ion-button>
+  </IonButton>
 </template>
 
 <style scoped>

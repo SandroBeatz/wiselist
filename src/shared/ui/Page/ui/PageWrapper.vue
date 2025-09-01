@@ -19,9 +19,9 @@ defineProps<{
 </script>
 
 <template>
-  <ion-page ref="pageRef">
+  <IonPage ref="pageRef">
     <!-- Header Section -->
-    <ion-header v-if="isInner" mode="md" class="header-inner-page">
+    <IonHeader v-if="isInner" mode="md" class="header-inner-page">
       <ion-toolbar class="header-inner-page__toolbar">
         <ion-buttons slot="start">
           <ion-back-button :default-href="defaultHref" text=""></ion-back-button>
@@ -36,10 +36,10 @@ defineProps<{
       <ion-toolbar v-if="$slots['header']">
         <slot name="header"></slot>
       </ion-toolbar>
-    </ion-header>
+    </IonHeader>
     <template v-else>
       <div class="ios-top-space"></div>
-      <ion-header class="header-page">
+      <IonHeader class="header-page">
         <ion-toolbar v-if="title || $slots['header-tools']" class="header-page__toolbar">
           <div class="text-3xl font-bold">{{title}}</div>
 
@@ -48,20 +48,20 @@ defineProps<{
           </ion-buttons>
         </ion-toolbar>
         <slot v-if="$slots['header']" name="header"></slot>
-      </ion-header>
+      </IonHeader>
     </template>
 
     <!-- Content Section -->
-    <ion-content :class="{'ion-padding': !noContentPadding}" class="flex" fullscreen>
+    <IonContent :class="{'ion-padding': !noContentPadding}" class="flex" fullscreen>
       <slot></slot>
-    </ion-content>
+    </IonContent>
 
-    <ion-footer v-if="$slots['footer']" class="footer-page" mode="md">
+    <IonFooter v-if="$slots['footer']" class="footer-page" mode="md">
       <ion-toolbar class="footer-page__toolbar">
         <slot name="footer"></slot>
       </ion-toolbar>
-    </ion-footer>
-  </ion-page>
+    </IonFooter>
+  </IonPage>
 </template>
 
 <style scoped>

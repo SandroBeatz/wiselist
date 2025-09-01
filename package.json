@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "ionic:serve": "vite",
+    "ionic:build": "vue-tsc && vite build",
     "build": "vue-tsc && vite build",
     "build:ios": "vue-tsc && vite build && npx cap sync ios && npx cap run ios",
     "preview": "vite preview",

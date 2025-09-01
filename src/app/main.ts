@@ -1,33 +1,8 @@
-// Fix for Android WebView Shadow DOM issue
-if (typeof window !== 'undefined' && window.Array && window.Array.prototype) {
-  const originalPush = Array.prototype.push
-  Array.prototype.push = function(...args) {
-    try {
-      return originalPush.apply(this, args)
-    } catch (e) {
-      if (e.message.includes('not extensible')) {
-        // Fallback for non-extensible arrays
-        for (let i = 0; i < args.length; i++) {
-          this[this.length] = args[i]
-        }
-        return this.length
-      }
-      throw e
-    }
-  }
-}
-
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
-import '@shared/utils/auth-debug.utils' // Development debugging tools
-
-// Disable Shadow DOM for Android
-if (typeof window !== 'undefined') {
-  (window as any).Ionic = { config: { experimentalSlotFixes: true, _shadowDomShim: false } }
-}
 
 import { IonicVue } from '@ionic/vue'
 

@@ -23,7 +23,7 @@ const { googleAuth } = useGoogleAuth()
       <div class="flex flex-col gap-4 w-full">
         <AppleButton>Continue with Apple</AppleButton>
         <GoogleButton @click="googleAuth">Continue with Google</GoogleButton>
-        <ion-button @click="router.push({name: 'Login'})">Continue with Email</ion-button>
+        <IonButton @click="router.push({name: 'Login'})">Continue with Email</IonButton>
       </div>
     </div>
 
