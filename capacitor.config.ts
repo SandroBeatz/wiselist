@@ -10,10 +10,17 @@ const config: CapacitorConfig = {
       serverClientId: "83090600571-3jqpe65clfc9aqgapm33nagjdnsgeisu.apps.googleusercontent.com",
       forceCodeForRefreshToken: false
     },
+    StatusBar: {
+      style: 'Light'
+    }
   },
   server: {
-    androidScheme: 'https'
+    androidScheme: 'http'
   },
+  android: {
+    allowMixedContent: true,
+    webContentsDebuggingEnabled: true
+  }
 };
 
 export default config;

@@ -6,9 +6,20 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
+  esbuild: {
+    supported: {
+      'top-level-await': true //browsers can handle top-level-await features
+    },
+  },
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // treat all tags with a dash as custom elements
+          // isCustomElement: (tag) => tag.includes('-'),
+        },
+      },
+    }),
     legacy()
   ],
   resolve: {
@@ -17,6 +28,9 @@ export default defineConfig({
       '@app': path.resolve(__dirname, './src/app'),
       '@pages': path.resolve(__dirname, './src/pages'),
       '@shared': path.resolve(__dirname, './src/shared'),
+      '@widgets': path.resolve(__dirname, './src/widgets'),
+      '@features': path.resolve(__dirname, './src/features'),
+      '@entities': path.resolve(__dirname, './src/entities'),
     },
   },
   // test: {

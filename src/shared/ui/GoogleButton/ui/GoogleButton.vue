@@ -6,9 +6,7 @@ interface Props {
   square?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
-  square: false,
-})
+const { square = false } = defineProps<Props>()
 </script>
 
 <template>

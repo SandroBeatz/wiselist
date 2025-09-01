@@ -21,17 +21,31 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { form, errors, isLoading, isValid, filteredSuggestions, selectSuggestion, submitForm } =
+const { form, errors, isSubmitting, handleSubmit: originalHandleSubmit, handlerField } =
   useCreateListItemForm(props.listId)
 
 const inputRef = ref<typeof IonInput>()
 const showSuggestions = ref(false)
 
+// Computed properties for compatibility
+const isLoading = isSubmitting
+const filteredSuggestions = ref<string[]>([]) // Placeholder for suggestions
+const isValid = ref(true) // Simple validation - can be improved later
+
 const closeModal = () => {
   modalController.dismiss()
 }
 
-const handleSubmit = async () => {
+const submitForm = async () => {
+  try {
+    await originalHandleSubmit()
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+const handleSubmitClick = async () => {
   const success = await submitForm()
   if (success) {
     if (props.callback) {
@@ -44,7 +58,7 @@ const handleSubmit = async () => {
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && isValid.value && !isLoading.value) {
     event.preventDefault()
-    handleSubmit()
+    handleSubmitClick()
   }
 }
 
@@ -56,6 +70,10 @@ const handleInputBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
   }, 200)
+}
+
+const selectSuggestion = (suggestion: string) => {
+  form.content = suggestion
 }
 
 const handleSuggestionClick = (suggestion: string) => {
@@ -85,7 +103,7 @@ onMounted(() => {
       <div class="relative">
         <ion-item 
           class="mb-4" 
-          :class="{ 'ion-invalid': errors.content }"
+          :class="{ 'ion-invalid': errors?.content }"
         >
           <ion-input
             ref="inputRef"
@@ -102,7 +120,7 @@ onMounted(() => {
         </ion-item>
         
         <ion-note 
-          v-if="errors.content" 
+          v-if="errors?.content" 
           color="danger" 
           class="block px-4 text-sm"
         >
@@ -133,7 +151,7 @@ onMounted(() => {
         <ion-button
           expand="block"
           :disabled="!isValid || isLoading"
-          @click="handleSubmit"
+          @click="handleSubmitClick"
           class="font-medium"
         >
           <ion-spinner v-if="isLoading" name="circular" class="mr-2"/>

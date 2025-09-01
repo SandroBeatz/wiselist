@@ -6,9 +6,7 @@ interface Props {
   square?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
-  square: false,
-})
+const { square = false } = defineProps<Props>()
 </script>
 
 <template>
@@ -28,5 +26,9 @@ withDefaults(defineProps<Props>(), {
   width: 54px;
   height: 54px;
   --border-radius: 12px;
+}
+
+ion-button {
+  position: relative;
 }
 </style>

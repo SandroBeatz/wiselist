@@ -25,12 +25,7 @@ interface Props {
   triggerId?: string
 }
 
-const { triggerId = `action-dropdown-${Math.random().toString(36).substr(2, 9)}` } = withDefaults(
-  defineProps<Props>(),
-  {
-    triggerId: `action-dropdown-${Math.random().toString(36).substr(2, 9)}`,
-  }
-)
+const { actions, triggerId = `action-dropdown-${Math.random().toString(36).substr(2, 9)}` } = defineProps<Props>()
 
 const handleAction = async (item: ActionItem) => {
   if (item.disabled) return

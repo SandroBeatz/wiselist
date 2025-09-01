@@ -11,13 +11,14 @@ interface Props {
   onConfirm?: () => void | Promise<void>
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Confirm Action',
-  message: 'Are you sure you want to proceed?',
-  confirmText: 'Confirm',
-  cancelText: 'Cancel',
-  confirmColor: 'primary',
-})
+const {
+  title = 'Confirm Action',
+  message = 'Are you sure you want to proceed?',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  confirmColor = 'primary',
+  onConfirm
+} = defineProps<Props>()
 
 const closeModal = () => {
   import('@ionic/vue').then(({ modalController }) => {
@@ -27,7 +28,7 @@ const closeModal = () => {
 
 const handleConfirm = async () => {
   try {
-    await props.onConfirm?.()
+    await onConfirm?.()
     closeModal()
   } catch (error) {
     console.error('Error in confirmation action:', error)

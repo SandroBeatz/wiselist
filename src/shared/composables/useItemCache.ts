@@ -29,7 +29,12 @@ class ItemCacheService {
       const stored = localStorage.getItem(CACHE_STORAGE_KEY)
       if (stored) {
         const parsedCache = JSON.parse(stored)
-        this.cache.value = { ...this.cache.value, ...parsedCache }
+        // Ensure arrays are mutable by creating fresh copies
+        this.cache.value = {
+          SHOPPING: Array.isArray(parsedCache.SHOPPING) ? [...parsedCache.SHOPPING] : [],
+          TODO: Array.isArray(parsedCache.TODO) ? [...parsedCache.TODO] : [],
+          OTHER: Array.isArray(parsedCache.OTHER) ? [...parsedCache.OTHER] : [],
+        }
       }
     } catch (error) {
       console.error('Failed to load item cache from storage:', error)

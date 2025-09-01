@@ -70,8 +70,44 @@ http://ionicframework.com/docs/theming/ */
  * Dark Theme
  * -------------------------------------------
  */
-.ios body, .ios body[color-theme="dark"],
-.md body, .md body[color-theme="dark"] {
+.ios body, .ios body[color-theme="light"],
+.md body, .md body[color-theme="light"] {
+    --ion-background-color: #F4F4F4;
+    --ion-background-color-rgb: 244, 244, 244;
+
+    --ion-text-color: #1C1C1C;
+    --ion-text-color-rgb: 28, 28, 28;
+
+    --ion-color-step-50: #f3f3f4;
+    --ion-color-step-100: #e8e8e8;
+    --ion-color-step-150: #dcdcdd;
+    --ion-color-step-200: #d1d0d2;
+    --ion-color-step-250: #c5c4c7;
+    --ion-color-step-300: #b9b9bb;
+    --ion-color-step-350: #aeadb0;
+    --ion-color-step-400: #a2a1a5;
+    --ion-color-step-450: #979599;
+    --ion-color-step-500: #8b8a8e;
+    --ion-color-step-550: #7f7e83;
+    --ion-color-step-600: #747277;
+    --ion-color-step-650: #68666c;
+    --ion-color-step-700: #5d5b61;
+    --ion-color-step-750: #514f56;
+    --ion-color-step-800: #45434a;
+    --ion-color-step-850: #3a373f;
+    --ion-color-step-900: #2e2b34;
+    --ion-color-step-950: #232028;
+
+    --ion-item-background: #ffffff;
+    --ion-item-background-rgb: 255, 255, 255;
+
+    --ion-card-background: #f5f5f5;
+    --ion-toolbar-background: #f5f5f5;
+    --ion-tab-bar-background: #ffffff;
+}
+
+.ios body[color-theme="dark"],
+.md body[color-theme="dark"] {
     --ion-background-color: #0c0815;
     --ion-background-color-rgb: 12, 8, 21;
 
@@ -105,40 +141,4 @@ http://ionicframework.com/docs/theming/ */
     --ion-card-background-rgb: 34, 29, 49;
     --ion-toolbar-background: #0c0815;
     --ion-tab-bar-background: #26172c;
-}
-
-.ios body[color-theme="light"],
-.md body[color-theme="light"] {
-    --ion-background-color: #F4F4F4;
-    --ion-background-color-rgb: 244, 244, 244;
-
-    --ion-text-color: #1C1C1C;
-    --ion-text-color-rgb: 28, 28, 28;
-
-    --ion-color-step-50: #f3f3f4;
-    --ion-color-step-100: #e8e8e8;
-    --ion-color-step-150: #dcdcdd;
-    --ion-color-step-200: #d1d0d2;
-    --ion-color-step-250: #c5c4c7;
-    --ion-color-step-300: #b9b9bb;
-    --ion-color-step-350: #aeadb0;
-    --ion-color-step-400: #a2a1a5;
-    --ion-color-step-450: #979599;
-    --ion-color-step-500: #8b8a8e;
-    --ion-color-step-550: #7f7e83;
-    --ion-color-step-600: #747277;
-    --ion-color-step-650: #68666c;
-    --ion-color-step-700: #5d5b61;
-    --ion-color-step-750: #514f56;
-    --ion-color-step-800: #45434a;
-    --ion-color-step-850: #3a373f;
-    --ion-color-step-900: #2e2b34;
-    --ion-color-step-950: #232028;
-
-    --ion-item-background: #ffffff;
-    --ion-item-background-rgb: 255, 255, 255;
-
-    --ion-card-background: #f5f5f5;
-    --ion-toolbar-background: #f5f5f5;
-    --ion-tab-bar-background: #ffffff;
 }

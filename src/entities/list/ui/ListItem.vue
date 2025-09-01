@@ -21,9 +21,8 @@ interface Emits {
   (e: 'delete', itemId: string): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  readonly: false,
-})
+const props = defineProps<Props>()
+const { item, readonly = false } = props
 
 const emit = defineEmits<Emits>()
 
@@ -48,10 +47,10 @@ const handleDragEnd = async () => {
   if (!slidingItemRef.value || props.readonly) return
 
   try {
-    const ratio = await slidingItemRef.value.$el.getSlidingRatio()
+    const ratio = await slidingItemRef.value.getSlidingRatio()
 
     if (ratio > SWIPE_DELETE_THRESHOLD) {
-      await slidingItemRef.value.$el.open('end')
+      await slidingItemRef.value.open('end')
       handleDelete()
     }
   } catch (error) {

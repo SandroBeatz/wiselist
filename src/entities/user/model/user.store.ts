@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
 import { apiUser } from '../api'
 import { tokenService } from '@shared/services/token.service'
 import type { User } from './types'
@@ -18,14 +17,14 @@ export const useUserStore = defineStore('user', {
 
   getters: {
     // Reactive authentication state based on tokens
-    isAuth: () => computed(() => tokenService.isAuthenticated()),
+    isAuth: () => tokenService.isAuthenticated(),
 
     // Check if user has valid access token
-    hasValidToken: () => computed(() => tokenService.hasValidAccessToken()),
+    hasValidToken: () => tokenService.hasValidAccessToken(),
 
     // Check if access token is expired but refresh token is available
     needsTokenRefresh: () =>
-      computed(() => tokenService.isAccessTokenExpired() && tokenService.hasValidRefreshToken()),
+      tokenService.isAccessTokenExpired() && tokenService.hasValidRefreshToken(),
   },
 
   actions: {
