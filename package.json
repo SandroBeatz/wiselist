@@ -12,7 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@capacitor/android": "7.4.3",
+    "@capacitor/android": "^7.4.3",
     "@capacitor/app": "7.0.2",
     "@capacitor/core": "7.4.3",
     "@capacitor/haptics": "7.0.2",
@@ -32,6 +32,7 @@
     "vue-router": "^4.2.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "7.4.3",
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-vue": "^4.0.0",

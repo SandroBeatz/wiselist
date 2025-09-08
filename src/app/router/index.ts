@@ -1,5 +1,5 @@
-import { createRouter, createWebHashHistory } from '@ionic/vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from '@ionic/vue-router'
+import {RouteRecordRaw} from 'vue-router'
 import authRoutes from '@/app/router/routes/auth.route'
 import loginRoutes from '@/app/router/routes/login.route'
 import registerRoutes from '@/app/router/routes/register.route'
@@ -46,19 +46,19 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 
 router.beforeEach((to, from, next) => {
   console.log('Router navigation:', { to: to.path, from: from.path })
-  
+
   const isAuth = to.matched.some((record) => record.meta.middleware?.isAuth)
   const isGuest = to.matched.some((record) => record.meta.middleware?.isGuest)
 
   // Check if user is authenticated (has valid access token or refresh token)
   const isAuthenticated = tokenService.isAuthenticated()
-  
+
   console.log('Auth status:', { isAuth, isGuest, isAuthenticated })
 
   if (isAuth && !isAuthenticated) {
