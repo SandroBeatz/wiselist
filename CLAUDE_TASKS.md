@@ -42,3 +42,16 @@ feat: add profile editing form with avatar colors and validation
 - Два новых компонента: ChangeEmailDialog и ChangePasswordDialog
 
 refactor: split profile editing into 3 separate forms with modal dialogs
+
+## Task 2 (Create list component)
+
+Context: 
+- There is a good styled list in the settings page
+
+Description:
+- I need global component for this list
+- Prepare types for props
+- Action use in the props
+- Add props list - create the structure the same
+- In the item add props detail, end, icon, label, caption 
+- Follow FSD structure

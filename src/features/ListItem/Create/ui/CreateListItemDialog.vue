@@ -24,7 +24,7 @@ const props = defineProps<Props>()
 const { form, errors, isSubmitting, handleSubmit: originalHandleSubmit, handlerField } =
   useCreateListItemForm(props.listId)
 
-const inputRef = ref<typeof IonInput>()
+const inputRef = ref<InstanceType<typeof IonInput>>()
 const showSuggestions = ref(false)
 
 // Computed properties for compatibility
@@ -79,12 +79,14 @@ const selectSuggestion = (suggestion: string) => {
 const handleSuggestionClick = (suggestion: string) => {
   selectSuggestion(suggestion)
   showSuggestions.value = false
-  inputRef.value?.$el.querySelector('input')?.focus()
+  const input = (inputRef.value as any)?.$el?.querySelector('input')
+  input?.focus()
 }
 
 onMounted(() => {
   setTimeout(() => {
-    inputRef.value?.$el.querySelector('input')?.focus()
+    const input = (inputRef.value as any)?.$el?.querySelector('input')
+    input?.focus()
   }, 300)
 })
 </script>

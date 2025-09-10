@@ -72,7 +72,7 @@ const itemSuggestions = computed(() => {
   return suggestions
 })
 
-const inputRef = ref<typeof IonInput>()
+const inputRef = ref<InstanceType<typeof IonInput>>()
 
 const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
@@ -85,7 +85,8 @@ const handleKeyPress = (event: KeyboardEvent) => {
       await fetchList(listId)
       resetForm()
       setTimeout(() => {
-        inputRef.value?.$el.querySelector('input')?.focus()
+        const input = (inputRef.value as any)?.$el?.querySelector('input')
+        input?.focus()
       }, 300)
     })
   }
@@ -129,7 +130,8 @@ const handleRemoveFromCache = (content: string) => {
 
 onMounted(() => {
   setTimeout(() => {
-    inputRef.value?.$el.querySelector('input')?.focus()
+    const input = (inputRef.value as any)?.$el?.querySelector('input')
+    input?.focus()
   }, 300)
 })
 </script>
