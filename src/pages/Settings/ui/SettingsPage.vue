@@ -35,20 +35,21 @@ const handleLogout = async () => {
 
 <template>
   <PageWrapper title="Settings">
-    <template #header-tools>
-      <div v-if="info" slot="end">
-        <RouterLink :to="{name: 'SettingsProfile'}">
-          <ion-avatar>
-            <img :alt="info.profile.fullName" :src="avatarUrl" />
-            <ion-badge>
-              <Pencil class="size-2" />
-            </ion-badge>
-          </ion-avatar>
-        </RouterLink>
-      </div>
-    </template>
-
     <ion-list lines="full">
+      <ion-item-divider>
+        <ion-label> <span class="text-slate-500">Profile</span> </ion-label>
+      </ion-item-divider>
+      <ion-item-group>
+        <ion-item v-if="info" button @click="router.push({name: 'SettingsProfile'})" class="profile">
+          <ion-avatar slot="start">
+            <img :alt="info.profile.fullName" :src="avatarUrl" />
+          </ion-avatar>
+          <div>
+            <ion-label>{{info.profile.fullName}}</ion-label>
+            <ion-label><span class="text-xs text-zinc-500">{{info.email}}</span></ion-label>
+          </div>
+        </ion-item>
+      </ion-item-group>
       <ion-item-divider>
         <ion-label> <span class="text-slate-500">General</span> </ion-label>
       </ion-item-divider>
@@ -64,6 +65,7 @@ const handleLogout = async () => {
         <ion-item button>
           <Languages class="size-5 text-slate-500" slot="start" />
           <ion-label>Language</ion-label>
+          <ion-label slot="end"><span class="text-xs text-zinc-500">EN</span></ion-label>
         </ion-item>
       </ion-item-group>
 
@@ -94,6 +96,15 @@ ion-item-group {
 }
 ion-item {
   --min-height: 52px;
+}
+
+ion-item.profile {
+  --min-height: 64px;
+}
+
+ion-item.profile ion-avatar {
+  width: 44px;
+  height: 44px;
 }
 
 ion-badge {

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { apiUser } from '../api'
+import { apiUser, type UpdateProfilePayload, type ChangePasswordPayload } from '../api'
 import { tokenService } from '@shared/services/token.service'
 import type { User } from './types'
 import type { Nullable } from '@shared/types/global'
@@ -73,6 +73,28 @@ export const useUserStore = defineStore('user', {
     async logout() {
       this.info = null
       tokenService.clearTokens()
+    },
+
+    /**
+     * Update user profile
+     * @param payload Profile update data
+     */
+    async updateProfile(payload: UpdateProfilePayload): Promise<void> {
+      try {
+        this.toggleLoader(true)
+        const updatedUser = await apiUser.updateProfile(payload)
+        this.info = updatedUser
+      } finally {
+        this.toggleLoader(false)
+      }
+    },
+
+    /**
+     * Change user password
+     * @param payload Password change data
+     */
+    async changePassword(payload: ChangePasswordPayload): Promise<void> {
+      await apiUser.changePassword(payload)
     },
 
     /**

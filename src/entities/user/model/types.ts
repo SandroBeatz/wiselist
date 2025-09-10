@@ -5,6 +5,7 @@ export type UserId = string
 export type UserProfile = {
   fullName: string
   avatar: Nullable<string>
+  avatar_icon?: string
 }
 
 export interface User {
