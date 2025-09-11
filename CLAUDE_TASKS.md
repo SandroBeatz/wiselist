@@ -106,112 +106,136 @@ feat: complete RxJS analysis and create implementation roadmap
 - Create RxJS services structure in `@shared/services/`
 - Set up base reactive service classes
 - Configure RxJS operators imports
+- **Backend Integration**: API already supports real-time via WebSocket
 
 #### Subtask 4.2: Create Reactive Store Pattern
 - Create `@shared/services/reactive-store.service.ts` base class
 - Implement BehaviorSubject-based state management
 - Add methods for state updates, subscriptions, and cleanup
 - Create TypeScript interfaces for reactive state
+- **Backend Integration**: Leverage existing event sourcing system
 
-#### Subtask 4.3: Migrate Lists Store to RxJS
+#### Subtask 4.3: WebSocket Service Integration
+- Create `@shared/services/websocket.service.ts` using Socket.io client
+- Implement authentication with JWT tokens
+- Add connection management with auto-reconnection
+- Handle existing WebSocket events: `joinList`, `leaveList`, `heartbeat`, `getActiveUsers`
+- **Backend Integration**: Use existing Socket.io server at `/lists` namespace
+
+#### Subtask 4.4: Migrate Lists Store to RxJS
 - Convert `useListsStore` to reactive pattern
 - Implement BehaviorSubject for lists array
-- Add real-time list updates capability
+- Add real-time list updates using `listEvent` WebSocket events
 - Maintain backward compatibility with existing components
+- **Backend Integration**: Use existing `/api/lists` endpoints
 
 ### Phase 2: Offline-First Architecture (Week 2)
 
-#### Subtask 4.4: Implement Local Storage Cache
+#### Subtask 4.5: Implement Local Storage Cache
 - Create `@shared/services/cache.service.ts`
 - Implement indexed storage for lists and items
-- Add cache synchronization logic
+- Add cache synchronization logic using RxJS operators
 - Handle cache invalidation strategies
+- **Backend Integration**: Leverage existing Redis caching patterns
 
-#### Subtask 4.5: Create Queue System for Offline Operations
+#### Subtask 4.6: Differential Sync Implementation
 - Enhance existing `request-queue.service.ts` with RxJS
-- Implement operation queuing (create, update, delete)
+- Implement operation queuing using existing event types
 - Add retry mechanisms with exponential backoff
-- Handle conflict resolution for simultaneous edits
+- **Backend Integration**: Use `/api/lists/:id/sync` endpoint with version control
 
-#### Subtask 4.6: Optimistic Updates Implementation
-- Create optimistic update patterns
+#### Subtask 4.7: Optimistic Updates Implementation
+- Create optimistic update patterns with BehaviorSubject
 - Implement rollback mechanisms for failed operations
 - Add loading states for background synchronization
 - Update UI to reflect optimistic changes
+- **Backend Integration**: Use existing event sourcing for conflict resolution
 
 ### Phase 3: Real-time Collaboration (Week 3)
 
-#### Subtask 4.7: WebSocket Integration
-- Create `@shared/services/websocket.service.ts`
-- Implement WebSocket connection management
-- Add automatic reconnection logic
+#### Subtask 4.8: Real-time List Updates Integration
+- Implement live list synchronization using `listEvent` WebSocket events
+- Handle all existing event types: `LIST_CREATED`, `LIST_UPDATED`, `LIST_DELETED`
+- Create merge strategies for list changes with version control
+- **Backend Integration**: Use existing event sourcing system with version tracking
+
+#### Subtask 4.9: Real-time Item Management
+- Handle item WebSocket events: `ITEM_CREATED`, `ITEM_UPDATED`, `ITEM_DELETED`, `ITEM_CHECKED`, `ITEM_REORDERED`
+- Implement conflict resolution using server-side version control
+- Add user activity indicators using `userJoined`/`userLeft` events
+- **Backend Integration**: Use existing event broadcasting system
+
+#### Subtask 4.10: User Presence System
+- Implement user presence tracking using `activeUsers` events
+- Add periodic heartbeat with `listId` parameter
+- Show active users with real-time updates
 - Handle connection state changes
-
-#### Subtask 4.8: Real-time List Updates
-- Implement live list synchronization
-- Add conflict resolution for concurrent edits
-- Create merge strategies for list changes
-- Handle user presence indicators
-
-#### Subtask 4.9: Live Item Management
-- Real-time item creation/editing/deletion
-- Implement operational transformation for text edits
-- Add user activity indicators
-- Handle simultaneous item modifications
+- **Backend Integration**: Use existing presence tracking with 30-second TTL
 
 ### Phase 4: Performance Optimization (Week 4)
 
-#### Subtask 4.10: Implement Smart Caching
-- Add intelligent data prefetching
+#### Subtask 4.11: Smart Caching Integration
+- Add intelligent data prefetching using RxJS operators
 - Implement memory management for large datasets
-- Create data pruning strategies
-- Add cache warming for frequently accessed data
+- Create data pruning strategies for mobile optimization
+- **Backend Integration**: Align with existing Redis TTL policies (lists: 5min, items: 3min)
 
-#### Subtask 4.11: Background Sync Optimization
-- Implement differential sync (only changed data)
-- Add bandwidth-aware synchronization
-- Create sync priority system
-- Optimize for mobile network conditions
+#### Subtask 4.12: Advanced Sync Optimization
+- Implement bandwidth-aware synchronization using connection observers
+- Create sync priority system for mobile networks
+- Add batch operations for multiple changes
+- **Backend Integration**: Use existing `/api/lists/:id/events` for event history
 
-#### Subtask 4.12: Testing and Performance Monitoring
-- Add RxJS-specific unit tests
-- Implement performance monitoring
+#### Subtask 4.13: Monitoring and Testing
+- Add RxJS-specific unit tests for reactive stores
+- Implement client-side performance monitoring
 - Create stress tests for offline scenarios
 - Add real-time collaboration tests
+- **Backend Integration**: Use existing `/api/monitoring/metrics` endpoint
 
-### Implementation Priority:
-1. **High**: Subtasks 4.1-4.3 (Foundation)
-2. **High**: Subtasks 4.4-4.6 (Offline capabilities)
-3. **Medium**: Subtasks 4.7-4.9 (Real-time features)
-4. **Low**: Subtasks 4.10-4.12 (Optimization)
+### Implementation Priority (Updated):
+1. **High**: Subtasks 4.1-4.4 (Foundation + WebSocket)
+2. **High**: Subtasks 4.5-4.7 (Offline capabilities)
+3. **Medium**: Subtasks 4.8-4.10 (Real-time features)
+4. **Low**: Subtasks 4.11-4.13 (Optimization)
 
-## Backend Requirements for Future Implementation
+### Required Dependencies:
+- `npm install rxjs socket.io-client`
+- Socket.io client for WebSocket connection
+- RxJS operators for reactive programming
 
-### Real-time Infrastructure:
-1. **WebSocket Server**: Socket.io or native WebSocket implementation
-2. **Message Broker**: Redis for pub/sub messaging
-3. **Real-time Database**: PostgreSQL with LISTEN/NOTIFY or MongoDB Change Streams
-4. **Event Sourcing**: Store all list operations as events for replay
+## Backend Status - **ALREADY IMPLEMENTED** ✅
 
-### API Enhancements:
-1. **Differential Sync Endpoints**: 
-   - `GET /api/lists/{id}/changes?since={timestamp}`
-   - `POST /api/lists/{id}/bulk-update`
-2. **Conflict Resolution**: 
-   - Last-writer-wins with timestamps
-   - Operational transformation for complex conflicts
-3. **User Presence**: 
-   - `POST /api/lists/{id}/presence`
-   - WebSocket events for user join/leave
+The backend already provides all necessary infrastructure for RxJS implementation:
 
-### Performance Optimizations:
-1. **Caching Layer**: Redis for frequently accessed data
-2. **CDN Integration**: For static assets and cached responses
-3. **Database Optimization**: Indexing for timestamp-based queries
-4. **Rate Limiting**: Protect against excessive real-time updates
+### ✅ Real-time Infrastructure:
+- **WebSocket Server**: Socket.io server at `/lists` namespace
+- **Event Sourcing**: Complete event system with 7 event types
+- **Version Control**: Built-in versioning for conflict resolution
+- **User Presence**: Active user tracking with 30-second TTL
 
-### Security Considerations:
-1. **WebSocket Authentication**: JWT token validation
-2. **Permission Checks**: Real-time operation authorization
-3. **Rate Limiting**: Prevent spam in collaborative editing
-4. **Data Validation**: Server-side validation for all operations
+### ✅ API Endpoints Available:
+- **Differential Sync**: `POST /api/lists/:id/sync` with version control
+- **Event History**: `GET /api/lists/:id/events` for replay capability
+- **Monitoring**: `/api/monitoring/health` and `/api/monitoring/metrics`
+- **Cache Stats**: `GET /api/cache/stats` for performance monitoring
+
+### ✅ WebSocket Events Available:
+- **Connection**: Authentication, rate limiting, auto-reconnection
+- **List Management**: `joinList`, `leaveList`, `listEvent` broadcasts
+- **Presence**: `userJoined`, `userLeft`, `activeUsers`, `heartbeat`
+- **Error Handling**: Comprehensive error events and validation
+
+### ✅ Security & Performance:
+- **JWT Authentication**: Token validation on all connections
+- **Rate Limiting**: Per-user limits (10-120 req/min depending on event)
+- **Redis Caching**: Multi-layer caching with intelligent TTL
+- **Conflict Resolution**: Server-side version control and event sourcing
+
+### ✅ Production Ready:
+- **Monitoring**: Health checks, metrics, logging
+- **Scaling**: Designed for horizontal scaling
+- **Docker Support**: Production deployment ready
+- **Error Handling**: Comprehensive error responses and logging
+
+**Result**: Frontend RxJS implementation can immediately connect to existing backend infrastructure with no backend changes required.
