@@ -10,5 +10,6 @@ export type {
 } from './model/types'
 export { mockLists } from './model/mocks'
 export { useListsStore } from './model/lists.store'
+export { reactiveListsStore } from './model/lists-reactive.store'
 export { useList } from './composables/useList'
 export * from './ui'

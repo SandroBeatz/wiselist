@@ -29,9 +29,9 @@ defineProps<{
 
         <ion-title class="ion-text-base ion-no-padding">{{title}}</ion-title>
 
-        <ion-buttons slot="end" class="header-inner-page__tools">
+        <div slot="end" class="header-inner-page__tools">
           <slot name="header-tools"></slot>
-        </ion-buttons>
+        </div>
       </ion-toolbar>
       <ion-toolbar v-if="$slots['header']">
         <slot name="header"></slot>
@@ -43,9 +43,9 @@ defineProps<{
         <ion-toolbar v-if="title || $slots['header-tools']" class="header-page__toolbar">
           <div class="text-3xl font-bold">{{title}}</div>
 
-          <ion-buttons slot="end" class="header-page__tools">
+          <div slot="end" class="header-page__tools">
             <slot name="header-tools"></slot>
-          </ion-buttons>
+          </div>
         </ion-toolbar>
         <slot v-if="$slots['header']" name="header"></slot>
       </IonHeader>
