@@ -136,7 +136,7 @@ class ItemCacheService {
   }
 
   clearType(type: ListType) {
-    ;(this.cache.value as ItemCache)[type] = []
+    (this.cache.value as ItemCache)[type] = []
     this.saveToStorage()
   }
 

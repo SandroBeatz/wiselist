@@ -20,4 +20,7 @@ export { AuthWebSocketService, authWebSocketService } from './auth-websocket.ser
 export { REACTIVE_CONFIG } from './config'
 export type { ReactiveConfig } from './config'
 
+export { CacheService, cacheService } from './cache.service'
+
 export * from './operators'
+export * from './cache-operators'
