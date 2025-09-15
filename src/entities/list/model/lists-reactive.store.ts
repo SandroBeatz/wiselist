@@ -16,12 +16,12 @@ interface ListsState {
  * Provides real-time synchronization with WebSocket events and offline-first approach
  */
 export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
-  
+
   constructor() {
     super({
       enableLogging: true
     })
-    
+
     this.initializeWebSocketSubscriptions()
     this.initializeRealTimeSyncIntegration()
     this.initializeAutoFetch()
@@ -61,6 +61,27 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     )
   }
 
+  /**
+   * Initialize the store after authentication is confirmed
+   * This should be called when user login is successful
+   */
+  async initializeAfterAuth(): Promise<void> {
+    this.log('Initializing store after authentication')
+    
+    if (!tokenService.isAuthenticated()) {
+      this.log('Cannot initialize: user not authenticated')
+      return
+    }
+
+    // Initialize WebSocket connection
+    if (!webSocketService.isConnected) {
+      webSocketService.connect()
+    }
+
+    // Fetch initial data
+    await this.fetchData()
+  }
+
   // Methods for backward compatibility with Pinia store
   get isLoading(): boolean {
     return this.currentData.loading
@@ -73,7 +94,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   toggleLoader(value?: boolean): void {
     const currentState = this.currentData
     const loading = typeof value === 'boolean' ? value : !currentState.loading
-    
+
     this.updateState({
       ...currentState,
       loading
@@ -100,13 +121,18 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   }
 
   async fetchData(): Promise<void> {
+    this.log('Fetching lists data', { 
+      isAuthenticated: tokenService.isAuthenticated(),
+      hasAccessToken: !!tokenService.accessToken 
+    })
+    
     this.toggleLoader(true)
     this.clearError()
 
     try {
       // Use cache-first strategy with RxJS operators
       const lists$ = of(null).pipe(
-        listCacheOperators.cacheFirstUserLists(() => 
+        listCacheOperators.cacheFirstUserLists(() =>
           new Observable<List[]>(subscriber => {
             apiList.getAll()
               .then(lists => {
@@ -121,9 +147,9 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
       const lists = await lists$.toPromise()
       if (lists) {
         this.buildData(lists)
-        this.log('Lists fetched successfully', { 
-          count: lists.length, 
-          source: cacheService.getListSync(lists[0]?.id) ? 'cache' : 'api' 
+        this.log('Lists fetched successfully', {
+          count: lists.length,
+          source: cacheService.getListSync(lists[0]?.id) ? 'cache' : 'api'
         })
       }
     } catch (error) {
@@ -148,10 +174,9 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
 
   // Reactive methods for real-time updates
   private initializeWebSocketSubscriptions(): void {
-    if (!tokenService.isAuthenticated()) {
-      this.log('User not authenticated, skipping WebSocket initialization')
-      return
-    }
+    // Set up WebSocket subscriptions regardless of current auth state
+    // The WebSocket service itself will handle authentication
+    this.log('Initializing WebSocket subscriptions')
 
     // Subscribe to WebSocket connection state
     webSocketService.connectionState$
@@ -159,12 +184,12 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
       .subscribe(connectionState => {
         const currentState = this.currentData
         const connected = connectionState === 'connected'
-        
+
         this.updateState({
           ...currentState,
           connected
         })
-        
+
         this.log('WebSocket connection state changed', { connectionState })
       })
 
@@ -178,22 +203,73 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
         this.handleListEvent(event)
       })
 
-    // Initialize WebSocket connection through auth service
-    if (tokenService.isAuthenticated()) {
-      webSocketService.connect()
+    // Initialize WebSocket connection when authentication is available
+    const initializeConnection = () => {
+      if (tokenService.isAuthenticated()) {
+        this.log('Initializing WebSocket connection')
+        webSocketService.connect()
+      } else {
+        // Wait for authentication with the same pattern as data fetching
+        let attempts = 0
+        const connectionCheckInterval = setInterval(() => {
+          attempts++
+          if (tokenService.isAuthenticated()) {
+            this.log('Authentication detected, connecting WebSocket')
+            webSocketService.connect()
+            clearInterval(connectionCheckInterval)
+          } else if (attempts >= 10) {
+            this.log('No authentication for WebSocket after 5 seconds')
+            clearInterval(connectionCheckInterval)
+          }
+        }, 500)
+      }
     }
+    
+    setTimeout(initializeConnection, 100)
   }
 
   private initializeAutoFetch(): void {
-    // Auto-fetch when component initializes if user is authenticated
+    // Check if user is already authenticated
     if (tokenService.isAuthenticated()) {
+      this.log('User already authenticated, fetching data immediately')
       this.fetchData()
+      return
     }
+
+    // If not authenticated yet, wait for authentication state to change
+    // This handles the case where tokens are still being loaded from localStorage
+    this.log('User not authenticated yet, waiting for authentication state')
+    
+    // Set up a one-time listener for authentication
+    const checkAuthPeriodically = () => {
+      if (tokenService.isAuthenticated()) {
+        this.log('User authentication detected, fetching data')
+        this.fetchData()
+        return
+      }
+      
+      // Check again after a short delay (max 10 times = 5 seconds)
+      let attempts = 0
+      const authCheckInterval = setInterval(() => {
+        attempts++
+        if (tokenService.isAuthenticated()) {
+          this.log('User authentication detected after waiting, fetching data')
+          this.fetchData()
+          clearInterval(authCheckInterval)
+        } else if (attempts >= 10) {
+          this.log('No authentication detected after 5 seconds, stopping checks')
+          clearInterval(authCheckInterval)
+        }
+      }, 500)
+    }
+    
+    // Wait a brief moment for localStorage to be read, then start checking
+    setTimeout(checkAuthPeriodically, 100)
   }
 
   private performFetch(): Observable<List[]> {
     this.toggleLoader(true)
-    
+
     return new Observable<List[]>(observer => {
       apiList.getAll()
         .then(lists => {
@@ -217,17 +293,17 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   }
 
   private isListEvent(event: any): boolean {
-    return event && 
-           typeof event.type === 'string' && 
+    return event &&
+           typeof event.type === 'string' &&
            ['LIST_CREATED', 'LIST_UPDATED', 'LIST_DELETED'].includes(event.type)
   }
 
   private handleListEvent(event: any): void {
     this.log('Handling list event (legacy handler)', { type: event.type, listId: event.listId })
-    
+
     // The real-time sync service now handles the advanced event processing
     // This method is kept for backward compatibility and simple event handling
-    
+
     const currentState = this.currentData
     let updatedLists = [...currentState.lists]
 
@@ -280,7 +356,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   addListOptimistic(list: List): void {
     const currentState = this.currentData
     const updatedLists = [...currentState.lists, list]
-    
+
     this.updateState({
       ...currentState,
       lists: updatedLists
@@ -289,11 +365,11 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     // Cache the optimistic list
     const version = new Date(list.updatedAt).getTime()
     cacheService.setList(list.id, list, version)
-    
+
     // Update user lists cache
     const listIds = updatedLists.map(l => l.id)
     cacheService.setUserLists(listIds, version)
-    
+
     this.log('List added optimistically', { listId: list.id })
   }
 
@@ -303,7 +379,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     const updatedLists = currentState.lists.map(list =>
       list.id === listId ? { ...list, ...updatedFields } : list
     )
-    
+
     this.updateState({
       ...currentState,
       lists: updatedLists
@@ -315,7 +391,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
       const version = new Date(updatedList.updatedAt).getTime()
       cacheService.setList(listId, updatedList, version)
     }
-    
+
     this.log('List updated optimistically', { listId })
   }
 
@@ -323,7 +399,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   removeListOptimistic(listId: ListId): void {
     const currentState = this.currentData
     const updatedLists = currentState.lists.filter(list => list.id !== listId)
-    
+
     this.updateState({
       ...currentState,
       lists: updatedLists
@@ -331,11 +407,11 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
 
     // Remove from cache
     cacheService.invalidateList(listId)
-    
+
     // Update user lists cache
     const listIds = updatedLists.map(l => l.id)
     cacheService.setUserLists(listIds)
-    
+
     this.log('List removed optimistically', { listId })
   }
 
@@ -370,7 +446,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
    */
   private handleRealTimeSyncEvent(event: any): void {
     this.log('Handling real-time sync event', { type: event.type, listId: event.listId, version: event.version })
-    
+
     const currentState = this.currentData
     let updatedLists = [...currentState.lists]
 
@@ -400,7 +476,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
             },
             ...event.data
           }
-          
+
           updatedLists.push(newList)
           this.log('List created via real-time sync', { listId: newList.id })
         }
@@ -410,8 +486,8 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
         if (event.data && event.listId) {
           const index = updatedLists.findIndex(list => list.id === event.listId)
           if (index !== -1) {
-            const updatedList = { 
-              ...updatedLists[index], 
+            const updatedList = {
+              ...updatedLists[index],
               ...event.data,
               updatedAt: event.timestamp || new Date().toISOString()
             }
@@ -445,8 +521,8 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     // Update cache with new lists array and version
     const listIds = updatedLists.map(list => list.id)
     cacheService.setUserLists(listIds, event.version)
-    
-    this.log('State updated from real-time sync event', { 
+
+    this.log('State updated from real-time sync event', {
       eventType: event.type,
       listId: event.listId,
       version: event.version,
@@ -461,13 +537,13 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     // Update connection status based on sync state
     const currentState = this.currentData
     const hasConnectedUsers = syncState.connectedUsers.length > 0
-    
+
     if (currentState.connected !== hasConnectedUsers) {
       this.updateState({
         ...currentState,
         connected: hasConnectedUsers
       })
-      
+
       this.log('Connection state updated from sync service', { connected: hasConnectedUsers })
     }
 
@@ -504,7 +580,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   async updateListWithOptimisticUpdate(listId: ListId, updates: Partial<List>): Promise<void> {
     // Store original list for rollback
     const originalList = this.lists.find(list => list.id === listId)
-    
+
     return optimisticUpdatesService.updateListOptimistic(
       listId,
       updates,
@@ -528,7 +604,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     // Store original list for rollback
     const originalList = this.lists.find(list => list.id === listId)
     const originalLists = [...this.lists]
-    
+
     return optimisticUpdatesService.deleteListOptimistic(
       listId,
       () => {
@@ -543,7 +619,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
             ...currentState,
             lists: originalLists
           })
-          
+
           // Restore to cache
           const version = new Date(originalData.updatedAt).getTime()
           cacheService.setList(listId, originalData, version)

@@ -32,6 +32,10 @@ export const useListsStore = defineStore('lists', () => {
   const fetchData = async () => {
     await reactiveStore.fetchData()
   }
+
+  const initializeAfterAuth = async () => {
+    await reactiveStore.initializeAfterAuth()
+  }
   
   // Additional reactive store methods for enhanced functionality
   const refresh = async () => {
@@ -69,6 +73,7 @@ export const useListsStore = defineStore('lists', () => {
     toggleLoader,
     buildData,
     fetchData,
+    initializeAfterAuth,
     
     // Enhanced actions (new reactive features)
     refresh,

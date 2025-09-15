@@ -6,7 +6,10 @@ const LIST_ROUTE = 'lists'
 const getAll = () =>
   new Promise<List[]>((resolve, reject) => {
     API.get(LIST_ROUTE)
-      .then((response) => resolve(response.data))
+      .then((response) => {
+          console.log(response)
+          return resolve(response.data)
+      })
       .catch((e) =>
         reject(
           Object.assign(new Error(e.message || 'Request error'), {
