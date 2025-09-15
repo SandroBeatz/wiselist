@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { syncQueueService } from './reactive/sync-queue.service'
 
 /**
  * Interface for queued request
@@ -11,6 +12,7 @@ interface QueuedRequest {
 
 /**
  * Request queue service for handling requests during token refresh
+ * Enhanced with reactive sync queue integration
  */
 class RequestQueueService {
   private queue: QueuedRequest[] = []
@@ -88,6 +90,32 @@ class RequestQueueService {
   clearQueue(): void {
     this.queue = []
     this.isRefreshing = false
+  }
+
+  /**
+   * Get sync queue status
+   */
+  getSyncQueueStatus() {
+    return {
+      queueSize: syncQueueService.queueSize,
+      operations$: syncQueueService.operations$,
+      isProcessing$: syncQueueService.isProcessing$,
+      connectionStatus$: syncQueueService.connectionStatus$
+    }
+  }
+
+  /**
+   * Retry all failed sync operations
+   */
+  retrySyncOperations(): void {
+    syncQueueService.retryFailedOperations()
+  }
+
+  /**
+   * Clear sync queue
+   */
+  clearSyncQueue(): void {
+    syncQueueService.clearQueue()
   }
 }
 

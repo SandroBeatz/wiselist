@@ -256,7 +256,6 @@ export function smartCache<T>(
   }
 ) {
   const {
-    listId,
     cacheGetter,
     apiFetcher,
     cacheSetter,

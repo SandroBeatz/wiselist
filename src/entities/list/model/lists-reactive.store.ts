@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs'
 import { map, filter, distinctUntilChanged, catchError, takeUntil } from 'rxjs/operators'
-import { ReactiveStoreService, webSocketService, cacheService, listCacheOperators } from '@shared/services/reactive'
+import { ReactiveStoreService, webSocketService, cacheService, listCacheOperators, optimisticUpdatesService, realTimeListSyncService } from '@shared/services/reactive'
 import type { List, ListId } from './types'
 import { apiList } from '../api'
 import { tokenService } from '@shared/services/token.service'
@@ -23,6 +23,7 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     })
     
     this.initializeWebSocketSubscriptions()
+    this.initializeRealTimeSyncIntegration()
     this.initializeAutoFetch()
   }
 
@@ -222,7 +223,10 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
   }
 
   private handleListEvent(event: any): void {
-    this.log('Handling list event', { type: event.type, listId: event.listId })
+    this.log('Handling list event (legacy handler)', { type: event.type, listId: event.listId })
+    
+    // The real-time sync service now handles the advanced event processing
+    // This method is kept for backward compatibility and simple event handling
     
     const currentState = this.currentData
     let updatedLists = [...currentState.lists]
@@ -335,9 +339,318 @@ export class ReactiveListsStore extends ReactiveStoreService<ListsState> {
     this.log('List removed optimistically', { listId })
   }
 
+  /**
+   * Initialize real-time sync integration
+   */
+  private initializeRealTimeSyncIntegration(): void {
+    if (!tokenService.isAuthenticated()) {
+      this.log('User not authenticated, skipping real-time sync initialization')
+      return
+    }
+
+    // Subscribe to processed list events from real-time sync service
+    realTimeListSyncService.listEvents$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(event => {
+        this.handleRealTimeSyncEvent(event)
+      })
+
+    // Subscribe to sync state changes
+    realTimeListSyncService.syncState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(syncState => {
+        this.handleSyncStateChange(syncState)
+      })
+
+    this.log('Real-time sync integration initialized')
+  }
+
+  /**
+   * Handle processed events from real-time sync service
+   */
+  private handleRealTimeSyncEvent(event: any): void {
+    this.log('Handling real-time sync event', { type: event.type, listId: event.listId, version: event.version })
+    
+    const currentState = this.currentData
+    let updatedLists = [...currentState.lists]
+
+    switch (event.type) {
+      case 'LIST_CREATED':
+        if (event.data && !updatedLists.find(list => list.id === event.data.id)) {
+          // Add the new list with proper typing
+          const newList: List = {
+            id: event.data.id,
+            title: event.data.title || event.data.name || 'Untitled List',
+            type: event.data.type || 'OTHER',
+            ownerId: event.data.ownerId || event.data.userId,
+            createdAt: event.data.createdAt || event.timestamp,
+            updatedAt: event.data.updatedAt || event.timestamp,
+            items: event.data.items || [],
+            owner: event.data.owner || {
+              id: event.data.ownerId || event.data.userId,
+              email: 'unknown@example.com',
+              profile: {
+                id: 'unknown',
+                userId: event.data.ownerId || event.data.userId,
+                fullName: 'Unknown User',
+                notificationsEnabled: true,
+                createdAt: event.timestamp,
+                updatedAt: event.timestamp
+              }
+            },
+            ...event.data
+          }
+          
+          updatedLists.push(newList)
+          this.log('List created via real-time sync', { listId: newList.id })
+        }
+        break
+
+      case 'LIST_UPDATED':
+        if (event.data && event.listId) {
+          const index = updatedLists.findIndex(list => list.id === event.listId)
+          if (index !== -1) {
+            const updatedList = { 
+              ...updatedLists[index], 
+              ...event.data,
+              updatedAt: event.timestamp || new Date().toISOString()
+            }
+            updatedLists[index] = updatedList
+            this.log('List updated via real-time sync', { listId: event.listId })
+          } else {
+            this.log('List not found for update', { listId: event.listId })
+          }
+        }
+        break
+
+      case 'LIST_DELETED':
+        const initialCount = updatedLists.length
+        updatedLists = updatedLists.filter(list => list.id !== event.listId)
+        if (updatedLists.length < initialCount) {
+          this.log('List deleted via real-time sync', { listId: event.listId })
+        }
+        break
+
+      default:
+        this.log('Unknown real-time sync event type', { type: event.type })
+        return
+    }
+
+    // Update state with version tracking
+    this.updateState({
+      ...currentState,
+      lists: updatedLists
+    }, event.version)
+
+    // Update cache with new lists array and version
+    const listIds = updatedLists.map(list => list.id)
+    cacheService.setUserLists(listIds, event.version)
+    
+    this.log('State updated from real-time sync event', { 
+      eventType: event.type,
+      listId: event.listId,
+      version: event.version,
+      totalLists: updatedLists.length
+    })
+  }
+
+  /**
+   * Handle sync state changes
+   */
+  private handleSyncStateChange(syncState: any): void {
+    // Update connection status based on sync state
+    const currentState = this.currentData
+    const hasConnectedUsers = syncState.connectedUsers.length > 0
+    
+    if (currentState.connected !== hasConnectedUsers) {
+      this.updateState({
+        ...currentState,
+        connected: hasConnectedUsers
+      })
+      
+      this.log('Connection state updated from sync service', { connected: hasConnectedUsers })
+    }
+
+    // Handle sync errors
+    if (syncState.syncErrors.length > 0) {
+      const latestError = syncState.syncErrors[syncState.syncErrors.length - 1]
+      this.setError(`Sync error: ${latestError.error}`)
+    }
+  }
+
   // Method to manually refresh lists
   async refresh(): Promise<void> {
     await this.fetchData()
+  }
+
+  // ========== ENHANCED OPTIMISTIC METHODS ==========
+
+  /**
+   * Create list with full optimistic update support
+   */
+  async createListWithOptimisticUpdate(listData: Partial<List>): Promise<List> {
+    return optimisticUpdatesService.createListOptimistic(
+      listData,
+      (tempList: List) => {
+        // Apply optimistic update immediately
+        this.addListOptimistic(tempList)
+      }
+    )
+  }
+
+  /**
+   * Update list with optimistic update and rollback support
+   */
+  async updateListWithOptimisticUpdate(listId: ListId, updates: Partial<List>): Promise<void> {
+    // Store original list for rollback
+    const originalList = this.lists.find(list => list.id === listId)
+    
+    return optimisticUpdatesService.updateListOptimistic(
+      listId,
+      updates,
+      (updates: Partial<List>) => {
+        // Apply optimistic update immediately
+        this.updateListOptimistic(listId, updates)
+      },
+      (originalData: List) => {
+        // Rollback to original data if operation fails
+        if (originalData) {
+          this.updateListOptimistic(listId, originalData)
+        }
+      }
+    )
+  }
+
+  /**
+   * Delete list with optimistic update and rollback support
+   */
+  async deleteListWithOptimisticUpdate(listId: ListId): Promise<void> {
+    // Store original list for rollback
+    const originalList = this.lists.find(list => list.id === listId)
+    const originalLists = [...this.lists]
+    
+    return optimisticUpdatesService.deleteListOptimistic(
+      listId,
+      () => {
+        // Apply optimistic delete immediately
+        this.removeListOptimistic(listId)
+      },
+      (originalData: List) => {
+        // Rollback by restoring the deleted list
+        if (originalData) {
+          const currentState = this.currentData
+          this.updateState({
+            ...currentState,
+            lists: originalLists
+          })
+          
+          // Restore to cache
+          const version = new Date(originalData.updatedAt).getTime()
+          cacheService.setList(listId, originalData, version)
+        }
+      }
+    )
+  }
+
+  /**
+   * Get loading state for a specific list
+   */
+  isListLoading$(listId: string): Observable<boolean> {
+    return optimisticUpdatesService.isLoading(listId)
+  }
+
+  /**
+   * Get pending operations for a list
+   */
+  getListPendingOperations$(listId: string) {
+    return optimisticUpdatesService.getPendingOperations(listId)
+  }
+
+  /**
+   * Get optimistic updates state
+   */
+  getOptimisticUpdatesState$() {
+    return optimisticUpdatesService.state$
+  }
+
+  /**
+   * Retry failed operations for this store
+   */
+  async retryFailedOperations(): Promise<void> {
+    await optimisticUpdatesService.retryAllFailedOperations()
+  }
+
+  // ========== REAL-TIME SYNC METHODS ==========
+
+  /**
+   * Force sync for a specific list
+   */
+  async forceSyncList(listId: ListId): Promise<void> {
+    try {
+      await realTimeListSyncService.forceSyncList(listId)
+      this.log('Force sync completed for list', { listId })
+    } catch (error) {
+      this.log('Force sync failed for list', { listId, error })
+      throw error
+    }
+  }
+
+  /**
+   * Get real-time sync state for a specific list
+   */
+  getListSyncState$(listId: ListId) {
+    return realTimeListSyncService.getListSyncState(listId)
+  }
+
+  /**
+   * Get connected users for collaboration
+   */
+  getConnectedUsers$() {
+    return realTimeListSyncService.getConnectedUsers()
+  }
+
+  /**
+   * Subscribe to events for a specific list
+   */
+  subscribeToListEvents$(listId: ListId) {
+    return realTimeListSyncService.subscribeToListEvents(listId)
+  }
+
+  /**
+   * Get global sync state
+   */
+  getSyncState$() {
+    return realTimeListSyncService.syncState$
+  }
+
+  /**
+   * Check if a list has pending changes
+   */
+  hasListPendingChanges$(listId: ListId): Observable<boolean> {
+    return realTimeListSyncService.getListSyncState(listId).pipe(
+      map(state => state.hasPendingChanges),
+      distinctUntilChanged()
+    )
+  }
+
+  /**
+   * Check if a list has conflicts
+   */
+  hasListConflicts$(listId: ListId): Observable<boolean> {
+    return realTimeListSyncService.getListSyncState(listId).pipe(
+      map(state => state.hasConflicts),
+      distinctUntilChanged()
+    )
+  }
+
+  /**
+   * Get list version
+   */
+  getListVersion$(listId: ListId): Observable<number> {
+    return realTimeListSyncService.getListSyncState(listId).pipe(
+      map(state => state.version),
+      distinctUntilChanged()
+    )
   }
 
   // Cleanup method
