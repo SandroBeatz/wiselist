@@ -185,15 +185,13 @@ onIonViewWillEnter(() => {
       :title="list?.title ?? ''"
   >
     <template #header-tools>
-      <ion-buttons slot="end">
-        <ActionDropdown :actions="dropdownActions" triggerId="list-actions-dropdown">
-          <template #trigger="{triggerId}">
-            <ion-button :id="triggerId" size="small">
-              <Ellipsis slot="icon-only" class="size-6"/>
-            </ion-button>
-          </template>
-        </ActionDropdown>
-      </ion-buttons>
+      <ActionDropdown slot="end" :actions="dropdownActions" triggerId="list-actions-dropdown">
+        <template #trigger="{triggerId}">
+          <ion-button :id="triggerId" size="small">
+            <Ellipsis slot="icon-only" class="size-6"/>
+          </ion-button>
+        </template>
+      </ActionDropdown>
     </template>
 
     <!-- Loading State -->
