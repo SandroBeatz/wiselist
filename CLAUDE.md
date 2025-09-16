@@ -9,12 +9,12 @@ Wiselist is an Ionic Vue 3 mobile application built with TypeScript and Capacito
 ## Development Commands
 
 - `npm run dev` - Start development server (Vite on port 5173)
-- `npm run build` - Build for production (includes TypeScript compilation)
+- `npm run build` - Build for production (includes TypeScript compilation with vue-tsc)
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 - `npm run test:unit` - Run unit tests with Vitest
 - `npm run test:e2e` - Run E2E tests with Cypress
-
+ 
 ## Capacitor Commands
 
 - `npx cap sync` - Sync web assets to native platforms
@@ -36,8 +36,9 @@ The project follows Feature-Sliced Design (FSD) methodology with the following s
 All configured in both `vite.config.ts` and `tsconfig.json`:
 - `@/` - src root
 - `@app/` - src/app
-- `@pages/` - src/pages  
+- `@pages/` - src/pages
 - `@shared/` - src/shared
+- `@widgets/` - src/widgets
 - `@features/` - src/features
 - `@entities/` - src/entities
 
@@ -49,7 +50,7 @@ All configured in both `vite.config.ts` and `tsconfig.json`:
 
 **State Management**: Uses Pinia for global state management, with feature-specific stores in respective entity folders.
 
-**Request Handling**: Axios instance configured with interceptors for token attachment and refresh logic (`@shared/instances/axios.ts`).
+**Request Handling**: Axios instance configured with interceptors for token attachment and refresh logic (`@shared/instances/axios.ts`). Includes request queuing service for offline capability (`@shared/services/request-queue.service.ts`).
 
 ## Technology Stack
 
@@ -60,7 +61,9 @@ All configured in both `vite.config.ts` and `tsconfig.json`:
 - **Routing**: Vue Router + Ionic Router
 - **Testing**: Vitest (unit) + Cypress (e2e)
 - **Build**: Vite
-- **Authentication**: Firebase + Google Social Login
+- **Authentication**: Firebase + Google Social Login (@capgo/capacitor-social-login)
+- **Icons**: Ionicons + Lucide Vue Next
+- **Utilities**: VueUse + Auto-animate
 
 ## Development Notes
 
@@ -73,6 +76,10 @@ All configured in both `vite.config.ts` and `tsconfig.json`:
 
 ## Task Management
 
-- Track tasks and issues in CLAUDE_TASKS.md, after completion set status to "done" below task description.
+- Track tasks and issues in CLAUDE_TASKS.md, after completion set status to "done" below task description
 - Add commit text below (short)
 - All comments in codebase are in English for consistency
+
+## RxJS Migration
+
+The project is currently planning a migration to RxJS for reactive state management, offline-first architecture, and real-time collaboration features. See Task 4 in CLAUDE_TASKS.md for detailed implementation plan with 12 subtasks across 4 phases.
