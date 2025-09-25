@@ -47,25 +47,15 @@ const handleDragEnd = async () => {
   if (!slidingItemRef.value || props.readonly) return
 
   try {
-    const ratio = await slidingItemRef.value.getSlidingRatio()
+    const ratio = await slidingItemRef.value.$el.getSlidingRatio()
 
     if (ratio > SWIPE_DELETE_THRESHOLD) {
-      await slidingItemRef.value.open('end')
+      await slidingItemRef.value.$el.open('end')
       handleDelete()
     }
   } catch (error) {
     console.error('Error getting sliding ratio:', error)
   }
-}
-
-// Currently unused, but kept for potential future use
-const _formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 </script>
 
