@@ -15,14 +15,10 @@ $RECYCLE.BIN/
 
 .env
 
-CLAUDE_TASKS.md
-
 *.log
 log.txt
 npm-debug.log*
 
-/.vscode
-/.claude
 /.idea
 /.ionic
 /.sass-cache
