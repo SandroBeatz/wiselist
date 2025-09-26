@@ -181,6 +181,9 @@ src/
 - Comments in codebase are in English for consistency
 - Follow existing architectural patterns for new features
 - Test both backend and frontend when making cross-stack changes
+- Use [CLAUDE_TASKS.md](CLAUDE_TASKS.md)
+- For Backend tasks use nestjs-backend-architect agent
+- For Frontend tasks use frontend-architect agent
 
 ## RxJS Migration
 

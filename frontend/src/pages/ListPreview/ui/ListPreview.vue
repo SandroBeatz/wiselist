@@ -20,20 +20,32 @@ import {
   SquarePen,
   Plus,
   LayoutList,
+  Share2,
 } from 'lucide-vue-next'
 import { useDeleteList } from '@/features/List/Delete'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
 import { ActionDropdown, type ActionItem } from '@/shared/ui/ActionDropdown'
 import { EmptyContent, PageWrapper } from '@shared/ui'
+import { ShareListModal } from '@features/Sharing'
+import { useUserStore } from '@entities/user'
 
 const route = useRoute()
 const router = useRouter()
 const { list, isLoading, error, fetchList } = useList()
 const { deleteList } = useDeleteList()
 const { toggleItem, deleteItem } = useListItem()
+const userStore = useUserStore()
 
 const pageRef = ref()
 const presentingElement = computed(() => pageRef.value?.$el)
+
+// Share modal state
+const shareModalOpen = ref(false)
+
+// Check if current user is the owner of the list
+const isCurrentUserOwner = computed(() => {
+  return userStore.info?.id === list.value?.ownerId
+})
 
 const getListIcon = (type: string) => {
   switch (type) {
@@ -147,25 +159,46 @@ const handleDeleteList = async () => {
   await alert.present()
 }
 
+const handleShareList = () => {
+  shareModalOpen.value = true
+}
+
 const dropdownActions = computed((): ActionItem[] => {
   if (!list.value) return []
 
-  return [
+  const actions: ActionItem[] = [
     {
       id: 'edit',
       label: 'Rename list',
       icon: SquarePen,
       color: 'medium',
       action: handleEditList,
-    },
-    {
+    }
+  ]
+
+  // Only add share option if user is the owner
+  if (isCurrentUserOwner.value) {
+    actions.unshift({
+      id: 'share',
+      label: 'Share list',
+      icon: Share2,
+      color: 'primary',
+      action: handleShareList,
+    })
+  }
+
+  // Only add delete option if user is the owner
+  if (isCurrentUserOwner.value) {
+    actions.push({
       id: 'delete',
       label: 'Delete',
       icon: Trash,
       color: 'danger',
       action: handleDeleteList,
-    },
-  ]
+    })
+  }
+
+  return actions
 })
 
 onIonViewWillEnter(() => {
@@ -243,6 +276,19 @@ onIonViewWillEnter(() => {
         <Plus/>
       </ion-fab-button>
     </ion-fab>
+
+    <!-- Share List Modal -->
+    <ShareListModal
+      v-if="list"
+      :is-open="shareModalOpen"
+      :list-id="list.id"
+      :list-title="list.title"
+      @close="shareModalOpen = false"
+      @shared="() => {
+        shareModalOpen = false
+        // Optionally refresh list data or show success message
+      }"
+    />
   </PageWrapper>
 </template>
 

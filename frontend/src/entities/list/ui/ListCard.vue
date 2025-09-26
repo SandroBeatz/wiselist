@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ShoppingBasket, CheckSquare, ListTodo, Calendar } from 'lucide-vue-next'
+import { useUserStore } from '@entities/user'
 import type { List } from '../model/types'
 
 interface Props {
   list: List
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const userStore = useUserStore()
+
+// Check if current user is the owner of the list
+const isCurrentUserOwner = computed(() => {
+  return userStore.info?.id === props.list.ownerId
+})
 
 // Used in template
 const getListIcon = (type: string) => {
