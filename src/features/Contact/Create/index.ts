@@ -1,0 +1,1 @@
+export { useCreateContact } from './model'
