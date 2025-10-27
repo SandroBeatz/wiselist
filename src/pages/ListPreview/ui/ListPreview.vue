@@ -25,6 +25,7 @@ import { ActionDropdown, type ActionItem } from '@/shared/ui/ActionDropdown'
 import { EmptyContent, PageWrapper } from '@shared/ui'
 import { ShareListModal } from '@features/Sharing'
 import { useUserStore } from '@entities/user'
+import {ListItemCard} from "@entities/list";
 
 const route = useRoute()
 const router = useRouter()
@@ -210,7 +211,7 @@ onIonViewWillEnter(() => {
 
     <div v-else>
       <ion-list v-auto-animate class="bg-transparent" lines="none">
-        <ListItem
+        <ListItemCard
             v-for="item in list.items.filter(i => !i.checked)"
             :key="item.id"
             :item="item"
@@ -224,7 +225,7 @@ onIonViewWillEnter(() => {
           <div class="text-sm text-zinc-500">Completed items</div>
         </div>
         <ion-list v-auto-animate class="bg-transparent" lines="none">
-          <ListItem
+          <ListItemCard
               v-for="item in list.items.filter(i => i.checked)"
               :key="item.id"
               :item="item"
