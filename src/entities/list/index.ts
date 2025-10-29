@@ -12,4 +12,5 @@ export type {
 export { mockLists } from './model/mocks'
 export { useListsStore } from './model/lists.store'
 export { useList } from './composables/useList'
+export { useListsRx } from './composables/useListsRx'
 export * from './ui'
