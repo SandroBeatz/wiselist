@@ -188,3 +188,5 @@ src/
 ## RxJS Migration
 
 The project is planning a migration to RxJS for reactive state management, offline-first architecture, and enhanced real-time collaboration features.
+- Все комментарии в коде пиши на английском языке, а в .md файлах можешь на русском
+- Все задачи лежать в @CLAUDE_TASKS.md. После выполнения задач обязательно оставляй статус в текущей задачи
