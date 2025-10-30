@@ -1,5 +1,7 @@
 import { useFormHandler } from '@shared/composables/useFormHandler'
-import { apiList, type ListForm, type ListId } from '@/entities/list'
+import { type ListForm, type ListId } from '@/entities/list'
+import { listRxService } from '@shared/services/rxjs/list.service'
+import { useUserStore } from '@entities/user'
 
 const validateListForm = (formData: ListForm): Record<keyof ListForm, string> | null => {
   const errors: Partial<Record<keyof ListForm, string>> = {}
@@ -31,6 +33,7 @@ interface UseCreateEditListFormOptions {
 export const useCreateEditListForm = (options: UseCreateEditListFormOptions = {}) => {
   const { listId, initialData } = options
   const isEditMode = !!listId
+  const userStore = useUserStore()
 
   return useFormHandler<ListForm>({
     initialData: {
@@ -41,9 +44,12 @@ export const useCreateEditListForm = (options: UseCreateEditListFormOptions = {}
     onSubmit: async (formData) => {
       try {
         if (isEditMode && listId) {
-          await apiList.update(listId, { title: formData.title })
+          // Update existing list using RxJS service
+          await listRxService.updateList(listId, { title: formData.title })
         } else {
-          await apiList.create(formData)
+          // Create new list using RxJS service
+          const ownerId = userStore.info?.id || 'local-user'
+          await listRxService.createList(formData, ownerId)
         }
       } catch (e) {
         console.log(e)

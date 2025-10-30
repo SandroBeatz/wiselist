@@ -52,6 +52,9 @@ describe('useListsRx', () => {
       localTimestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      items: [],
+      owner: null as any,
+      shares: [],
     })
 
     const wrapper = mount(TestComponent)
@@ -98,6 +101,9 @@ describe('useListsRx', () => {
       localTimestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      items: [],
+      owner: null as any,
+      shares: [],
     })
 
     const wrapper = mount(TestComponent)
@@ -124,6 +130,9 @@ describe('useListsRx', () => {
       localTimestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      items: [],
+      owner: null as any,
+      shares: [],
     })
 
     const wrapper = mount(TestComponent)
@@ -153,6 +162,9 @@ describe('useListsRx', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
       {
         id: 'list-2',
@@ -164,6 +176,9 @@ describe('useListsRx', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
     ])
 
@@ -217,6 +232,9 @@ describe('useListsRx', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
       {
         id: 'list-2',
@@ -228,6 +246,9 @@ describe('useListsRx', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
     ])
 

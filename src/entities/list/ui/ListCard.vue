@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 import { ShoppingBasket, CheckSquare, ListTodo, Calendar } from 'lucide-vue-next'
 import { useUserStore } from '@entities/user'
-import type { List } from '../model/types'
+import type { LocalList } from '@shared/db'
 
 interface Props {
-  list: List
+  list: LocalList
 }
 
 const props = defineProps<Props>()

@@ -2,9 +2,10 @@
 import { IonButton, IonButtons, IonInput, IonSelect, IonSelectOption, IonText } from '@ionic/vue'
 import { useCreateEditListForm } from '../composables/useCreateEditListForm'
 import { computed } from 'vue'
-import { useListsStore, type List } from '@/entities/list'
+import { type List } from '@/entities/list'
 import { X } from 'lucide-vue-next'
 import type { ListId } from '@/entities/list'
+import { syncService } from '@shared/services/sync'
 
 interface Props {
   id?: ListId
@@ -32,11 +33,12 @@ const closeModal = () => {
 
 const closeAndRefetch = async () => {
   try {
-    if (isEditMode.value) {
-      await props.callback?.()
-    } else {
-      await useListsStore().fetchData()
-    }
+    // Trigger sync after create/edit
+    // RxJS will automatically update UI via observables
+    await syncService.forceSync()
+
+    // Call callback if provided (for custom logic)
+    await props.callback?.()
 
     closeModal()
   } catch (error) {

@@ -51,6 +51,9 @@ describe('Database Utils', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       })
 
       await db.listItems.add({
@@ -95,6 +98,9 @@ describe('Database Utils', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       })
 
       const size = await getDatabaseSize()
@@ -145,6 +151,9 @@ describe('Database Utils', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       })
 
       const isEmpty = await isDatabaseEmpty()

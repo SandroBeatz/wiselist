@@ -8,9 +8,8 @@ import {
   IonFab,
 } from '@ionic/vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, ref } from 'vue'
-import { useList } from '@/entities/list'
-import { useListItem } from '@/entities/list-item'
+import { computed, ref, watch } from 'vue'
+import { useListRx } from '@/entities/list'
 import {
   Ellipsis,
   Trash,
@@ -19,20 +18,29 @@ import {
   LayoutList,
   Share2,
 } from 'lucide-vue-next'
-import { useDeleteList } from '@/features/List/Delete'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
 import { ActionDropdown, type ActionItem } from '@/shared/ui/ActionDropdown'
 import { EmptyContent, PageWrapper } from '@shared/ui'
 import { ShareListModal } from '@features/Sharing'
 import { useUserStore } from '@entities/user'
-import {ListItemCard} from "@entities/list";
+import {ListItemCard} from "@entities/list"
+import { syncService } from '@shared/services/sync/sync.service'
 
 const route = useRoute()
 const router = useRouter()
-const { list, isLoading, fetchList } = useList()
-const { deleteList } = useDeleteList()
-const { toggleItem, deleteItem } = useListItem()
 const userStore = useUserStore()
+
+// Initialize reactive list composable
+const listId = ref<string | null>(null)
+const {
+  list,
+  isLoading,
+  watchList,
+  updateList,
+  deleteList: deleteListRx,
+  toggleItem,
+  deleteItem,
+} = useListRx()
 
 const pageRef = ref()
 
@@ -46,38 +54,22 @@ const isCurrentUserOwner = computed(() => {
 const handleItemToggle = async (itemId: string, checked: boolean) => {
   if (!list.value) return
 
-  // Optimistically update the UI
-  const item = list.value.items.find((item) => item.id === itemId)
-  if (item) {
-    item.checked = checked
-  }
-
-  // Make the API call
-  const success = await toggleItem(itemId, checked)
-
-  // If the API call failed, revert the optimistic update
-  if (!success && item) {
-    item.checked = !checked
+  try {
+    // RxJS service handles optimistic updates automatically
+    await toggleItem(itemId, checked)
+  } catch (error) {
+    console.error('Failed to toggle item:', error)
   }
 }
 
 const handleItemDelete = async (itemId: string) => {
   if (!list.value) return
 
-  // Optimistically remove the item from the UI
-  const itemIndex = list.value.items.findIndex((item) => item.id === itemId)
-  let removedItem = null
-
-  if (itemIndex !== -1) {
-    removedItem = list.value.items.splice(itemIndex, 1)[0]
-  }
-
-  // Make the API call
-  const success = await deleteItem(itemId)
-
-  // If the API call failed, restore the item
-  if (!success && removedItem && itemIndex !== -1) {
-    list.value.items.splice(itemIndex, 0, removedItem)
+  try {
+    // RxJS service handles optimistic updates automatically
+    await deleteItem(itemId)
+  } catch (error) {
+    console.error('Failed to delete item:', error)
   }
 }
 
@@ -88,7 +80,8 @@ const handleEditList = async () => {
     id: list.value.id,
     list: list.value,
     callback: async () => {
-      await fetchList(list.value!.id)
+      // List will update automatically via RxJS subscription
+      await syncService.forceSync()
     },
   })
 
@@ -111,7 +104,7 @@ const handleDeleteList = async () => {
         role: 'destructive',
         handler: async () => {
           try {
-            await deleteList(list.value!.id)
+            await deleteListRx(list.value!.id)
             await router.replace({ name: 'TabLists' })
           } catch (error) {
             console.error('Failed to delete list:', error)
@@ -166,10 +159,12 @@ const dropdownActions = computed((): ActionItem[] => {
   return actions
 })
 
+// Watch for route changes and subscribe to list
 onIonViewWillEnter(() => {
-  const listId = String(route.params.id)
-  if (listId) {
-    void fetchList(listId)
+  const id = String(route.params.id)
+  if (id) {
+    listId.value = id
+    watchList(id)
   }
 })
 </script>
@@ -249,7 +244,7 @@ onIonViewWillEnter(() => {
       :list-id="list.id"
       :list-title="list.title"
       @close="shareModalOpen = false"
-      @shared="fetchList(list.id)"
+      @shared="syncService.forceSync()"
     />
   </PageWrapper>
 </template>

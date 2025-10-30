@@ -22,6 +22,7 @@ export const mockLists: List[] = [
         updatedAt: '2025-08-01T10:00:00Z',
       }
     },
+    shares: [],
   },
   {
     id: '2',
@@ -44,6 +45,7 @@ export const mockLists: List[] = [
         updatedAt: '2025-08-02T09:00:00Z',
       }
     },
+    shares: [],
   },
   {
     id: '3',
@@ -66,5 +68,6 @@ export const mockLists: List[] = [
         updatedAt: '2025-08-01T10:00:00Z',
       }
     },
+    shares: [],
   },
 ]

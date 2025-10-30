@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { onIonViewWillEnter, IonFab, IonFabButton, IonButton } from '@ionic/vue'
-import { useListsStore, ListCard, SkeletonListCards } from '@/entities/list'
-import { storeToRefs } from 'pinia'
+import { useListsRx, ListCard, SkeletonListCards } from '@/entities/list'
 import { Ellipsis, Plus, TextSearch, Bell } from 'lucide-vue-next'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
 import { EmptyContent, PageWrapper } from '@shared/ui'
 
-const listsStore = useListsStore()
-const { isLoading, lists } = storeToRefs(listsStore)
+// Use RxJS composable instead of Pinia store
+const { lists, isLoading, manualSync } = useListsRx()
 
 const handleAddList = async () => {
   const dialog = await CreateEditListDialogService.open({
     callback: async () => {
-      await listsStore.fetchData()
+      // Trigger manual sync after creating list
+      await manualSync()
     },
   })
 
   await dialog.present()
 }
 
-onIonViewWillEnter(() => void listsStore.fetchData())
+// Trigger sync on page enter
+onIonViewWillEnter(() => void manualSync())
 </script>
 
 <template>
@@ -34,6 +35,8 @@ onIonViewWillEnter(() => void listsStore.fetchData())
         </ion-button>
       </ion-buttons>
     </template>
+
+<!--    <pre>{{lists}}</pre>-->
 
     <SkeletonListCards v-if="isLoading && !lists.length"/>
     <EmptyContent

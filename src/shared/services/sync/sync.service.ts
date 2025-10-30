@@ -8,6 +8,12 @@ import { listRxService } from '@shared/services/rxjs/list.service'
 import { listItemRxService } from '@shared/services/rxjs/list-item.service'
 import { resolveConflict, mergeOperationsByEntity, sortOperations } from './ot-resolver'
 import type { SyncState, SyncPayload, SyncResponse, SyncConfig } from './types'
+import {
+  OFFLINE_ONLY_MODE,
+  AUTO_SYNC_INTERVAL,
+  MAX_SYNC_RETRIES,
+  SYNC_RETRY_BACKOFF,
+} from '@shared/config/offline.config'
 
 /**
  * SyncService - Main synchronization service
@@ -42,9 +48,10 @@ export class SyncService {
 
   // Configuration
   private config: SyncConfig = {
-    autoSyncInterval: 30000, // 30 seconds
-    maxRetries: 3,
-    retryBackoff: 2000, // 2 seconds
+    autoSyncInterval: AUTO_SYNC_INTERVAL,
+    maxRetries: MAX_SYNC_RETRIES,
+    retryBackoff: SYNC_RETRY_BACKOFF,
+    offlineOnly: OFFLINE_ONLY_MODE, // Set from config
   }
 
   // Auto-sync timer
@@ -132,6 +139,21 @@ export class SyncService {
    */
   private async sync(retryCount = 0): Promise<void> {
     const state = this.getSyncState()
+
+    // Don't sync if in offline-only mode (no backend available)
+    if (this.config.offlineOnly) {
+      console.log('Sync skipped: offline-only mode (no backend)')
+      // Just clear pending operations queue and mark as synced locally
+      const pendingOps = await db.syncOperations.toArray()
+      if (pendingOps.length > 0) {
+        await db.syncOperations.clear()
+        this.updateSyncState({
+          lastSync: Date.now(),
+          pendingCount: 0,
+        })
+      }
+      return
+    }
 
     // Don't sync if offline
     if (!state.isOnline) {

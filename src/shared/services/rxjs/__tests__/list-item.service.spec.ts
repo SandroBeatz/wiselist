@@ -27,6 +27,12 @@ describe('ListItemRxService', () => {
       localTimestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
+      items: [],
+      owner: null as any,
+      shares: [],
     })
   })
 

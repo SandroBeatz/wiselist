@@ -47,6 +47,9 @@ describe('WiselistDatabase', () => {
       localTimestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      items: [],
+      owner: null as any,
+      shares: [],
     }
 
     it('should add a list', async () => {
@@ -310,6 +313,12 @@ describe('WiselistDatabase', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
+        items: [],
+        owner: null as any,
+        shares: [],
       })
 
       await db.listItems.add({
@@ -361,6 +370,12 @@ describe('WiselistDatabase', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
+        items: [],
+        owner: null as any,
+        shares: [],
       })
 
       isEmpty = await db.isEmpty()
@@ -387,6 +402,9 @@ describe('WiselistDatabase', () => {
           localTimestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          items: [],
+          owner: null as any,
+          shares: [],
         },
         {
           id: 'list-2',
@@ -398,6 +416,9 @@ describe('WiselistDatabase', () => {
           localTimestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          items: [],
+          owner: null as any,
+          shares: [],
         },
       ]
 

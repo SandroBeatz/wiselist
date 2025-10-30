@@ -57,4 +57,5 @@ export interface SyncConfig {
   autoSyncInterval: number // milliseconds
   maxRetries: number
   retryBackoff: number // milliseconds
+  offlineOnly?: boolean // If true, never sync with server (local-only mode)
 }

@@ -40,28 +40,33 @@ describe('SyncService', () => {
   let service: SyncService
 
   beforeEach(async () => {
+    // Mock navigator.onLine BEFORE creating service instance
+    vi.stubGlobal('navigator', {
+      ...navigator,
+      onLine: true,
+    })
+
     // Clear database
     await db.clearAll()
 
     // Reset all mocks
     vi.clearAllMocks()
 
-    // Get fresh service instance
+    // Reset singleton instance to force new creation with mocked navigator
+    // @ts-ignore - accessing private static for testing
+    SyncService.instance = null
+
+    // Get fresh service instance (will use mocked navigator.onLine)
     service = SyncService.getInstance()
 
     // Stop auto-sync for tests
     service.stop()
-
-    // Mock navigator.onLine to be true
-    Object.defineProperty(navigator, 'onLine', {
-      writable: true,
-      value: true,
-    })
   })
 
   afterEach(async () => {
     service.destroy()
     await db.clearAll()
+    vi.unstubAllGlobals()
   })
 
   describe('Singleton Pattern', () => {
@@ -75,7 +80,8 @@ describe('SyncService', () => {
 
   describe('getSyncState$', () => {
     it('should emit initial sync state', (done) => {
-      const subscription = service.getSyncState$().subscribe(state => {
+      let subscription: any
+      subscription = service.getSyncState$().subscribe(state => {
         expect(state).toHaveProperty('isSyncing')
         expect(state).toHaveProperty('isOnline')
         expect(state).toHaveProperty('lastSync')
@@ -127,14 +133,17 @@ describe('SyncService', () => {
   describe('forceSync', () => {
     it('should not sync when offline', async () => {
       // Mock offline state
-      Object.defineProperty(navigator, 'onLine', {
-        writable: true,
-        value: false,
+      vi.stubGlobal('navigator', {
+        ...navigator,
+        onLine: false,
       })
 
-      // Force state update
-      const stateSnapshot = service.getSyncState()
-      stateSnapshot.isOnline = false
+      // Reset service with offline state
+      service.destroy()
+      // @ts-ignore - accessing private static for testing
+      SyncService.instance = null
+      service = SyncService.getInstance()
+      service.stop()
 
       await service.forceSync()
 
@@ -424,7 +433,18 @@ describe('SyncService', () => {
     })
 
     it('should add new items from server', async () => {
-      // Mock API response with new item (not from client operations)
+      // Add a dummy operation to trigger sync (sync skips if no operations)
+      await db.syncOperations.add({
+        entityType: 'list',
+        entityId: 'list-temp',
+        operationType: OperationType.CREATE,
+        version: 1,
+        timestamp: Date.now(),
+        data: {},
+        retryCount: 0,
+      })
+
+      // Mock API response with new item from server
       const serverItem = {
         id: 'item-1',
         listId: 'list-1',
@@ -445,7 +465,7 @@ describe('SyncService', () => {
         },
       } as any)
 
-      // Force sync with no operations (to test pure server push)
+      // Force sync
       await service.forceSync()
 
       // Check if item was added to DB

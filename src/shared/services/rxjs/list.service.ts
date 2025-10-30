@@ -28,7 +28,7 @@ export class ListRxService {
   private lists$: Observable<LocalList[]>
 
   // BehaviorSubject for sync status
-  private syncStatus$ = new BehaviorSubject<SyncStatus>('SYNCED' as SyncStatus)
+  private syncStatus$ = new BehaviorSubject<SyncStatus>(SyncStatus.SYNCED as SyncStatus)
 
   private constructor() {
     // Create observable from Dexie liveQuery
@@ -117,18 +117,22 @@ export class ListRxService {
       createdAt: new Date(now).toISOString(),
       updatedAt: new Date(now).toISOString(),
       version: 1,
-      syncStatus: 'PENDING',
+      syncStatus: SyncStatus.PENDING,
       localTimestamp: now,
+      // Include all fields from List
+      items: [],
+      owner: null as any, // Will be populated from backend or left null for offline-only
+      shares: [],
     }
 
     // Optimistically add to IndexedDB
     await db.lists.add(newList)
 
     // Add to sync queue
-    await this.addToSyncQueue('CREATE', id, newList, 1, now)
+    await this.addToSyncQueue(OperationType.CREATE, id, newList, 1, now)
 
     // Update sync status
-    this.syncStatus$.next('PENDING')
+    this.syncStatus$.next(SyncStatus.PENDING)
 
     return id
   }
@@ -152,7 +156,7 @@ export class ListRxService {
       ...existingList,
       ...updates,
       version: newVersion,
-      syncStatus: 'PENDING',
+      syncStatus: SyncStatus.PENDING,
       localTimestamp: now,
       updatedAt: new Date(now).toISOString(),
     }
@@ -161,10 +165,10 @@ export class ListRxService {
     await db.lists.put(updatedList)
 
     // Add to sync queue
-    await this.addToSyncQueue('UPDATE', id, updatedList, newVersion, now)
+    await this.addToSyncQueue(OperationType.UPDATE, id, updatedList, newVersion, now)
 
     // Update sync status
-    this.syncStatus$.next('PENDING')
+    this.syncStatus$.next(SyncStatus.PENDING)
   }
 
   /**
@@ -188,10 +192,10 @@ export class ListRxService {
     await db.listItems.where('listId').equals(id).delete()
 
     // Add to sync queue
-    await this.addToSyncQueue('DELETE', id, { id }, newVersion, now)
+    await this.addToSyncQueue(OperationType.DELETE, id, { id }, newVersion, now)
 
     // Update sync status
-    this.syncStatus$.next('PENDING')
+    this.syncStatus$.next(SyncStatus.PENDING)
   }
 
   /**
@@ -247,7 +251,7 @@ export class ListRxService {
   async clearAll(): Promise<void> {
     await db.lists.clear()
     await db.listItems.clear()
-    this.syncStatus$.next('SYNCED')
+    this.syncStatus$.next(SyncStatus.SYNCED)
   }
 }
 

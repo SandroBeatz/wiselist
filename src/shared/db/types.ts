@@ -26,8 +26,9 @@ export type EntityType = 'list' | 'listItem'
 
 /**
  * Local List with sync metadata
+ * Now includes all fields from List (items, owner, shares)
  */
-export interface LocalList extends Omit<List, 'items' | 'owner' | 'shares'> {
+export interface LocalList extends List {
   version: number
   syncStatus: SyncStatus
   localTimestamp: number

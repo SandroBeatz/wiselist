@@ -22,6 +22,9 @@ describe('OT Resolver', () => {
       localTimestamp: 1000,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-02T00:00:00Z',
+      items: [],
+      owner: null as any,
+      shares: [],
     }
 
     const serverList: LocalList = {
@@ -34,6 +37,9 @@ describe('OT Resolver', () => {
       localTimestamp: 2000,
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-03T00:00:00Z',
+      items: [],
+      owner: null as any,
+      shares: [],
     }
 
     it('should prioritize DELETE operation from client', () => {
@@ -183,6 +189,9 @@ describe('OT Resolver', () => {
         localTimestamp: 1000,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
+        items: [],
+        owner: null as any,
+        shares: [],
       }
 
       const server: LocalList = {
@@ -204,6 +213,9 @@ describe('OT Resolver', () => {
         localTimestamp: 1000,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
+        items: [],
+        owner: null as any,
+        shares: [],
       }
 
       const server: LocalList = {
@@ -225,6 +237,9 @@ describe('OT Resolver', () => {
         localTimestamp: 1000,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
+        items: [],
+        owner: null as any,
+        shares: [],
       }
 
       const server: LocalList = {
@@ -267,6 +282,9 @@ describe('OT Resolver', () => {
         localTimestamp: 1000,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
+        items: [],
+        owner: null as any,
+        shares: [],
       }
 
       expect(isInConflict(entity, entity)).toBe(false)

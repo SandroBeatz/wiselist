@@ -8,6 +8,8 @@ import { useConfirmationDialog } from '@shared/ui/ConfirmationDialog'
 import { SunMoon, LogOut, Bell, Languages } from 'lucide-vue-next'
 import { computed } from 'vue'
 import type { ListProps } from '@shared/ui'
+import { db } from '@shared/db'
+
 
 const router = useRouter()
 
@@ -52,7 +54,8 @@ const listData = computed<ListProps>(() => ({
         {
           label: 'Appearance',
           icon: SunMoon,
-          button: true
+          button: true,
+          onClick: () => db.clearAll()
         },
         {
           label: 'Notifications',
