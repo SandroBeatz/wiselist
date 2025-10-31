@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { apiUser, type UpdateProfilePayload, type ChangePasswordPayload } from '../api'
 import { tokenService } from '@shared/services/token.service'
+import { listRxService } from '@shared/services/rxjs/list.service'
+import { listItemRxService } from '@shared/services/rxjs/list-item.service'
+import { syncService } from '@shared/services/sync/sync.service'
+import { db } from '@shared/db'
 import type { User } from './types'
 import type { Nullable } from '@shared/types/global'
 
@@ -58,21 +62,40 @@ export const useUserStore = defineStore('user', {
     },
 
     /**
-     * Set authentication tokens and update user info
+     * Set authentication tokens, update user info, and sync data from server
      * @param accessToken Access token
      * @param refreshToken Refresh token
      */
     async setTokens(accessToken: string, refreshToken: string) {
       tokenService.setTokens(accessToken, refreshToken)
       await this.fetchUser()
+
+      // Trigger full sync after successful login to get user's data from server
+      try {
+        await syncService.forceSync()
+      } catch (error) {
+        console.error('[UserStore] Error syncing data on login:', error)
+        // Don't fail login if sync fails - user can sync manually later
+      }
     },
 
     /**
-     * Handle user logout - clear tokens and user info
+     * Handle user logout - clear tokens, user info, and local database
+     * This ensures data isolation between different users
      */
     async logout() {
       this.info = null
       tokenService.clearTokens()
+
+      // Clear all local data from IndexedDB to prevent data leakage between users
+      try {
+        await listRxService.clearAll()
+        await listItemRxService.clearAll()
+        await db.syncOperations.clear()
+      } catch (error) {
+        console.error('[UserStore] Error clearing local database on logout:', error)
+        // Continue with logout even if clearing fails
+      }
     },
 
     /**

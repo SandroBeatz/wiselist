@@ -4,9 +4,13 @@ import { useListsRx, ListCard, SkeletonListCards } from '@/entities/list'
 import { Ellipsis, Plus, TextSearch, Bell } from 'lucide-vue-next'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
 import { EmptyContent, PageWrapper } from '@shared/ui'
+import { useUserStore } from '@entities/user'
 
-// Use RxJS composable instead of Pinia store
-const { lists, isLoading, manualSync } = useListsRx()
+// Get current user for filtering lists
+const userStore = useUserStore()
+
+// Use RxJS composable with userId filtering to show only current user's lists
+const { lists, isLoading, manualSync } = useListsRx(userStore.info?.id)
 
 const handleAddList = async () => {
   const dialog = await CreateEditListDialogService.open({
