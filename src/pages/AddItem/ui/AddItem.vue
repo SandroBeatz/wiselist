@@ -3,39 +3,38 @@ import {
   onIonViewWillEnter,
   IonItem,
   IonList,
-  IonNote,
   type IonInput,
-  IonFabButton,
   IonFab,
 } from '@ionic/vue'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onMounted, ref } from 'vue'
-import { useList } from '@/entities/list'
+import { useListRx } from '@/entities/list'
 import { PageWrapper } from '@shared/ui'
 import type { ListId } from '@/entities/list'
 import { useCreateListItemForm } from '@/features/ListItem/Create'
 import { Check, Trash, Plus, Minus } from 'lucide-vue-next'
 import { useItemCache } from '@shared/composables/useItemCache'
-import { useListItem } from '@/entities/list-item'
+import { listItemRxService } from '@shared/services/rxjs/list-item.service'
 
 const route = useRoute()
 const router = useRouter()
 
-const { list, fetchList } = useList()
-const { getCachedItems, addToCache, removeFromCache } = useItemCache()
-const { deleteItem } = useListItem()
-
 const listId = route.params.id as ListId
+
+// Use RxJS composable for reactive list updates
+const { list, watchList } = useListRx()
+const { getCachedItems, addToCache, removeFromCache } = useItemCache()
 
 const pageRef = ref()
 
+// Watch list changes on page enter
 onIonViewWillEnter(() => {
   if (listId) {
-    void fetchList(listId)
+    watchList(listId)
   }
 })
 
-const { isSubmitting, form, handleSubmit, resetForm } = useCreateListItemForm(listId)
+const { form, handleSubmit, resetForm } = useCreateListItemForm(listId)
 
 // Get cached items for the current list type
 const cachedItems = computed(() => {
@@ -74,15 +73,20 @@ const itemSuggestions = computed(() => {
 
 const inputRef = ref<InstanceType<typeof IonInput>>()
 
-const handleKeyPress = (event: KeyboardEvent) => {
+const handleKeyPress = async (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
     event.preventDefault()
-    handleSubmit(async () => {
+
+    console.log(32532)
+
+    await handleSubmit(async () => {
       // Add item to cache after successful creation
+      console.log(list.value)
+
       if (list.value && form.content.trim()) {
         addToCache(list.value.type, form.content.trim())
       }
-      await fetchList(listId)
+      // No need to fetch list - RxJS will auto-update via observable
       resetForm()
       setTimeout(() => {
         const input = (inputRef.value as any)?.$el?.querySelector('input')
@@ -99,7 +103,7 @@ const handleAddFromCache = async (content: string) => {
   try {
     form.context = content
     await handleSubmit(async () => {
-      await fetchList(listId)
+      // RxJS will auto-update the list
       resetForm()
     })
   } catch (error) {
@@ -114,8 +118,9 @@ const handleRemoveFromList = async (content: string) => {
   const item = list.value.items.find((i) => i.content.toLowerCase() === content.toLowerCase())
   if (item) {
     try {
-      await deleteItem(item.id)
-      await fetchList(listId)
+      // Use RxJS service for optimistic delete
+      await listItemRxService.deleteListItem(item.id)
+      // No need to fetch - RxJS observable will auto-update
     } catch (error) {
       console.error('Failed to remove item from list:', error)
     }
@@ -143,7 +148,7 @@ onMounted(() => {
         <ion-input
             ref="inputRef"
             v-model="form.content"
-            placeholder="Type item content"
+            placeholder="Type item name and press Enter"
             type="text"
             :maxlength="500"
             @keydown="handleKeyPress"
@@ -152,63 +157,66 @@ onMounted(() => {
       </div>
     </template>
 
-    <div class="pb-12">
-      <ion-list class="p-0 bg-none" lines="none">
-        <ion-item
-            v-for="(suggestion, index) in itemSuggestions"
-            :key="index"
-            :detail="false"
-            class="transition-colors mb-2"
-            :class="{'active': suggestion.isInCurrentList}"
-        >
-          <!-- Add button for items not in current list -->
-          <ion-button
-            v-if="!suggestion.isInCurrentList"
-            slot="start"
-            fill="clear"
-            class="add-btn"
-            @click="handleAddFromCache(suggestion.content)"
+    <div class="pb-20">
+      <!-- Suggestions from Cache Section -->
+      <div v-if="itemSuggestions.length" class="mt-6">
+        <ion-list class="p-0 bg-none" lines="none">
+          <ion-item
+              v-for="(suggestion, index) in itemSuggestions"
+              :key="index"
+              :detail="false"
+              class="suggestion-item mb-2"
+              :class="{'active': suggestion.isInCurrentList}"
           >
-            <Plus slot="icon-only" class="size-5" />
-          </ion-button>
-
-          <!-- Check mark for items already in current list -->
-          <ion-avatar
-            v-else
-            slot="start"
-            class="flex justify-center items-center bg-zinc-50"
-          >
-            <Check class="size-5 text-zinc-500" />
-          </ion-avatar>
-
-          <ion-label>{{ suggestion.content }}</ion-label>
-
-          <!-- Remove from cache button (always visible) -->
-          <ion-button
+            <!-- Add button for items not in current list -->
+            <ion-button
               v-if="!suggestion.isInCurrentList"
-            slot="end"
-            fill="clear"
-            class="delete-btn"
-            @click="handleRemoveFromCache(suggestion.content)"
-          >
-            <Trash slot="icon-only" class="size-5" />
-          </ion-button>
+              slot="start"
+              fill="clear"
+              class="add-btn"
+              @click="handleAddFromCache(suggestion.content)"
+            >
+              <Plus slot="icon-only" class="size-5" />
+            </ion-button>
 
-          <!-- Remove from current list button (only for items in list) -->
-          <ion-button
-            v-if="suggestion.isInCurrentList"
-            slot="end"
-            fill="clear"
-            class="remove-btn"
-            @click="handleRemoveFromList(suggestion.content)"
-          >
-            <Minus slot="icon-only" class="size-5"/>
-          </ion-button>
-        </ion-item>
-      </ion-list>
+            <!-- Check mark for items already in current list -->
+            <ion-avatar
+              v-else
+              slot="start"
+              class="flex justify-center items-center bg-zinc-50"
+            >
+              <Check class="size-5 text-zinc-500" />
+            </ion-avatar>
+
+            <ion-label>{{ suggestion.content }}</ion-label>
+
+            <!-- Remove from cache button -->
+            <ion-button
+                v-if="!suggestion.isInCurrentList"
+              slot="end"
+              fill="clear"
+              class="cache-delete-btn"
+              @click="handleRemoveFromCache(suggestion.content)"
+            >
+              <Trash slot="icon-only" class="size-4" />
+            </ion-button>
+
+            <!-- Remove from current list button -->
+            <ion-button
+              v-if="suggestion.isInCurrentList"
+              slot="end"
+              fill="clear"
+              class="remove-btn"
+              @click="handleRemoveFromList(suggestion.content)"
+            >
+              <Minus slot="icon-only" class="size-5"/>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
     </div>
 
-    <ion-fab v-if="itemSuggestions.length" slot="fixed" vertical="bottom" horizontal="center" class="p-3">
+    <ion-fab slot="fixed" vertical="bottom" horizontal="center" class="p-3">
       <ion-button @click="router.go(-1)">
         <Check /> Done
       </ion-button>
@@ -232,8 +240,18 @@ ion-item {
   --background: rgba(var(--ion-item-background-rgb), 0.5);
 }
 
-ion-item.active {
+/* Current list items - solid background */
+ion-item.list-item {
   --background: var(--ion-item-background);
+}
+
+/* Suggestions - lighter background */
+ion-item.suggestion-item {
+  --background: rgba(var(--ion-item-background-rgb), 0.5);
+}
+
+ion-item.suggestion-item.active {
+  --background: rgba(var(--ion-item-background-rgb), 0.7);
 }
 
 ion-item ion-button, ion-item ion-avatar {
@@ -246,6 +264,10 @@ ion-item ion-button, ion-item ion-avatar {
 
 .delete-btn {
   @apply bg-red-50 text-red-500;
+}
+
+.cache-delete-btn {
+  @apply bg-zinc-100 text-zinc-400;
 }
 
 .remove-btn {

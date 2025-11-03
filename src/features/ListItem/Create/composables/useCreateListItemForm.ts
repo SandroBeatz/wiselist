@@ -1,11 +1,12 @@
 import { useFormHandler } from '@shared/composables/useFormHandler'
 import type { ListId } from '@/entities/list'
-import { apiListItem, type ListItemForm } from '@/entities/list-item'
+import { type ListItemForm } from '@/entities/list-item'
+import { listItemRxService } from '@shared/services/rxjs/list-item.service'
 
 const validateListForm = (formData: ListItemForm): Record<keyof ListItemForm, string> | null => {
   const errors: Partial<Record<keyof ListItemForm, string>> = {}
 
-  // Validate title
+  // Validate content (skip validation if context is provided)
   if (!formData.context) {
     if (!formData.content) {
       errors.content = 'Содержимое элемента обязательно'
@@ -32,11 +33,13 @@ export const useCreateListItemForm = (listId: ListId) => {
     },
     validate: validateListForm,
     onSubmit: async ({ context, ...form }: ListItemForm) => {
+      console.log(32534532532523532)
       try {
-        await apiListItem.create({
-          ...form,
-          content: context || form.content,
-        })
+        // Use RxJS service for optimistic create with auto-sync
+        const content = context || form.content
+        console.log(325, content)
+
+        await listItemRxService.createListItem(form.listId, content)
       } catch (e) {
         console.log(e)
         throw e

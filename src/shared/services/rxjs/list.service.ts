@@ -64,12 +64,30 @@ export class ListRxService {
   }
 
   /**
-   * Get observable of a single list by ID
+   * Get observable of a single list by ID with items
+   * Automatically JOINs with listItems table
+   * Updates when either list or items change
    * @param id List ID
    */
   getList$(id: string): Observable<LocalList | undefined> {
     return from(
-      liveQuery(() => db.lists.get(id))
+      liveQuery(async () => {
+        // Get list from database
+        const list = await db.lists.get(id)
+        if (!list) return undefined
+
+        // Get all items for this list
+        const items = await db.listItems
+          .where('listId')
+          .equals(id)
+          .sortBy('localTimestamp')
+
+        // Return list with populated items
+        return {
+          ...list,
+          items: items,
+        } as LocalList
+      })
     ).pipe(
       shareReplay(1)
     )
