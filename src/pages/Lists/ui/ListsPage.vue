@@ -40,8 +40,6 @@ onIonViewWillEnter(() => void manualSync())
       </ion-buttons>
     </template>
 
-<!--    <pre>{{lists}}</pre>-->
-
     <SkeletonListCards v-if="isLoading && !lists.length"/>
     <EmptyContent
         v-else-if="!lists.length"

@@ -56,11 +56,37 @@ export class ListRxService {
   }
 
   /**
-   * Get observable of all lists
-   * Automatically updates when IndexedDB changes
+   * Get observable of all lists with items
+   * Automatically JOINs with listItems table
+   * Updates when either lists or items change
    */
   getLists$(): Observable<LocalList[]> {
-    return this.lists$
+    return from(
+      liveQuery(async () => {
+        // Get all lists sorted by timestamp (newest first)
+        const lists = await db.lists
+          .orderBy('localTimestamp')
+          .reverse()
+          .toArray()
+
+        // For each list, get its items with JOIN
+        return await Promise.all(
+          lists.map(async (list) => {
+            const items = await db.listItems
+              .where('listId')
+              .equals(list.id)
+              .sortBy('localTimestamp')
+
+            return {
+              ...list,
+              items: items,
+            } as LocalList
+          })
+        )
+      })
+    ).pipe(
+      shareReplay(1) // Cache latest value for new subscribers
+    )
   }
 
   /**
