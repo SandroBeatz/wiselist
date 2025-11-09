@@ -60,6 +60,10 @@ export class SyncService {
   // Network event listeners
   private networkSubscription: any = null
 
+  // Debouncing to prevent too frequent sync calls
+  private lastSyncAttemptTime = 0
+  private readonly MIN_SYNC_INTERVAL = 3000 // 3 seconds minimum between sync attempts
+
   private constructor() {
     // Initialize with current online status
     this.syncState$.next({
@@ -98,10 +102,22 @@ export class SyncService {
    * Start auto-sync and network monitoring
    */
   start(): void {
+    // Idempotency guard - prevent multiple starts
+    if (this.autoSyncSubscription) {
+      console.log('Sync service already started, skipping duplicate start() call')
+      return
+    }
+
+    console.log('Starting sync service...')
+
     // Start auto-sync interval
     this.autoSyncSubscription = interval(this.config.autoSyncInterval)
       .pipe(
-        filter(() => this.getSyncState().isOnline && !this.getSyncState().isSyncing)
+        filter(() =>
+          this.getSyncState().isOnline &&
+          !this.getSyncState().isSyncing &&
+          tokenService.isAuthenticated()
+        )
       )
       .subscribe(() => {
         this.sync().catch(error => {
@@ -109,8 +125,8 @@ export class SyncService {
         })
       })
 
-    // Initial sync if online
-    if (this.getSyncState().isOnline) {
+    // Initial sync if online and authenticated
+    if (this.getSyncState().isOnline && tokenService.isAuthenticated()) {
       this.sync().catch(error => {
         console.error('Initial sync failed:', error)
       })
@@ -124,7 +140,15 @@ export class SyncService {
     if (this.autoSyncSubscription) {
       this.autoSyncSubscription.unsubscribe()
       this.autoSyncSubscription = null
+      console.log('Sync service stopped')
     }
+  }
+
+  /**
+   * Check if sync service is currently started
+   */
+  isStarted(): boolean {
+    return this.autoSyncSubscription !== null
   }
 
   /**
@@ -155,6 +179,21 @@ export class SyncService {
       return
     }
 
+    // Debouncing: Don't sync if called too soon after last attempt
+    const now = Date.now()
+    const timeSinceLastAttempt = now - this.lastSyncAttemptTime
+    if (timeSinceLastAttempt < this.MIN_SYNC_INTERVAL && retryCount === 0) {
+      console.log(`Sync skipped: too soon since last attempt (${timeSinceLastAttempt}ms < ${this.MIN_SYNC_INTERVAL}ms)`)
+      return
+    }
+    this.lastSyncAttemptTime = now
+
+    // Don't sync if not authenticated
+    if (!tokenService.isAuthenticated()) {
+      console.log('Sync skipped: not authenticated')
+      return
+    }
+
     // Don't sync if offline
     if (!state.isOnline) {
       console.log('Sync skipped: offline')
@@ -180,17 +219,7 @@ export class SyncService {
       // Update pending count
       this.updateSyncState({ pendingCount: pendingOps.length })
 
-      // If no pending operations, just update lastSync
-      if (pendingOps.length === 0) {
-        this.updateSyncState({
-          isSyncing: false,
-          lastSync: Date.now(),
-          pendingCount: 0,
-        })
-        return
-      }
-
-      // Step 3: Group and prepare operations
+      // Step 3: Group and prepare operations (even if empty - fetch from server)
       const payload = await this.prepareSyncPayload(pendingOps)
 
       // Step 4: Send to server
@@ -257,8 +286,15 @@ export class SyncService {
    * Prepare sync payload from pending operations
    */
   private async prepareSyncPayload(operations: SyncOperation[]): Promise<SyncPayload> {
+    // Enforce max 1000 operations limit
+    const limitedOps = operations.slice(0, 1000)
+
+    if (operations.length > 1000) {
+      console.warn(`Truncating ${operations.length} operations to 1000 limit`)
+    }
+
     // Merge operations by entity (keep latest only)
-    const mergedOps = mergeOperationsByEntity(operations)
+    const mergedOps = mergeOperationsByEntity(limitedOps)
 
     // Sort by priority (DELETE > UPDATE > CREATE)
     const sortedOps = sortOperations(mergedOps)
@@ -266,6 +302,17 @@ export class SyncService {
     // Group by entity type
     const listOps = sortedOps.filter(op => op.entityType === 'list')
     const itemOps = sortedOps.filter(op => op.entityType === 'listItem')
+
+    // Get last sync timestamp for incremental sync
+    const lastSync = localStorage.getItem('lastSyncTimestamp')
+    const isInitialSync = !lastSync
+
+    // Log sync type
+    if (isInitialSync) {
+      console.log('🔄 Preparing INITIAL SYNC (full data fetch from server)')
+    } else {
+      console.log('🔄 Preparing INCREMENTAL SYNC (changes since:', new Date(parseInt(lastSync)).toISOString(), ')')
+    }
 
     return {
       listOperations: listOps.map(op => ({
@@ -277,11 +324,13 @@ export class SyncService {
       })),
       itemOperations: itemOps.map(op => ({
         id: op.entityId,
+        listId: op.data?.listId || op.data?.data?.listId, // Extract listId from data
         type: op.operationType as 'CREATE' | 'UPDATE' | 'DELETE',
         version: op.version,
         timestamp: op.timestamp,
-        data: op.data,
+        data: op.data?.data || op.data, // Handle nested data structure
       })),
+      lastSyncTimestamp: lastSync ? parseInt(lastSync) : undefined,
     }
   }
 
@@ -289,8 +338,36 @@ export class SyncService {
    * Send sync request to server
    */
   private async sendSyncRequest(payload: SyncPayload): Promise<SyncResponse> {
-    const response = await API.post<SyncResponse>('lists/sync', payload)
-    return response.data
+    try {
+      const response = await API.post<SyncResponse>('lists/sync', payload)
+      return response.data
+    } catch (error: any) {
+      // Handle specific HTTP error codes
+      if (error.response) {
+        const status = error.response.status
+
+        switch (status) {
+          case 400:
+            // Bad Request - likely invalid payload or too many operations
+            console.error('Sync request rejected - invalid data:', error.response.data)
+            throw new Error('Invalid sync request - check operation data')
+
+          case 403:
+            // Forbidden - user doesn't have access to one or more lists
+            console.error('Sync forbidden - access denied to one or more lists')
+            throw new Error('Access denied to lists')
+
+          case 429:
+            // Rate limit exceeded - wait 60 seconds before retry
+            console.warn('Sync rate limit exceeded - will retry after backoff')
+            throw new Error('Rate limit exceeded')
+
+          default:
+            throw error
+        }
+      }
+      throw error
+    }
   }
 
   /**
@@ -300,20 +377,40 @@ export class SyncService {
     response: SyncResponse,
     sentOperations: SyncOperation[]
   ): Promise<void> {
+    // Debug: Log server response
+    console.log('📥 Server sync response:', {
+      listsCount: response.lists?.length || 0,
+      itemsCount: response.items?.length || 0,
+      conflictListIds: response.conflicts?.listIds?.length || 0,
+      conflictItemIds: response.conflicts?.itemIds?.length || 0,
+      serverTimestamp: response.serverTimestamp,
+    })
+
+    // Save serverTimestamp for next incremental sync
+    if (response.serverTimestamp) {
+      localStorage.setItem('lastSyncTimestamp', response.serverTimestamp.toString())
+    }
+
     // Update lists from server
     if (response.lists && response.lists.length > 0) {
-      await this.processServerLists(response.lists, sentOperations)
+      console.log('📝 Processing', response.lists.length, 'lists from server')
+      await this.processServerLists(response.lists, response.conflicts, sentOperations)
     }
 
     // Update items from server
     if (response.items && response.items.length > 0) {
-      await this.processServerItems(response.items, sentOperations)
+      console.log('📝 Processing', response.items.length, 'items from server')
+      await this.processServerItems(response.items, response.conflicts, sentOperations)
     }
 
-    // Handle conflicts if any
-    if (response.conflicts && response.conflicts.length > 0) {
-      console.warn('Conflicts detected:', response.conflicts)
-      // Conflicts are already resolved by the resolver logic above
+    // Log conflicts if any
+    if (response.conflicts) {
+      if (response.conflicts.listIds?.length > 0) {
+        console.warn('List conflicts resolved (server won):', response.conflicts.listIds)
+      }
+      if (response.conflicts.itemIds?.length > 0) {
+        console.warn('Item conflicts resolved (server won):', response.conflicts.itemIds)
+      }
     }
   }
 
@@ -322,53 +419,34 @@ export class SyncService {
    */
   private async processServerLists(
     serverLists: any[],
+    conflicts: { listIds: string[]; itemIds: string[] },
     sentOperations: SyncOperation[]
   ): Promise<void> {
+    console.log('💾 Saving lists to IndexedDB:', serverLists.length)
+
     for (const serverList of serverLists) {
-      const clientOp = sentOperations.find(
-        op => op.entityType === 'list' && op.entityId === serverList.id
-      )
+      const isConflict = conflicts.listIds.includes(serverList.id)
 
-      if (clientOp) {
-        // Check for conflicts
-        const clientData = await db.lists.get(serverList.id)
-
-        if (clientData && clientData.version !== serverList.version) {
-          // Conflict detected - resolve
-          const resolution = resolveConflict(
-            clientOp.operationType,
-            clientData,
-            clientOp.timestamp,
-            serverList,
-            new Date(serverList.updatedAt).getTime()
-          )
-
-          if (resolution.resolved) {
-            // Update with resolved data
-            await db.lists.put({
-              ...resolution.resolved,
-              syncStatus: SyncStatus.SYNCED,
-            })
-          } else {
-            // Entity was deleted
-            await db.lists.delete(serverList.id)
-          }
-
-          console.log(`List conflict resolved for ${serverList.id}:`, resolution.strategy)
-        } else {
-          // No conflict - just update
-          await db.lists.put({
-            ...serverList,
-            syncStatus: SyncStatus.SYNCED,
-          })
-        }
-      } else {
-        // New list from server (no client operation)
-        await db.lists.put({
-          ...serverList,
-          syncStatus: SyncStatus.SYNCED,
-        })
+      if (isConflict) {
+        console.warn(`⚠️ List conflict resolved for ${serverList.id} - using server version`)
       }
+
+      // Always use server data (conflicts already resolved by server using LWW)
+      const listToSave = {
+        ...serverList,
+        version: serverList.version, // Ensure version is updated
+        syncStatus: SyncStatus.SYNCED,
+        localTimestamp: Date.now(), // Update timestamp to trigger liveQuery
+      }
+
+      await db.lists.put(listToSave)
+
+      console.log('✅ Saved list to IndexedDB:', {
+        id: serverList.id,
+        title: serverList.title,
+        ownerId: serverList.ownerId,
+        itemsCount: serverList.items?.length || 0,
+      })
     }
   }
 
@@ -377,53 +455,22 @@ export class SyncService {
    */
   private async processServerItems(
     serverItems: any[],
+    conflicts: { listIds: string[]; itemIds: string[] },
     sentOperations: SyncOperation[]
   ): Promise<void> {
     for (const serverItem of serverItems) {
-      const clientOp = sentOperations.find(
-        op => op.entityType === 'listItem' && op.entityId === serverItem.id
-      )
+      const isConflict = conflicts.itemIds.includes(serverItem.id)
 
-      if (clientOp) {
-        // Check for conflicts
-        const clientData = await db.listItems.get(serverItem.id)
-
-        if (clientData && clientData.version !== serverItem.version) {
-          // Conflict detected - resolve
-          const resolution = resolveConflict(
-            clientOp.operationType,
-            clientData,
-            clientOp.timestamp,
-            serverItem,
-            new Date(serverItem.updatedAt).getTime()
-          )
-
-          if (resolution.resolved) {
-            // Update with resolved data
-            await db.listItems.put({
-              ...resolution.resolved,
-              syncStatus: SyncStatus.SYNCED,
-            })
-          } else {
-            // Entity was deleted
-            await db.listItems.delete(serverItem.id)
-          }
-
-          console.log(`Item conflict resolved for ${serverItem.id}:`, resolution.strategy)
-        } else {
-          // No conflict - just update
-          await db.listItems.put({
-            ...serverItem,
-            syncStatus: SyncStatus.SYNCED,
-          })
-        }
-      } else {
-        // New item from server (no client operation)
-        await db.listItems.put({
-          ...serverItem,
-          syncStatus: SyncStatus.SYNCED,
-        })
+      if (isConflict) {
+        console.warn(`Item conflict resolved for ${serverItem.id} - using server version`)
       }
+
+      // Always use server data (conflicts already resolved by server using LWW)
+      await db.listItems.put({
+        ...serverItem,
+        version: serverItem.version, // Ensure version is updated
+        syncStatus: SyncStatus.SYNCED,
+      })
     }
   }
 

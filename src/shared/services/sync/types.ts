@@ -15,19 +15,38 @@ export interface SyncState {
  * Sync API request payload
  */
 export interface SyncPayload {
-  listOperations: SyncOperationPayload[]
-  itemOperations: SyncOperationPayload[]
+  listOperations: ListOperationPayload[]
+  itemOperations: ListItemOperationPayload[]
+  lastSyncTimestamp?: number // For incremental sync
 }
 
 /**
- * Individual operation in sync payload
+ * List operation in sync payload
  */
-export interface SyncOperationPayload {
+export interface ListOperationPayload {
   id: string
   type: 'CREATE' | 'UPDATE' | 'DELETE'
   version: number
   timestamp: number
-  data: any
+  data?: {
+    title?: string
+    type?: 'SHOPPING' | 'TODO' | 'OTHER'
+  }
+}
+
+/**
+ * List item operation in sync payload
+ */
+export interface ListItemOperationPayload {
+  id: string
+  listId: string // Required for item operations
+  type: 'CREATE' | 'UPDATE' | 'DELETE'
+  version: number
+  timestamp: number
+  data?: {
+    content?: string
+    checked?: boolean
+  }
 }
 
 /**
@@ -36,18 +55,11 @@ export interface SyncOperationPayload {
 export interface SyncResponse {
   lists: LocalList[]
   items: LocalListItem[]
-  conflicts: ConflictInfo[]
-}
-
-/**
- * Conflict information from server
- */
-export interface ConflictInfo {
-  entityType: 'list' | 'listItem'
-  entityId: string
-  clientVersion: number
-  serverVersion: number
-  resolution: 'client' | 'server' | 'merged'
+  conflicts: {
+    listIds: string[]
+    itemIds: string[]
+  }
+  serverTimestamp: number // Save for next incremental sync
 }
 
 /**

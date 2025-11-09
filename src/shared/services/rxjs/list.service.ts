@@ -120,17 +120,35 @@ export class ListRxService {
   }
 
   /**
-   * Get observable of lists by owner ID
+   * Get observable of lists by owner ID with items
+   * Automatically JOINs with listItems table
    * @param ownerId Owner user ID
    */
   getListsByOwner$(ownerId: string): Observable<LocalList[]> {
     return from(
-      liveQuery(() =>
-        db.lists
+      liveQuery(async () => {
+        // Get lists for this owner sorted by timestamp (newest first)
+        const lists = await db.lists
           .where('ownerId')
           .equals(ownerId)
+          .reverse()
           .sortBy('localTimestamp')
-      )
+
+        // For each list, get its items with JOIN
+        return await Promise.all(
+          lists.map(async (list) => {
+            const items = await db.listItems
+              .where('listId')
+              .equals(list.id)
+              .sortBy('localTimestamp')
+
+            return {
+              ...list,
+              items: items,
+            } as LocalList
+          })
+        )
+      })
     ).pipe(
       shareReplay(1)
     )
@@ -172,8 +190,11 @@ export class ListRxService {
     // Optimistically add to IndexedDB
     await db.lists.add(newList)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.CREATE, id, newList, 1, now)
+    // Add to sync queue (only send required fields to API)
+    await this.addToSyncQueue(OperationType.CREATE, id, {
+      title: newList.title,
+      type: newList.type,
+    }, 1, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)
@@ -208,8 +229,11 @@ export class ListRxService {
     // Optimistically update in IndexedDB
     await db.lists.put(updatedList)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.UPDATE, id, updatedList, newVersion, now)
+    // Add to sync queue (only send required fields to API)
+    await this.addToSyncQueue(OperationType.UPDATE, id, {
+      title: updatedList.title,
+      type: updatedList.type,
+    }, newVersion, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)

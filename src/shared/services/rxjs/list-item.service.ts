@@ -121,8 +121,14 @@ export class ListItemRxService {
     // Optimistically add to IndexedDB
     await db.listItems.add(newItem)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.CREATE, id, newItem, 1, now)
+    // Add to sync queue (include listId at root level for API)
+    await this.addToSyncQueue(OperationType.CREATE, id, {
+      listId: listId,
+      data: {
+        content: content,
+        checked: false,
+      }
+    }, 1, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)
@@ -158,8 +164,13 @@ export class ListItemRxService {
     // Optimistically update in IndexedDB
     await db.listItems.put(updatedItem)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.UPDATE, id, updatedItem, newVersion, now)
+    // Add to sync queue (include listId at root level for API)
+    await this.addToSyncQueue(OperationType.UPDATE, id, {
+      listId: existingItem.listId,
+      data: {
+        checked: checked,
+      }
+    }, newVersion, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)
@@ -192,8 +203,13 @@ export class ListItemRxService {
     // Optimistically update in IndexedDB
     await db.listItems.put(updatedItem)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.UPDATE, id, updatedItem, newVersion, now)
+    // Add to sync queue (include listId at root level for API)
+    await this.addToSyncQueue(OperationType.UPDATE, id, {
+      listId: existingItem.listId,
+      data: {
+        content: content,
+      }
+    }, newVersion, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)
@@ -216,8 +232,10 @@ export class ListItemRxService {
     // Optimistically delete from IndexedDB
     await db.listItems.delete(id)
 
-    // Add to sync queue
-    await this.addToSyncQueue(OperationType.DELETE, id, { id }, newVersion, now)
+    // Add to sync queue (include listId for API)
+    await this.addToSyncQueue(OperationType.DELETE, id, {
+      listId: existingItem.listId,
+    }, newVersion, now)
 
     // Update sync status
     this.syncStatus$.next(SyncStatus.PENDING)

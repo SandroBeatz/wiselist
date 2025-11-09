@@ -40,7 +40,7 @@ export const useLoginForm = () => {
       try {
         const { accessToken, refreshToken } = await apiAuth.login(formData)
         await useUserStore().setTokens(accessToken, refreshToken)
-        void router.push({ name: 'TabLists' })
+        await router.push({ name: 'TabLists' })
       } catch (e) {
         console.log(e)
       }

@@ -84,8 +84,14 @@ export const useUserStore = defineStore('user', {
      * This ensures data isolation between different users
      */
     async logout() {
+      // Stop sync service before clearing data
+      syncService.stop()
+
       this.info = null
       tokenService.clearTokens()
+
+      // Clear sync timestamp to force full sync on next login
+      localStorage.removeItem('lastSyncTimestamp')
 
       // Clear all local data from IndexedDB to prevent data leakage between users
       try {

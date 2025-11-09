@@ -13,7 +13,7 @@
  *
  * Default: true (offline-only, no backend required)
  */
-export const OFFLINE_ONLY_MODE = true
+export const OFFLINE_ONLY_MODE = false
 
 /**
  * Auto-sync interval (milliseconds)

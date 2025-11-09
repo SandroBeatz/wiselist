@@ -4,12 +4,20 @@ import { useUserStore } from '../entities/user/model/user.store'
 import { onBeforeMount } from 'vue'
 import { SocialLogin } from '@capgo/capacitor-social-login'
 import { tokenMonitorService } from '@shared/services/token-monitor.service'
+import { tokenService } from '@shared/services/token.service'
+import { syncService } from '@shared/services/sync/sync.service'
 
 const userStore = useUserStore()
 
 onBeforeMount(async () => {
   await userStore.initUser()
   tokenMonitorService.startMonitoring()
+
+  // Only start sync for authenticated users
+  if (tokenService.isAuthenticated()) {
+    syncService.start() // Start background sync and auto-sync timer
+  }
+
   await SocialLogin.initialize({
     google: {
       webClientId: import.meta.env.VITE_WEB_GOOGLE_AUTH_KEY,
