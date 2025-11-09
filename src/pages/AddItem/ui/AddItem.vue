@@ -3,7 +3,7 @@ import {
   onIonViewWillEnter,
   IonItem,
   IonList,
-  type IonInput,
+  IonInput,
   IonFab,
 } from '@ionic/vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -77,12 +77,8 @@ const handleKeyPress = async (event: KeyboardEvent) => {
   if (event.key === 'Enter') {
     event.preventDefault()
 
-    console.log(32532)
-
     await handleSubmit(async () => {
       // Add item to cache after successful creation
-      console.log(list.value)
-
       if (list.value && form.content.trim()) {
         addToCache(list.value.type, form.content.trim())
       }
@@ -96,6 +92,9 @@ const handleKeyPress = async (event: KeyboardEvent) => {
   }
 }
 
+const handlerField = (event: CustomEvent) => {
+  form.content = (event.target as HTMLInputElement).value
+}
 // Add item from cache to current list
 const handleAddFromCache = async (content: string) => {
   if (!list.value) return
@@ -147,7 +146,8 @@ onMounted(() => {
       <div class="ion-padding-horizontal">
         <ion-input
             ref="inputRef"
-            v-model="form.content"
+            :value="form.content"
+            @ionInput="handlerField($event)"
             placeholder="Type item name and press Enter"
             type="text"
             :maxlength="500"

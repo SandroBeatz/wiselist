@@ -1,12 +1,10 @@
 import { BehaviorSubject, Observable, interval, fromEvent, merge } from 'rxjs'
 import { filter, debounceTime } from 'rxjs/operators'
 import { API } from '@shared/instances/axios'
-import { db, OperationType, SyncStatus } from '@shared/db'
+import { db, SyncStatus } from '@shared/db'
 import type { SyncOperation } from '@shared/db'
 import { tokenService } from '@shared/services/token.service'
-import { listRxService } from '@shared/services/rxjs/list.service'
-import { listItemRxService } from '@shared/services/rxjs/list-item.service'
-import { resolveConflict, mergeOperationsByEntity, sortOperations } from './ot-resolver'
+import { mergeOperationsByEntity, sortOperations } from './ot-resolver'
 import type { SyncState, SyncPayload, SyncResponse, SyncConfig } from './types'
 import {
   OFFLINE_ONLY_MODE,

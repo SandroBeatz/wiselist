@@ -33,6 +33,8 @@ const closeModal = () => {
 
 const closeAndRefetch = async () => {
   try {
+    closeModal()
+
     // Trigger sync after create/edit
     // RxJS will automatically update UI via observables
     await syncService.forceSync()
@@ -40,7 +42,7 @@ const closeAndRefetch = async () => {
     // Call callback if provided (for custom logic)
     await props.callback?.()
 
-    closeModal()
+
   } catch (error) {
     console.error('Error closing modal:', error)
   }

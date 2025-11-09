@@ -33,12 +33,9 @@ export const useCreateListItemForm = (listId: ListId) => {
     },
     validate: validateListForm,
     onSubmit: async ({ context, ...form }: ListItemForm) => {
-      console.log(32534532532523532)
       try {
         // Use RxJS service for optimistic create with auto-sync
         const content = context || form.content
-        console.log(325, content)
-
         await listItemRxService.createListItem(form.listId, content)
       } catch (e) {
         console.log(e)
