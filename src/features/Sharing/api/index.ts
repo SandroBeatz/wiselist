@@ -6,7 +6,7 @@ import type {ListId} from "@entities/list";
 import type {ShareListRequest} from "../model/types";
 
 // API endpoints
-const SHARE_LIST = (listId: ListId) => `sharing/lists/${listId}`
+const SHARE_LIST = (listId: ListId) => `sharing/lists/${listId}/invite-user`
 const REMOVE_SHARE = (shareId: ShareId) => `sharing/lists/${shareId}/leave`
 
 const shareList = (listId: ListId, payload: ShareListRequest) =>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import {onMounted, watch} from 'vue'
 import {
   IonModal,
   IonHeader,
@@ -42,6 +42,10 @@ const handleShare = (email: string) => {
 const handleClose = () => {
   emit('close')
 }
+
+onMounted(async () => {
+  await contactsStore.fetchData()
+})
 
 // Watch for modal open/close
 watch(() => props.isOpen, (isOpen) => {
