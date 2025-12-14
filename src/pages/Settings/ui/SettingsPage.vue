@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { PageWrapper, List } from '@shared/ui'
 import { useConfirmationDialog } from '@shared/ui/ConfirmationDialog'
 import { useLanguageSwitcherDialog, languageService } from '@/features/Language'
+import { useThemeSwitcherDialog, themeService } from '@/features/Theme'
 import { SunMoon, LogOut, Bell, Languages, OctagonX } from 'lucide-vue-next'
 import { computed } from 'vue'
 import type { ListProps } from '@shared/ui'
@@ -41,6 +42,11 @@ const handleLanguageClick = async () => {
   await dialog.present()
 }
 
+const handleThemeClick = async () => {
+  const dialog = await useThemeSwitcherDialog().open()
+  await dialog.present()
+}
+
 const listData = computed<ListProps>(() => ({
   sections: [
     {
@@ -61,7 +67,9 @@ const listData = computed<ListProps>(() => ({
         {
           label: t('settings.appearance'),
           icon: SunMoon,
+          detail: themeService.getCurrentThemeLabel(),
           button: true,
+          onClick: handleThemeClick
         },
         {
           label: t('settings.notifications'),

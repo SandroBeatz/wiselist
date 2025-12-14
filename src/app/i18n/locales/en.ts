@@ -20,4 +20,10 @@ export default {
     german: 'Deutsch',
     french: 'Français',
   },
+  theme: {
+    title: 'Select Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System (Auto)',
+  },
 }

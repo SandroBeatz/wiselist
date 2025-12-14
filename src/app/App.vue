@@ -6,10 +6,14 @@ import { SocialLogin } from '@capgo/capacitor-social-login'
 import { tokenMonitorService } from '@shared/services/token-monitor.service'
 import { tokenService } from '@shared/services/token.service'
 import { syncService } from '@shared/services/sync/sync.service'
+import { themeService } from '@/features/Theme/model/theme.service'
 
 const userStore = useUserStore()
 
 onBeforeMount(async () => {
+  // Initialize theme FIRST to prevent flash on app load
+  themeService.initialize()
+
   await userStore.initUser()
   tokenMonitorService.startMonitoring()
 
