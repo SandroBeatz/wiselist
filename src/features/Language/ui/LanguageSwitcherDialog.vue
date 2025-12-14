@@ -27,7 +27,7 @@ const languageListData = computed<ListProps>(() => ({
       items: languages.map(lang => ({
         label: lang.name,
         detail: currentLocale.value === lang.code ? '✓' : undefined,
-        button: true,
+        button: false,
         onClick: () => handleSelectLanguage(lang.code)
       }))
     }

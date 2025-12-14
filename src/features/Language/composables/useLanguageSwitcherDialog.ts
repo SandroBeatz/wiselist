@@ -13,6 +13,7 @@ export function useLanguageSwitcherDialog() {
       component: LanguageSwitcherDialog,
       initialBreakpoint: 1,
       breakpoints: [0, 1],
+      cssClass: 'height-auto',
     })
 
     return {
