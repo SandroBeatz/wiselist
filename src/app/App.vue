@@ -7,11 +7,15 @@ import { tokenMonitorService } from '@shared/services/token-monitor.service'
 import { tokenService } from '@shared/services/token.service'
 import { syncService } from '@shared/services/sync/sync.service'
 import { themeService } from '@/features/Theme/model/theme.service'
+import { languageService } from '@/features/Language'
 
 const userStore = useUserStore()
 
 onBeforeMount(async () => {
-  // Initialize theme FIRST to prevent flash on app load
+  // Initialize language FIRST to set correct locale
+  languageService.initialize()
+
+  // Initialize theme to prevent flash on app load
   themeService.initialize()
 
   await userStore.initUser()

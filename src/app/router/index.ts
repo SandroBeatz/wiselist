@@ -7,6 +7,8 @@ import settingsRoutes from '@/app/router/routes/settings.route'
 import listsRoutes from '@/app/router/routes/lists.route'
 import { tokenService } from '@shared/services/token.service'
 import settingsProfileRoutes from '@app/router/routes/settings-profile.route'
+import profileRoutes from '@app/router/routes/profile.route'
+import aboutRoutes from '@app/router/routes/about.route'
 import listPreviewRoutes from '@app/router/routes/list-preview.route'
 import addItemRoutes from '@app/router/routes/add-item.route'
 
@@ -43,6 +45,8 @@ const routes: Array<RouteRecordRaw> = [
   ...listPreviewRoutes,
   ...addItemRoutes,
   ...settingsProfileRoutes,
+  ...profileRoutes,
+  ...aboutRoutes,
 ]
 
 const router = createRouter({

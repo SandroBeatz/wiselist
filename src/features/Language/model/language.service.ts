@@ -19,8 +19,14 @@ class LanguageService {
 
   constructor() {
     this._locale = useLocalStorage<string>(storageKeys.LOCALE, 'en')
+  }
 
-    // Sync initial locale with vue-i18n
+  /**
+   * Initialize language service and sync with vue-i18n
+   * Should be called in App.vue onBeforeMount
+   */
+  initialize(): void {
+    // Sync locale from localStorage to vue-i18n
     if (this._locale.value) {
       ;(i18n.global.locale as any).value = this._locale.value as SupportedLocale
     }
