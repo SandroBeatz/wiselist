@@ -5,11 +5,10 @@ import { useLogout } from '@/features/Auth'
 import { useRouter } from 'vue-router'
 import { PageWrapper, List } from '@shared/ui'
 import { useConfirmationDialog } from '@shared/ui/ConfirmationDialog'
-import { SunMoon, LogOut, Bell, Languages } from 'lucide-vue-next'
+import { SunMoon, LogOut, Bell, Languages, OctagonX } from 'lucide-vue-next'
 import { computed } from 'vue'
 import type { ListProps } from '@shared/ui'
 import { db } from '@shared/db'
-
 
 const router = useRouter()
 
@@ -55,7 +54,6 @@ const listData = computed<ListProps>(() => ({
           label: 'Appearance',
           icon: SunMoon,
           button: true,
-          onClick: () => db.clearAll()
         },
         {
           label: 'Notifications',
@@ -67,6 +65,12 @@ const listData = computed<ListProps>(() => ({
           icon: Languages,
           detail: 'EN',
           button: true
+        },
+        {
+          label: 'Clear Database',
+          icon: OctagonX,
+          button: true,
+          onClick: () => db.clearAll()
         }
       ]
     },

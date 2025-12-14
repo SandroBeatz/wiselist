@@ -8,9 +8,9 @@ defineProps<ListProps>()
 <template>
   <ion-list :lines="lines || 'full'">
     <template v-for="(section, sectionIndex) in sections" :key="sectionIndex">
-      <ion-item-divider v-if="section.title">
+      <ion-item-divider v-if="section.title" class="ion-no-padding">
         <ion-label>
-          <span class="text-slate-500">{{ section.title }}</span>
+          <span class="ion-text-default font-semibold">{{ section.title }}</span>
         </ion-label>
       </ion-item-divider>
 
@@ -30,7 +30,7 @@ defineProps<ListProps>()
           <component
             v-else-if="item.icon && typeof item.icon !== 'string'"
             :is="item.icon"
-            class="size-5 text-slate-500"
+            class="size-5 ion-text-quiet"
             slot="start"
           />
 
@@ -41,16 +41,16 @@ defineProps<ListProps>()
           />
 
           <div v-if="item.caption">
-            <ion-label>{{ item.label }}</ion-label>
+            <ion-label class="font-semibold">{{ item.label }}</ion-label>
             <ion-label>
-              <span class="text-xs text-zinc-500">{{ item.caption }}</span>
+              <span class="text-xs ion-text-mute">{{ item.caption }}</span>
             </ion-label>
           </div>
 
           <ion-label v-else>{{ item.label }}</ion-label>
 
           <ion-label v-if="item.detail && typeof item.detail === 'string'" slot="end">
-            <span class="text-xs text-zinc-500">{{ item.detail }}</span>
+            <span class="text-xs ion-text-mute">{{ item.detail }}</span>
           </ion-label>
         </ion-item>
       </ion-item-group>
@@ -73,7 +73,7 @@ ion-item-group {
   overflow: hidden;
   margin-bottom: 18px;
   border-radius: 12px;
-  @apply shadow-xl;
+  @apply shadow-lg;
 }
 
 ion-item {
