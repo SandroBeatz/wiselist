@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import i18n from './i18n'
 
 import { IonicVue } from '@ionic/vue'
 
@@ -39,7 +40,7 @@ import './assets/css/main.css'
 
 const pinia = createPinia()
 
-const app = createApp(App).use(IonicVue).use(pinia).use(autoAnimatePlugin).use(router)
+const app = createApp(App).use(IonicVue).use(pinia).use(i18n).use(autoAnimatePlugin).use(router)
 
 router.isReady().then(async () => {
   app.mount('#app')

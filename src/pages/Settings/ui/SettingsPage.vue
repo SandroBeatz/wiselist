@@ -5,12 +5,15 @@ import { useLogout } from '@/features/Auth'
 import { useRouter } from 'vue-router'
 import { PageWrapper, List } from '@shared/ui'
 import { useConfirmationDialog } from '@shared/ui/ConfirmationDialog'
+import { useLanguageSwitcherDialog, languageService } from '@/features/Language'
 import { SunMoon, LogOut, Bell, Languages, OctagonX } from 'lucide-vue-next'
 import { computed } from 'vue'
 import type { ListProps } from '@shared/ui'
 import { db } from '@shared/db'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const { info } = storeToRefs(useUserStore())
 
@@ -33,10 +36,15 @@ const handleLogout = async () => {
   await dialog.present()
 }
 
+const handleLanguageClick = async () => {
+  const dialog = await useLanguageSwitcherDialog().open()
+  await dialog.present()
+}
+
 const listData = computed<ListProps>(() => ({
   sections: [
     {
-      title: 'Profile',
+      title: t('settings.profile'),
       items: [
         {
           label: info.value?.profile.fullName || '',
@@ -48,26 +56,27 @@ const listData = computed<ListProps>(() => ({
       ]
     },
     {
-      title: 'General',
+      title: t('settings.general'),
       items: [
         {
-          label: 'Appearance',
+          label: t('settings.appearance'),
           icon: SunMoon,
           button: true,
         },
         {
-          label: 'Notifications',
+          label: t('settings.notifications'),
           icon: Bell,
           button: true
         },
         {
-          label: 'Language',
+          label: t('settings.language'),
           icon: Languages,
-          detail: 'EN',
-          button: true
+          detail: languageService.getCurrentLocaleName(),
+          button: true,
+          onClick: handleLanguageClick
         },
         {
-          label: 'Clear Database',
+          label: t('settings.clearDatabase'),
           icon: OctagonX,
           button: true,
           onClick: () => db.clearAll()
@@ -77,7 +86,7 @@ const listData = computed<ListProps>(() => ({
     {
       items: [
         {
-          label: 'Logout',
+          label: t('common.logout'),
           icon: LogOut,
           button: true,
           detail: false,
@@ -91,7 +100,7 @@ const listData = computed<ListProps>(() => ({
 </script>
 
 <template>
-  <PageWrapper title="Settings">
+  <PageWrapper :title="t('settings.title')">
     <List v-if="info" :sections="listData.sections" />
   </PageWrapper>
 </template>
