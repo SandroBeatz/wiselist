@@ -5,6 +5,7 @@
 body {
     @apply font-nunito text-lg;
     --ion-font-family: 'Nunito', sans-serif;
+    color: var(--ion-text-color);
 }
 
 .height-auto {
