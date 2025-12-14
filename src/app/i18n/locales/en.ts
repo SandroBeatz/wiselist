@@ -4,6 +4,9 @@ export default {
     save: 'Save',
     logout: 'Logout',
   },
+  lists: {
+    title: 'My lists',
+  },
   settings: {
     title: 'Settings',
     profile: 'Profile',

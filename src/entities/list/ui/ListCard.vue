@@ -1,16 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ShoppingBasket, CheckSquare, ListTodo, Calendar } from 'lucide-vue-next'
-import { useUserStore } from '@entities/user'
+import { ShoppingBasket, CheckSquare, ListTodo, EllipsisVertical } from 'lucide-vue-next'
+import {UserId, useUserStore} from '@entities/user'
 import type { LocalList } from '@shared/db'
+import {Nullable} from "@shared/types/global";
 
 interface Props {
   list: LocalList
 }
 
+export type ListShare = {
+  id: UserId
+  email: string
+  fullName: string
+  avatar: Nullable<string>
+}
+
 const props = defineProps<Props>()
 
 const userStore = useUserStore()
+
+const shares = computed<ListShare[]>(() => props.list.shares)
 
 // Check if current user is the owner of the list
 const isCurrentUserOwner = computed(() => {
@@ -63,16 +73,17 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
-  <div class="relative flex-1 flex">
-<!--    <ion-buttons class="absolute top-2 right-2 z-10">-->
-<!--      <ion-button size="small" fill="clear">-->
-<!--        <EllipsisVertical class="size-5" slot="icon-only"/>-->
-<!--      </ion-button>-->
-<!--    </ion-buttons>-->
+  <ion-card class="flex-1 flex ion-no-margin ion-activatable ripple-parent overflow-hidden relative rounded-2xl p-4 shadow-md hover:shadow-xl transition-shadow">
+    <ion-buttons class="absolute top-[13px] right-2 z-10">
+      <ion-button size="small" fill="clear">
+        <EllipsisVertical class="size-5" slot="icon-only"/>
+      </ion-button>
+    </ion-buttons>
     <router-link
         :to="{ name: 'ListPreview', params: { id: list.id } }"
-        class="flex w-full flex-1 flex-col ion-activatable ripple-parent overflow-hidden relative bg-white rounded-2xl p-4 shadow-md hover:shadow-xl transition-shadow"
+        class="flex w-full flex-1 flex-col"
     >
+      <!--
       <div class="flex items-center justify-between mb-3">
         <div class="rounded-full size-8 flex justify-center items-center" :class="getListTypeBg(list.type)">
           <component
@@ -82,26 +93,24 @@ const formatDate = (dateString: string) => {
           />
         </div>
       </div>
+      -->
 
-      <h3 class="text-xl font-semibold text-zinc-800 mb-2 line-clamp-2">
+      <h3 class="text-xl font-semibold ion-text-default mb-2 line-clamp-2">
         {{ list.title }}
       </h3>
+      <!--
       <div class="flex items-center text-xs text-zinc-400 mb-3">
         <Calendar class="size-4 mr-1"/>
         {{ formatDate(list.createdAt) }}
       </div>
-
-      <div class="w-full bg-zinc-200 rounded-full overflow-hidden h-1.5">
-        <div
-            class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
-            :style="{ width: `${list.items.length > 0 ? +(list.items.filter(item => item.checked).length / list.items.length) * 100 : 0}%` }"
-        ></div>
-      </div>
+      -->
+<!--      <pre>{{list.ownerId}}</pre>-->
+<!--      <pre>{{shares}}</pre>-->
       <div class="flex justify-between items-center">
         <div class="flex">
 
         </div>
-        <div class="flex justify-between text-xs text-zinc-400 mt-1">
+        <div class="flex justify-between text-xs ion-text-mute mb-1">
           <template v-if="!list.items.length">
             0
           </template>
@@ -112,10 +121,16 @@ const formatDate = (dateString: string) => {
           </template>
         </div>
       </div>
+      <div class="w-full bg-zinc-200 rounded-full overflow-hidden h-1.5">
+        <div
+            class="bg-blue-500 h-1.5 rounded-full transition-all duration-300"
+            :style="{ width: `${list.items.length > 0 ? +(list.items.filter(item => item.checked).length / list.items.length) * 100 : 0}%` }"
+        ></div>
+      </div>
 
       <ion-ripple-effect></ion-ripple-effect>
     </router-link>
-  </div>
+  </ion-card>
 </template>
 
 <style scoped>

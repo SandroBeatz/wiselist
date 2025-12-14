@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onIonViewWillEnter, IonFab, IonFabButton, IonButton } from '@ionic/vue'
 import { useListsRx, ListCard, SkeletonListCards } from '@/entities/list'
-import { Ellipsis, Plus, TextSearch, Bell } from 'lucide-vue-next'
+import { Plus, TextSearch, Bell } from 'lucide-vue-next'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
 import { EmptyContent, PageWrapper } from '@shared/ui'
 import { useUserStore } from '@entities/user'
+import {useI18n} from "vue-i18n";
+
+const {t} = useI18n()
 
 // Get current user for filtering lists
 const userStore = useUserStore()
@@ -28,16 +31,16 @@ onIonViewWillEnter(() => void manualSync())
 </script>
 
 <template>
-  <PageWrapper title="Lists">
+  <PageWrapper :title="t('lists.title')">
     <template #header-tools>
-      <ion-buttons slot="end">
-        <ion-button size="small" @click="handleAddList">
-          <Bell slot="icon-only" class="size-6" />
-        </ion-button>
-        <ion-button size="small" @click="handleAddList">
-          <Ellipsis slot="icon-only" class="size-6" />
-        </ion-button>
-      </ion-buttons>
+      <ion-button>
+        <Bell slot="icon-only" class="size-6" />
+      </ion-button>
+      <!--
+      <ion-button>
+        <Ellipsis slot="icon-only" class="size-6" />
+      </ion-button>
+      -->
     </template>
 
     <SkeletonListCards v-if="isLoading && !lists.length"/>
