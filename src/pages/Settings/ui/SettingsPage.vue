@@ -61,7 +61,7 @@ const listData = computed<ListProps>(() => ({
           label: t('settings.notifications'),
           icon: Bell,
           button: true,
-          onClick: showComingSoon
+          onClick: () => router.push({ name: 'NotificationSettings' })
         },
         {
           label: t('settings.contacts'),

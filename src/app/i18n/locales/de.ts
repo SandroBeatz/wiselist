@@ -4,6 +4,9 @@ export default {
     save: 'Speichern',
     logout: 'Abmelden',
   },
+  lists: {
+    title: 'Meine Listen',
+  },
   settings: {
     title: 'Einstellungen',
     profile: 'Profil',
@@ -81,6 +84,23 @@ export default {
     version: {
       label: 'Version',
       build: 'Build'
+    }
+  },
+  notifications: {
+    title: 'Benachrichtigungseinstellungen',
+    sectionTitle: 'Benachrichtigungen',
+    listSharing: {
+      label: 'Listen teilen',
+      caption: 'Erhalten Sie Benachrichtigungen, wenn jemand eine Liste mit Ihnen teilt oder Änderungen an geteilten Listen vornimmt',
+      enabled: 'Benachrichtigungen für geteilte Listen aktiviert',
+      disabled: 'Benachrichtigungen für geteilte Listen deaktiviert'
+    },
+    reminder: {
+      label: 'Erinnerungen',
+      caption: 'Planen Sie Einkäufe besser mit intelligenten Tipps und Feiertagserinnerungen',
+      enabled: 'Intelligente Erinnerungen aktiviert',
+      disabled: 'Intelligente Erinnerungen deaktiviert',
+      permissionDenied: 'Benachrichtigungsberechtigung verweigert. Bitte in den Einstellungen aktivieren.'
     }
   },
 }

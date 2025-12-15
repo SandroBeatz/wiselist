@@ -17,6 +17,7 @@
     "@capacitor/core": "7.4.3",
     "@capacitor/haptics": "7.0.2",
     "@capacitor/keyboard": "7.0.2",
+    "@capacitor/local-notifications": "^7.0.4",
     "@capacitor/status-bar": "7.0.2",
     "@capgo/capacitor-social-login": "^7.11.2",
     "@formkit/auto-animate": "^0.8.4",

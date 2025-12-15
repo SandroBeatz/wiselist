@@ -11,6 +11,7 @@ import profileRoutes from '@app/router/routes/profile.route'
 import aboutRoutes from '@app/router/routes/about.route'
 import listPreviewRoutes from '@app/router/routes/list-preview.route'
 import addItemRoutes from '@app/router/routes/add-item.route'
+import notificationSettingsRoutes from '@app/router/routes/notification-settings.route'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -47,6 +48,7 @@ const routes: Array<RouteRecordRaw> = [
   ...settingsProfileRoutes,
   ...profileRoutes,
   ...aboutRoutes,
+  ...notificationSettingsRoutes,
 ]
 
 const router = createRouter({

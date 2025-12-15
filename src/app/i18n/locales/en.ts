@@ -86,4 +86,21 @@ export default {
       build: 'Build'
     }
   },
+  notifications: {
+    title: 'Notification Settings',
+    sectionTitle: 'Notifications',
+    listSharing: {
+      label: 'List sharing',
+      caption: 'Get notified when somebody shares a list with you or makes changes on shared lists',
+      enabled: 'List sharing notifications enabled',
+      disabled: 'List sharing notifications disabled'
+    },
+    reminder: {
+      label: 'Reminder',
+      caption: 'Plan shopping better with smart tips and holiday reminders',
+      enabled: 'Smart reminders enabled',
+      disabled: 'Smart reminders disabled',
+      permissionDenied: 'Notification permission denied. Please enable in settings.'
+    }
+  },
 }

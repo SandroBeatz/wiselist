@@ -8,6 +8,7 @@ import { tokenService } from '@shared/services/token.service'
 import { syncService } from '@shared/services/sync/sync.service'
 import { themeService } from '@/features/Theme/model/theme.service'
 import { languageService } from '@/features/Language'
+import { notificationService } from '@/features/Notification'
 
 const userStore = useUserStore()
 
@@ -17,6 +18,9 @@ onBeforeMount(async () => {
 
   // Initialize theme to prevent flash on app load
   themeService.initialize()
+
+  // Initialize notification service for reminder scheduling
+  await notificationService.initialize()
 
   await userStore.initUser()
   tokenMonitorService.startMonitoring()

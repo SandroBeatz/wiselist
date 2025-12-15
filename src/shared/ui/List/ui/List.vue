@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IonList, IonItemGroup, IonItem, IonLabel, IonAvatar, IonIcon } from '@ionic/vue'
+import { IonList, IonItemGroup, IonItem, IonLabel, IonAvatar, IonIcon, IonToggle } from '@ionic/vue'
 import type { ListProps } from '../types'
 
 defineProps<ListProps>()
@@ -18,10 +18,10 @@ defineProps<ListProps>()
         <ion-item
           v-for="(item, itemIndex) in section.items"
           :key="itemIndex"
-          :button="item.button"
+          :button="item.button && !item.hasToggle"
           :detail="typeof item.detail === 'boolean' ? item.detail : undefined"
           :lines="item.lines"
-          @click="item.onClick"
+          @click="() => !item.hasToggle && item.onClick?.()"
         >
           <ion-avatar v-if="item.avatar" slot="start">
             <img :src="item.avatar" :alt="item.label" />
@@ -49,7 +49,15 @@ defineProps<ListProps>()
 
           <ion-label v-else>{{ item.label }}</ion-label>
 
-          <ion-label v-if="item.detail && typeof item.detail === 'string'" slot="end">
+          <ion-toggle
+            v-if="item.hasToggle"
+            slot="end"
+            :checked="item.toggleValue"
+            :disabled="item.toggleDisabled"
+            @ionChange="(e) => item.onToggle?.(e.detail.checked)"
+          />
+
+          <ion-label v-else-if="item.detail && typeof item.detail === 'string'" slot="end">
             <span class="text-xs ion-text-mute">{{ item.detail }}</span>
           </ion-label>
         </ion-item>

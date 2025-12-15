@@ -4,6 +4,9 @@ export default {
     save: 'Sauvegarder',
     logout: 'Se déconnecter',
   },
+  lists: {
+    title: 'Mes listes',
+  },
   settings: {
     title: 'Paramètres',
     profile: 'Profil',
@@ -81,6 +84,23 @@ export default {
     version: {
       label: 'Version',
       build: 'Build'
+    }
+  },
+  notifications: {
+    title: 'Paramètres de notification',
+    sectionTitle: 'Notifications',
+    listSharing: {
+      label: 'Partage de listes',
+      caption: 'Soyez notifié lorsque quelqu\'un partage une liste avec vous ou apporte des modifications aux listes partagées',
+      enabled: 'Notifications de partage de liste activées',
+      disabled: 'Notifications de partage de liste désactivées'
+    },
+    reminder: {
+      label: 'Rappels',
+      caption: 'Planifiez mieux vos achats avec des conseils intelligents et des rappels de vacances',
+      enabled: 'Rappels intelligents activés',
+      disabled: 'Rappels intelligents désactivés',
+      permissionDenied: 'Permission de notification refusée. Veuillez activer dans les paramètres.'
     }
   },
 }

@@ -9,6 +9,12 @@ export interface ListItemProps {
   button?: boolean
   lines?: 'full' | 'inset' | 'none'
   onClick?: () => void
+
+  // Toggle support
+  hasToggle?: boolean
+  toggleValue?: boolean
+  toggleDisabled?: boolean
+  onToggle?: (value: boolean) => void
 }
 
 export interface ListSectionProps {
