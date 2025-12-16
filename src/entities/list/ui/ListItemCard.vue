@@ -26,11 +26,11 @@ const { item, readonly = false } = props
 
 const emit = defineEmits<Emits>()
 
-const slidingItemRef = ref<HTMLIonItemSlidingElement>()
+const slidingItemRef = ref<InstanceType<typeof IonItemSliding>>()
 const SWIPE_DELETE_THRESHOLD = 2.2 // 80% swipe triggers delete
 
 // Used in template
-const handleToggle = (event: CustomEvent) => {
+const handleToggle = (event: any) => {
   if (!props.readonly) {
     emit('toggle', props.item.id, event.detail.checked)
   }
@@ -47,10 +47,10 @@ const handleDragEnd = async () => {
   if (!slidingItemRef.value || props.readonly) return
 
   try {
-    const ratio = await slidingItemRef.value.$el.getSlidingRatio()
+    const ratio = await slidingItemRef.value.$el?.getSlidingRatio()
 
     if (ratio > SWIPE_DELETE_THRESHOLD) {
-      await slidingItemRef.value.$el.open('end')
+      await slidingItemRef.value.$el?.open('end')
       handleDelete()
     }
   } catch (error) {

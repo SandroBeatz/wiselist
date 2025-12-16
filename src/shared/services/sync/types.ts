@@ -1,4 +1,4 @@
-import type { LocalList, LocalListItem, SyncOperation } from '@shared/db'
+import type { LocalList, LocalListItem } from '@shared/db'
 
 /**
  * Sync state for UI components

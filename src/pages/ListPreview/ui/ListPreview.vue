@@ -8,7 +8,7 @@ import {
   IonFab,
 } from '@ionic/vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useListRx } from '@/entities/list'
 import {
   Ellipsis,
@@ -36,7 +36,6 @@ const {
   list,
   isLoading,
   watchList,
-  updateList,
   deleteList: deleteListRx,
   toggleItem,
   deleteItem,

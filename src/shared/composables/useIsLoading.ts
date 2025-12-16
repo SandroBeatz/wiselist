@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import { useIsBoolean } from './useIsBoolean'
 
 interface IUseIsLoading {

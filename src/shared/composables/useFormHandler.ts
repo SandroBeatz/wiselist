@@ -1,9 +1,5 @@
 import { reactive, ref, type Ref } from 'vue'
 
-export interface InputCustomEvent extends CustomEvent {
-  target: HTMLIonInputElement
-}
-
 export interface HTMLIonInputElement extends HTMLElement {
   name?: string
   value?: string | number | null
@@ -25,7 +21,7 @@ export interface FormHandlerOptions<T extends FormData> {
 
 export interface FormHandlerReturn<T extends FormData> {
   form: T
-  handlerField: (event: InputCustomEvent) => void
+  handlerField: (event: any) => void
   handleSubmit: (callback?: () => void | Promise<void>) => Promise<void>
   errors: Ref<Record<keyof T, string> | null>
   isSubmitting: Ref<boolean>
@@ -42,7 +38,7 @@ export function useFormHandler<T extends FormData>(
   const errors = ref(null) as Ref<Record<keyof T, string> | null>
   const isSubmitting = ref<boolean>(false)
 
-  function handlerField(event: InputCustomEvent): void {
+  function handlerField(event: any): void {
     const target = event.target as HTMLIonInputElement
     const name = target.name as keyof T
     const value = target.value ?? ''

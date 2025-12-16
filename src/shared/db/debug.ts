@@ -1,5 +1,6 @@
 import { db } from './database'
 import type { LocalList, LocalListItem, SyncOperation } from './types'
+import { SyncStatus } from './types'
 
 /**
  * Debug utilities for development
@@ -125,10 +126,13 @@ export async function seedMockData(): Promise<void> {
         type: 'SHOPPING',
         ownerId: 'user-1',
         version: 1,
-        syncStatus: 'SYNCED',
+        syncStatus: SyncStatus.SYNCED,
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
       {
         id: 'mock-list-2',
@@ -136,10 +140,13 @@ export async function seedMockData(): Promise<void> {
         type: 'TODO',
         ownerId: 'user-1',
         version: 1,
-        syncStatus: 'PENDING',
+        syncStatus: SyncStatus.PENDING,
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        items: [],
+        owner: null as any,
+        shares: [],
       },
     ]
 
@@ -150,7 +157,7 @@ export async function seedMockData(): Promise<void> {
         content: 'Milk',
         checked: false,
         version: 1,
-        syncStatus: 'SYNCED',
+        syncStatus: SyncStatus.SYNCED,
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -161,7 +168,7 @@ export async function seedMockData(): Promise<void> {
         content: 'Bread',
         checked: true,
         version: 1,
-        syncStatus: 'SYNCED',
+        syncStatus: SyncStatus.SYNCED,
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -172,7 +179,7 @@ export async function seedMockData(): Promise<void> {
         content: 'Clean garage',
         checked: false,
         version: 1,
-        syncStatus: 'PENDING',
+        syncStatus: SyncStatus.PENDING,
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

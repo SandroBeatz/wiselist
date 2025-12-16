@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { db, WiselistDatabase } from '../database'
 import { SyncStatus, OperationType } from '../types'
 import type { LocalList, LocalListItem, SyncOperation } from '../types'
@@ -316,9 +316,6 @@ describe('WiselistDatabase', () => {
         items: [],
         owner: null as any,
         shares: [],
-        items: [],
-        owner: null as any,
-        shares: [],
       })
 
       await db.listItems.add({
@@ -370,9 +367,6 @@ describe('WiselistDatabase', () => {
         localTimestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        items: [],
-        owner: null as any,
-        shares: [],
         items: [],
         owner: null as any,
         shares: [],

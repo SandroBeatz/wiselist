@@ -1,75 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { ShoppingBasket, CheckSquare, ListTodo, EllipsisVertical } from 'lucide-vue-next'
-import {UserId, useUserStore} from '@entities/user'
+import { EllipsisVertical } from 'lucide-vue-next'
 import type { LocalList } from '@shared/db'
-import {Nullable} from "@shared/types/global";
 
 interface Props {
   list: LocalList
 }
 
-export type ListShare = {
-  id: UserId
-  email: string
-  fullName: string
-  avatar: Nullable<string>
-}
-
-const props = defineProps<Props>()
-
-const userStore = useUserStore()
-
-const shares = computed<ListShare[]>(() => props.list.shares)
-
-// Check if current user is the owner of the list
-const isCurrentUserOwner = computed(() => {
-  return userStore.info?.id === props.list.ownerId
-})
-
-// Used in template
-const getListIcon = (type: string) => {
-  switch (type) {
-    case 'SHOPPING':
-      return ShoppingBasket
-    case 'TODO':
-      return CheckSquare
-    default:
-      return ListTodo
-  }
-}
-
-// Used in template
-const getListTypeColor = (type: string) => {
-  switch (type) {
-    case 'SHOPPING':
-      return 'text-blue-500'
-    case 'TODO':
-      return 'text-green-500'
-    default:
-      return 'text-zinc-500'
-  }
-}
-
-// Used in template
-const getListTypeBg = (type: string) => {
-  switch (type) {
-    case 'SHOPPING':
-      return 'bg-blue-100'
-    case 'TODO':
-      return 'bg-green-100'
-    default:
-      return 'bg-zinc-100'
-  }
-}
-
-// Used in template
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
+defineProps<Props>()
 </script>
 
 <template>

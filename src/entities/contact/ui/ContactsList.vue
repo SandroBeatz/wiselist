@@ -19,6 +19,7 @@ interface Emits {
   (e: 'share', email: string): void
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emit = defineEmits<Emits>()
 
 const {isLoading, contacts} = storeToRefs(useContactsStore())

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import { IonList, IonItemGroup, IonItem, IonLabel, IonAvatar, IonIcon, IonToggle } from '@ionic/vue'
 import type { ListProps } from '../types'

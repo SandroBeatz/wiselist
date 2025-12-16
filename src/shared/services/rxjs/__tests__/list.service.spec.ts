@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { firstValueFrom, take } from 'rxjs'
 import { ListRxService } from '../list.service'
 import { db } from '@shared/db'

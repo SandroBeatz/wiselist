@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import type { Ref } from 'vue'
 
 interface IUseIsBoolean {
   isBoolean: Ref<boolean>

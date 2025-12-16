@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { db } from '../database'
 import {
   initializeDatabase,
@@ -10,7 +10,6 @@ import {
   closeDatabase,
 } from '../utils'
 import { SyncStatus, OperationType } from '../types'
-import type { LocalList, LocalListItem } from '../types'
 
 describe('Database Utils', () => {
   beforeEach(async () => {
@@ -187,6 +186,9 @@ describe('Database Utils', () => {
           localTimestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          items: [],
+          owner: null as any,
+          shares: [],
         },
         {
           id: 'list-2',
@@ -198,6 +200,9 @@ describe('Database Utils', () => {
           localTimestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          items: [],
+          owner: null as any,
+          shares: [],
         },
       ])
 

@@ -28,7 +28,7 @@ class LanguageService {
   initialize(): void {
     // Sync locale from localStorage to vue-i18n
     if (this._locale.value) {
-      ;(i18n.global.locale as any).value = this._locale.value as SupportedLocale
+      (i18n.global.locale as any).value = this._locale.value as SupportedLocale
     }
   }
 

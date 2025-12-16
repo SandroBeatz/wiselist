@@ -418,7 +418,8 @@ export class SyncService {
   private async processServerLists(
     serverLists: any[],
     conflicts: { listIds: string[]; itemIds: string[] },
-    sentOperations: SyncOperation[]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _sentOperations: SyncOperation[]
   ): Promise<void> {
     console.log('💾 Saving lists to IndexedDB:', serverLists.length)
 
@@ -454,7 +455,8 @@ export class SyncService {
   private async processServerItems(
     serverItems: any[],
     conflicts: { listIds: string[]; itemIds: string[] },
-    sentOperations: SyncOperation[]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _sentOperations: SyncOperation[]
   ): Promise<void> {
     for (const serverItem of serverItems) {
       const isConflict = conflicts.itemIds.includes(serverItem.id)

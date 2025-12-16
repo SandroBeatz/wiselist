@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { SyncService } from '../sync.service'
 import { db, OperationType, SyncStatus } from '@shared/db'
 import type { SyncOperation } from '@shared/db'
-import { tokenService } from '@shared/services/token.service'
 import * as axiosModule from '@shared/instances/axios'
 
 // Mock axios
@@ -53,7 +52,7 @@ describe('SyncService', () => {
     vi.clearAllMocks()
 
     // Reset singleton instance to force new creation with mocked navigator
-    // @ts-ignore - accessing private static for testing
+    // @ts-expect-error - accessing private static for testing
     SyncService.instance = null
 
     // Get fresh service instance (will use mocked navigator.onLine)
@@ -79,17 +78,19 @@ describe('SyncService', () => {
   })
 
   describe('getSyncState$', () => {
-    it('should emit initial sync state', (done) => {
-      let subscription: any
-      subscription = service.getSyncState$().subscribe(state => {
-        expect(state).toHaveProperty('isSyncing')
-        expect(state).toHaveProperty('isOnline')
-        expect(state).toHaveProperty('lastSync')
-        expect(state).toHaveProperty('pendingCount')
-        expect(state).toHaveProperty('error')
-        subscription.unsubscribe()
-        done()
+    it('should emit initial sync state', async () => {
+      const state$ = service.getSyncState$()
+      const state = await new Promise((resolve) => {
+        const subscription = state$.subscribe(value => {
+          subscription.unsubscribe()
+          resolve(value)
+        })
       })
+      expect(state).toHaveProperty('isSyncing')
+      expect(state).toHaveProperty('isOnline')
+      expect(state).toHaveProperty('lastSync')
+      expect(state).toHaveProperty('pendingCount')
+      expect(state).toHaveProperty('error')
     })
 
     it('should have correct initial state', () => {
@@ -140,7 +141,7 @@ describe('SyncService', () => {
 
       // Reset service with offline state
       service.destroy()
-      // @ts-ignore - accessing private static for testing
+      // @ts-expect-error - accessing private static for testing
       SyncService.instance = null
       service = SyncService.getInstance()
       service.stop()

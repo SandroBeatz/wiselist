@@ -30,9 +30,6 @@ describe('ListItemRxService', () => {
         items: [],
         owner: null as any,
         shares: [],
-      items: [],
-      owner: null as any,
-      shares: [],
     })
   })
 
@@ -116,9 +113,9 @@ describe('ListItemRxService', () => {
 
   describe('getItemsByStatus$', () => {
     it('should filter items by checked status', async () => {
-      const item1Id = await service.createListItem(testListId, 'Item 1')
+      await service.createListItem(testListId, 'Item 1')
       const item2Id = await service.createListItem(testListId, 'Item 2')
-      const item3Id = await service.createListItem(testListId, 'Item 3')
+      await service.createListItem(testListId, 'Item 3')
 
       // Check item2
       await service.toggleListItem(item2Id, true)
@@ -434,7 +431,7 @@ describe('ListItemRxService', () => {
     it('should return correct checked item count', async () => {
       const item1Id = await service.createListItem(testListId, 'Item 1')
       const item2Id = await service.createListItem(testListId, 'Item 2')
-      const item3Id = await service.createListItem(testListId, 'Item 3')
+      await service.createListItem(testListId, 'Item 3')
 
       await service.toggleListItem(item1Id, true)
       await service.toggleListItem(item2Id, true)

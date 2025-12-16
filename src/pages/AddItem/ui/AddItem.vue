@@ -147,7 +147,7 @@ onMounted(() => {
         <ion-input
             ref="inputRef"
             :value="form.content"
-            @ionInput="handlerField($event)"
+            @ionInput="(e: any) => handlerField(e)"
             placeholder="Type item name and press Enter"
             type="text"
             :maxlength="500"

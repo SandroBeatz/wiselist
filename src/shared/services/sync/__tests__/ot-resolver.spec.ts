@@ -154,7 +154,7 @@ describe('OT Resolver', () => {
         },
       }
 
-      const result = resolveFieldLevelConflict(clientData, serverData, fieldTimestamps)
+      const result = resolveFieldLevelConflict(clientData as any, serverData, fieldTimestamps)
 
       expect(result.title).toBe('Client Title') // Client newer
       expect(result.type).toBe('TODO') // Server newer

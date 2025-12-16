@@ -21,7 +21,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { form, errors, isSubmitting, handleSubmit: originalHandleSubmit, handlerField } =
+const { form, errors, isSubmitting, handleSubmit: originalHandleSubmit } =
   useCreateListItemForm(props.listId)
 
 const inputRef = ref<InstanceType<typeof IonInput>>()

@@ -87,7 +87,6 @@ import {
 } from '@ionic/vue'
 import { close } from 'ionicons/icons'
 import { ref, computed, watch } from 'vue'
-import { useUserStore } from '@/entities/user'
 
 interface Props {
   isOpen: boolean
@@ -100,8 +99,6 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
-
-const userStore = useUserStore()
 
 // Form state
 const newEmail = ref('')
