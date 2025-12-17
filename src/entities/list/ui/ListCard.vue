@@ -6,13 +6,24 @@ interface Props {
   list: LocalList
 }
 
-defineProps<Props>()
+interface Emits {
+  (e: 'openActions', list: LocalList): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const handleOpenActions = (event: Event) => {
+  event.preventDefault()
+  event.stopPropagation()
+  emit('openActions', props.list)
+}
 </script>
 
 <template>
   <ion-card class="flex-1 flex ion-no-margin ion-activatable ripple-parent overflow-hidden relative rounded-2xl p-4 shadow-md hover:shadow-xl transition-shadow">
     <ion-buttons class="absolute top-[13px] right-2 z-10">
-      <ion-button size="small" fill="clear">
+      <ion-button @click="handleOpenActions" size="small" fill="clear">
         <EllipsisVertical class="size-5" slot="icon-only"/>
       </ion-button>
     </ion-buttons>

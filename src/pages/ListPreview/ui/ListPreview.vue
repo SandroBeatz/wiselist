@@ -8,23 +8,20 @@ import {
   IonFab,
 } from '@ionic/vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useListRx } from '@/entities/list'
 import {
   Ellipsis,
-  Trash,
-  SquarePen,
   Plus,
   LayoutList,
-  Share2,
 } from 'lucide-vue-next'
 import { CreateEditListDialogService } from '@/features/List/CreateEdit'
-import { ActionDropdown, type ActionItem } from '@/shared/ui/ActionDropdown'
 import { EmptyContent, PageWrapper } from '@shared/ui'
 import { ShareListModal } from '@features/Sharing'
 import { useUserStore } from '@entities/user'
 import {ListItemCard} from "@entities/list"
 import { syncService } from '@shared/services/sync/sync.service'
+import { useActionsDialog } from '@features/Actions'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,11 +41,6 @@ const {
 const pageRef = ref()
 
 const shareModalOpen = ref(false)
-
-// Check if current user is the owner of the list
-const isCurrentUserOwner = computed(() => {
-  return userStore.info?.id === list.value?.ownerId
-})
 
 const handleItemToggle = async (itemId: string, checked: boolean) => {
   if (!list.value) return
@@ -120,43 +112,72 @@ const handleShareList = () => {
   shareModalOpen.value = true
 }
 
-const dropdownActions = computed((): ActionItem[] => {
-  if (!list.value) return []
+const handleCheckAll = async () => {
+  if (!list.value) return
 
-  const actions: ActionItem[] = [
-    {
-      id: 'edit',
-      label: 'Rename list',
-      icon: SquarePen,
-      color: 'medium',
-      action: handleEditList,
+  const uncheckedItems = list.value.items.filter(i => !i.checked)
+
+  try {
+    await Promise.all(
+      uncheckedItems.map(item => toggleItem(item.id, true))
+    )
+  } catch (error) {
+    console.error('Failed to check all items:', error)
+  }
+}
+
+const handleUncheckAll = async () => {
+  if (!list.value) return
+
+  const checkedItems = list.value.items.filter(i => i.checked)
+
+  try {
+    await Promise.all(
+      checkedItems.map(item => toggleItem(item.id, false))
+    )
+  } catch (error) {
+    console.error('Failed to uncheck all items:', error)
+  }
+}
+
+const handleOpenActionsDialog = async () => {
+  if (!list.value) return
+
+  const { open } = useActionsDialog()
+  const dialog = await open({
+    listId: list.value.id,
+    listTitle: list.value.title,
+    listOwnerId: list.value.ownerId,
+    currentUserId: userStore.info?.id || '',
+    itemsCount: list.value.items.length,
+    checkedItemsCount: list.value.items.filter(i => i.checked).length,
+    uncheckedItemsCount: list.value.items.filter(i => !i.checked).length,
+  })
+
+  await dialog.present()
+
+  const { data } = await dialog.onDidDismiss()
+
+  if (data?.action) {
+    switch (data.action) {
+      case 'edit':
+        await handleEditList()
+        break
+      case 'share':
+        handleShareList()
+        break
+      case 'uncheckAll':
+        await handleUncheckAll()
+        break
+      case 'checkAll':
+        await handleCheckAll()
+        break
+      case 'delete':
+        await handleDeleteList()
+        break
     }
-  ]
-
-  // Only add share option if user is the owner
-  if (isCurrentUserOwner.value) {
-    actions.unshift({
-      id: 'share',
-      label: 'Share list',
-      icon: Share2,
-      color: 'primary',
-      action: handleShareList,
-    })
   }
-
-  // Only add delete option if user is the owner
-  if (isCurrentUserOwner.value) {
-    actions.push({
-      id: 'delete',
-      label: 'Delete',
-      icon: Trash,
-      color: 'danger',
-      action: handleDeleteList,
-    })
-  }
-
-  return actions
-})
+}
 
 // Watch for route changes and subscribe to list
 onIonViewWillEnter(() => {
@@ -176,13 +197,9 @@ onIonViewWillEnter(() => {
       :title="list?.title ?? ''"
   >
     <template #header-tools>
-      <ActionDropdown :actions="dropdownActions" triggerId="list-actions-dropdown">
-        <template #trigger="{triggerId}">
-          <ion-button :id="triggerId" size="small">
-            <Ellipsis slot="icon-only" class="size-6"/>
-          </ion-button>
-        </template>
-      </ActionDropdown>
+      <ion-button @click="handleOpenActionsDialog" size="small">
+        <Ellipsis slot="icon-only" class="size-6"/>
+      </ion-button>
     </template>
 
     <!-- Loading State -->

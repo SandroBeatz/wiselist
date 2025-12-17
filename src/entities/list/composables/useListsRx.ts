@@ -1,10 +1,12 @@
-import { ref, onMounted, onUnmounted } from 'vue'
-import type { Ref } from 'vue'
-import { Subscription } from 'rxjs'
-import { listRxService } from '@shared/services/rxjs/list.service'
-import { syncService } from '@shared/services/sync/sync.service'
-import type { LocalList } from '@shared/db'
-import type { ListForm } from '../model/types'
+import {Ref, watchEffect} from 'vue'
+import {onMounted, onUnmounted, ref} from 'vue'
+import {Subscription} from 'rxjs'
+import {listRxService} from '@shared/services/rxjs/list.service'
+import {syncService} from '@shared/services/sync/sync.service'
+import type {LocalList} from '@shared/db'
+import type {ListForm} from '../model/types'
+import {UserId} from "@entities/user";
+import {Nullable} from "@shared/types/global";
 
 /**
  * Vue composable for reactive lists with RxJS
@@ -33,7 +35,7 @@ import type { ListForm } from '../model/types'
  * </script>
  * ```
  */
-export function useListsRx(ownerId?: string) {
+export function useListsRx(ownerId?: Ref<Nullable<UserId>>) {
   // Reactive state
   const lists = ref<LocalList[]>([]) as Ref<LocalList[]>
   const isLoading = ref(true)
@@ -44,14 +46,18 @@ export function useListsRx(ownerId?: string) {
   let listsSubscription: Subscription | null = null
   let syncStatusSubscription: Subscription | null = null
 
+  void ownerId
+
   /**
    * Initialize subscriptions
    */
   const initialize = () => {
     // Subscribe to lists
-    const lists$ = ownerId
-      ? listRxService.getListsByOwner$(ownerId)
-      : listRxService.getLists$()
+    // const lists$ = ownerId?.value
+    //   ? listRxService.getListsByOwner$(ownerId.value)
+    //   : listRxService.getLists$()
+
+    const lists$ = listRxService.getLists$()
 
     listsSubscription = lists$.subscribe({
       next: (data) => {
@@ -100,8 +106,7 @@ export function useListsRx(ownerId?: string) {
    */
   const createList = async (listForm: ListForm, listOwnerId: string) => {
     try {
-      const listId = await listRxService.createList(listForm, listOwnerId)
-      return listId
+      return await listRxService.createList(listForm, listOwnerId)
     } catch (err: any) {
       error.value = err.message
       throw err
@@ -159,7 +164,7 @@ export function useListsRx(ownerId?: string) {
   }
 
   // Lifecycle hooks
-  onMounted(() => {
+  watchEffect(() => {
     initialize()
   })
 

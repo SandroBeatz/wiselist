@@ -103,4 +103,12 @@ export default {
       permissionDenied: 'Benachrichtigungsberechtigung verweigert. Bitte in den Einstellungen aktivieren.'
     }
   },
+  actions: {
+    title: 'Listenaktionen',
+    edit: 'Bearbeiten',
+    share: 'Teilen',
+    checkAll: 'Alle abhaken',
+    uncheckAll: 'Alle demarkieren',
+    delete: 'Löschen'
+  },
 }

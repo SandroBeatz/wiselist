@@ -103,4 +103,12 @@ export default {
       permissionDenied: 'Notification permission denied. Please enable in settings.'
     }
   },
+  actions: {
+    title: 'List Actions',
+    edit: 'Edit',
+    share: 'Share',
+    checkAll: 'Check off all',
+    uncheckAll: 'Uncheck all',
+    delete: 'Delete'
+  },
 }

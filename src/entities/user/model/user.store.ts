@@ -5,7 +5,7 @@ import { listRxService } from '@shared/services/rxjs/list.service'
 import { listItemRxService } from '@shared/services/rxjs/list-item.service'
 import { syncService } from '@shared/services/sync/sync.service'
 import { db } from '@shared/db'
-import type { User } from './types'
+import type {User, UserId} from './types'
 import type { Nullable } from '@shared/types/global'
 
 interface UserState {
@@ -29,6 +29,8 @@ export const useUserStore = defineStore('user', {
     // Check if access token is expired but refresh token is available
     needsTokenRefresh: () =>
       tokenService.isAccessTokenExpired() && tokenService.hasValidRefreshToken(),
+
+    userId: (state): Nullable<UserId> => state.info?.id || null,
   },
 
   actions: {

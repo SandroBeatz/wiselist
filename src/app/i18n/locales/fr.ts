@@ -103,4 +103,12 @@ export default {
       permissionDenied: 'Permission de notification refusée. Veuillez activer dans les paramètres.'
     }
   },
+  actions: {
+    title: 'Actions de liste',
+    edit: 'Modifier',
+    share: 'Partager',
+    checkAll: 'Tout cocher',
+    uncheckAll: 'Tout décocher',
+    delete: 'Supprimer'
+  },
 }
