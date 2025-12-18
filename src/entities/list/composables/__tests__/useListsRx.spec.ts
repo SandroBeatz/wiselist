@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { defineComponent, nextTick } from 'vue'
+import {defineComponent, nextTick, ref} from 'vue'
 import { useListsRx } from '../useListsRx'
 import { db } from '@shared/db'
 import { SyncStatus } from '@shared/db'
@@ -255,7 +255,7 @@ describe('useListsRx', () => {
     const TestComponentWithOwner = defineComponent({
       template: '<div>Test</div>',
       setup() {
-        return useListsRx('user-1')
+        return useListsRx(ref('user-1'))
       },
     })
 
