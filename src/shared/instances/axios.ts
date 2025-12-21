@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { tokenService } from '@shared/services/token.service'
 import { requestQueueService } from '@shared/services/request-queue.service'
-import type { AxiosRequestConfig } from 'axios'
+import { handleErrorToast } from '@shared/utils/error-toast.util'
+import type { AxiosRequestConfig, AxiosError } from 'axios'
 
 const API = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api/`,
@@ -26,7 +27,7 @@ API.interceptors.request.use(
  */
 API.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
     // Handle 401 errors with token refresh
@@ -41,6 +42,7 @@ API.interceptors.response.use(
       // If no refresh token available, clear tokens and reject
       if (!tokenService.hasValidRefreshToken()) {
         tokenService.clearTokens()
+        await handleErrorToast(error)
         return Promise.reject(error)
       }
 
@@ -67,12 +69,16 @@ API.interceptors.response.use(
         // Refresh failed - clear tokens and reject all queued requests
         tokenService.clearTokens()
         requestQueueService.rejectQueue(refreshError)
+        await handleErrorToast(error)
 
         return Promise.reject(refreshError)
       } finally {
         requestQueueService.setRefreshStatus(false)
       }
     }
+
+    // Handle all other HTTP errors
+    await handleErrorToast(error)
 
     return Promise.reject(error)
   }

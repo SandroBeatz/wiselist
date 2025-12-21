@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { IonApp, IonRouterOutlet } from '@ionic/vue'
+import { GlobalSyncLoader } from '@shared/ui'
 import { useUserStore } from '../entities/user/model/user.store'
 import { onBeforeMount } from 'vue'
 import { SocialLogin } from '@capgo/capacitor-social-login'
@@ -47,6 +48,7 @@ onBeforeMount(async () => {
 
 <template>
   <ion-app>
+    <GlobalSyncLoader />
     <ion-router-outlet />
   </ion-app>
 </template>
